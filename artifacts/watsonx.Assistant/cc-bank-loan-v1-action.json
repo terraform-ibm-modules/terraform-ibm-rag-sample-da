@@ -1,0 +1,3263 @@
+{
+  "name": "cc bank loan v1-action",
+  "type": "action",
+  "valid": true,
+  "status": "Available",
+  "created": "2024-02-21T04:19:14.559Z",
+  "updated": "2024-03-02T19:51:16.278Z",
+  "language": "en",
+  "skill_id": "b85ba827-af53-4ef0-bc22-bd5395e3e7ed",
+  "workspace": {
+    "actions": [
+      {
+        "steps": [
+          {
+            "step": "step_291",
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "\"\""
+                  },
+                  "skill_variable": "passages"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_291",
+            "next_step": "step_167"
+          },
+          {
+            "step": "step_167",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "${search_results}.get(0).document_passages.get(0).passage_text"
+                  },
+                  "skill_variable": "snippet"
+                },
+                {
+                  "value": {
+                    "expression": "${snippet}"
+                  },
+                  "skill_variable": "passages"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_167",
+            "condition": {
+              "and": [
+                {
+                  "expression": "${search_results}.size > 0"
+                },
+                {
+                  "expression": "${search_results}.get(0).document_passages.size > 0"
+                }
+              ]
+            },
+            "next_step": "step_239"
+          },
+          {
+            "step": "step_239",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "${search_results}.get(1).document_passages.get(0).passage_text"
+                  },
+                  "skill_variable": "snippet"
+                },
+                {
+                  "value": {
+                    "expression": "${passages}.concat(\"    \").concat(${snippet})"
+                  },
+                  "skill_variable": "passages"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_239",
+            "condition": {
+              "and": [
+                {
+                  "expression": "${search_results}.size > 1"
+                },
+                {
+                  "expression": "${search_results}.get(1).document_passages.size > 0"
+                }
+              ]
+            },
+            "next_step": "step_982"
+          },
+          {
+            "step": "step_982",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "${search_results}.get(2).document_passages.get(0).passage_text"
+                  },
+                  "skill_variable": "snippet"
+                },
+                {
+                  "value": {
+                    "expression": "${passages}.concat(\"    \").concat(${snippet})"
+                  },
+                  "skill_variable": "passages"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_982",
+            "condition": {
+              "and": [
+                {
+                  "expression": "${search_results}.size > 2"
+                },
+                {
+                  "expression": "${search_results}.get(2).document_passages.size > 0"
+                }
+              ]
+            },
+            "next_step": "step_858"
+          },
+          {
+            "step": "step_858",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "${passages}.replaceAll(\"<em>\",\"\").replaceAll(\"</em>\",\"\")"
+                  },
+                  "skill_variable": "passages"
+                },
+                {
+                  "value": {
+                    "expression": "${passages}.concat(\"\\n\\nPlease answer a question about this article. \\n\").concat(${query_text}).concat(\"\\n\\n\")"
+                  },
+                  "skill_variable": "prompt"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_858",
+            "next_step": "step_657"
+          },
+          {
+            "step": "step_657",
+            "handlers": [],
+            "resolver": {
+              "type": "callout",
+              "callout": {
+                "path": "/ml/v1-beta/generation/text",
+                "type": "integration_interaction",
+                "method": "POST",
+                "internal": {
+                  "spec_hash_id": "cc50493e455de183d661b95360196ddb468a02051add6dcaf4a6479b34900be5",
+                  "catalog_item_id": "1cc3185c-eb89-4135-9afa-d6672146667d"
+                },
+                "request_mapping": {
+                  "body": [
+                    {
+                      "value": {
+                        "skill_variable": "prompt"
+                      },
+                      "parameter": "input"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_id_flanul2"
+                      },
+                      "parameter": "model_id"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "watsonx_project_id"
+                      },
+                      "parameter": "project_id"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_parameters_temperature"
+                      },
+                      "parameter": "parameters.temperature"
+                    },
+                    {
+                      "value": {
+                        "scalar": 200
+                      },
+                      "parameter": "parameters.max_new_tokens"
+                    },
+                    {
+                      "value": {
+                        "scalar": 50
+                      },
+                      "parameter": "parameters.min_new_tokens"
+                    },
+                    {
+                      "value": {
+                        "scalar": 1
+                      },
+                      "parameter": "parameters.repetition_penalty"
+                    }
+                  ],
+                  "query": [
+                    {
+                      "value": {
+                        "skill_variable": "watsonx_api_version"
+                      },
+                      "parameter": "version"
+                    }
+                  ]
+                },
+                "result_variable": "step_657_result_1"
+              }
+            },
+            "variable": "step_657",
+            "next_step": "step_323"
+          },
+          {
+            "step": "step_323",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": "I'm sorry, I encountered an connection error: "
+                          },
+                          {
+                            "variable": "step_657_result_1"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_323",
+            "condition": {
+              "eq": [
+                {
+                  "variable": "step_657_result_1",
+                  "variable_path": "success"
+                },
+                {
+                  "scalar": false
+                }
+              ]
+            },
+            "next_step": "step_714"
+          },
+          {
+            "step": "step_714",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "${step_657_result_1.body.results}.get(0).generated_text"
+                  },
+                  "skill_variable": "answer"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_714",
+            "next_step": "step_930"
+          },
+          {
+            "step": "step_930",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": "I'm sorry, I was not able to find an answer to your question."
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "end_action"
+            },
+            "variable": "step_930",
+            "condition": {
+              "expression": "${answer} == \"unanswerable\""
+            },
+            "next_step": "step_525"
+          },
+          {
+            "step": "step_525",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": ""
+                          },
+                          {
+                            "skill_variable": "answer"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_525"
+          }
+        ],
+        "title": "Generate Answer",
+        "action": "action_20548-2",
+        "boosts": [],
+        "handlers": [],
+        "condition": {
+          "intent": "action_43808_intent_33082-2"
+        },
+        "variables": [
+          {
+            "title": "",
+            "variable": "step_167",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_167_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_169_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_217_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_222_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_237_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_237_result_2",
+            "data_type": "any"
+          },
+          {
+            "title": "",
+            "variable": "step_239",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_239_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_286_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "variable": "step_291",
+            "data_type": "any"
+          },
+          {
+            "title": "I'm sorry, I encountered an connection error: {variable}",
+            "variable": "step_323",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_472_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_474_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_474_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_492_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "{variable}",
+            "variable": "step_525",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_597_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "privacy": {
+              "enabled": false
+            },
+            "variable": "step_657",
+            "data_type": "any"
+          },
+          {
+            "privacy": {
+              "enabled": false
+            },
+            "variable": "step_657_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "",
+            "variable": "step_714",
+            "data_type": "any"
+          },
+          {
+            "title": "",
+            "variable": "step_858",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_890_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "I'm sorry, I was not able to find an answer to your question.",
+            "variable": "step_930",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_942_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_978_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "",
+            "variable": "step_982",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_982_result_1",
+            "data_type": "any"
+          }
+        ],
+        "next_action": "action_44059-2",
+        "topic_switch": {
+          "allowed_from": true,
+          "allowed_into": true
+        },
+        "disambiguation_opt_out": false
+      },
+      {
+        "steps": [
+          {
+            "step": "step_291",
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "scalar": "Read the list of Products and their Description below and answer the question only from the content provided below. In the answer provide Product name and the explanation using the specific Description line.\n***\n\nProduct: Conventional Fixed Rate Loan\nDescription:\n- The lowest fixed rates for eligible buyers\n- No interest-rate surprises\n- Plan to stay in your home for a long time\n- Have an established credit history\n- Can put at least 5% down on a home\n- Available for 10-year, 15-year, 20-year and 30-year terms\n\n\nProduct: Adjustable-Rate Mortgage (ARM) Loan\nDescription:\n- The lowest short-term rates\n- Initial lower monthly payments\n- Initial rate periods of 3-10 years, then rates can adjust up or down\n- Know you'll be moving within the next few years\n- Have an established credit history\n- Can put at least 5% down on a home\n- 5-year ARM loans - generally provide the lowest interest rates and monthly payments during the initial rate period. These loans are ideal for borrowers who plan to move or refinance within the five-year period.\n- 7-year ARM loans - provide seven years of predictable monthly principal and interest payments at a low interest rate before any adjustments are made. If you expect to move or refinance within the seven-year period, this may be a good option.\n- 10-year ARM loans- are increasingly popular as they combine significant savings for the initial rate period with longer protection from market-based interest rate fluctuations.\n\n\nProduct: Federal Housing Administration (FHA) Loan\nDescription:\n- Low down payments\n- Flexible qualification guidelines\n- Fixed-rate\n- Have limited funds for a down payment\n- Don't have an established credit history or have experienced credit challenges in the past\n\nProduct: Veterans Affair (VA) Loan\nDescription:\n- Low or no down payments\n- No mortgage insurance requirement\n- Flexible qualification guidelines\n- Fixed-rate and ARM options\n- Are an active military member or veteran\n- Are the surviving spouse of a service member who died as a result of military service\n\n\nProduct: Jumbo Loans\nDescription:\n- Increased purchase limits for higher-priced properties\n- Competitive rates\n- Fixed-rate and ARM options\n- Are buying a home that exceeds conforming loan limits ($766,550 in most areas)\n- Have an established credit history\n- Low down payment options\n\nProduct: Investment Property Loans\nDescription:\n- Financing for residential rental property with 1-4 units\n- A variety of loan options to choose from\n- Want to become a landlord\n- Are buying a second home\n\nProduct: New Construction and Lot Loans\nDescription:\n- Convenient financing for new construction\n- Construction-to-permanent loan options\n- Are building a new home to your specifications\n- Are buying a lot for a future home\n\n\n\n***\n"
+                  },
+                  "skill_variable": "identify_product_prompt"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_291",
+            "next_step": "step_657"
+          },
+          {
+            "step": "step_657",
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "${identify_product_prompt}.concat(\"\\n\\nInput:\").concat(${query_text}).concat(\"\\nOutput:\")"
+                  },
+                  "skill_variable": "identify_product_prompt_final"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "callout",
+              "callout": {
+                "path": "/ml/v1-beta/generation/text",
+                "type": "integration_interaction",
+                "method": "POST",
+                "internal": {
+                  "spec_hash_id": "cc50493e455de183d661b95360196ddb468a02051add6dcaf4a6479b34900be5",
+                  "catalog_item_id": "1cc3185c-eb89-4135-9afa-d6672146667d"
+                },
+                "request_mapping": {
+                  "body": [
+                    {
+                      "value": {
+                        "skill_variable": "identify_product_prompt_final"
+                      },
+                      "parameter": "input"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_id"
+                      },
+                      "parameter": "model_id"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "watsonx_project_id"
+                      },
+                      "parameter": "project_id"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_parameters_max_new_tokens"
+                      },
+                      "parameter": "parameters.max_new_tokens"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_parameters_min_new_tokens"
+                      },
+                      "parameter": "parameters.min_new_tokens"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_parameters_stop_sequences"
+                      },
+                      "parameter": "parameters.stop_sequences"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_parameters_repetition_penalty"
+                      },
+                      "parameter": "parameters.repetition_penalty"
+                    }
+                  ],
+                  "query": [
+                    {
+                      "value": {
+                        "skill_variable": "watsonx_api_version"
+                      },
+                      "parameter": "version"
+                    }
+                  ]
+                },
+                "result_variable": "step_657_result_1"
+              }
+            },
+            "variable": "step_657",
+            "next_step": "step_323"
+          },
+          {
+            "step": "step_323",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": "I'm sorry, I encountered an connection error: "
+                          },
+                          {
+                            "variable": "step_657_result_1"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_323",
+            "condition": {
+              "eq": [
+                {
+                  "variable": "step_657_result_1",
+                  "variable_path": "success"
+                },
+                {
+                  "scalar": false
+                }
+              ]
+            },
+            "next_step": "step_714"
+          },
+          {
+            "step": "step_714",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "${step_657_result_1.body.results}.get(0).generated_text"
+                  },
+                  "skill_variable": "answer"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_714",
+            "next_step": "step_930"
+          },
+          {
+            "step": "step_930",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": "I'm sorry, I was not able to find an answer to your question."
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "end_action"
+            },
+            "variable": "step_930",
+            "condition": {
+              "expression": "${answer} == \"unanswerable\""
+            },
+            "next_step": "step_525"
+          },
+          {
+            "step": "step_525",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": ""
+                          },
+                          {
+                            "skill_variable": "answer"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_525"
+          }
+        ],
+        "title": "Identify Product",
+        "action": "action_20548-2-2",
+        "boosts": [],
+        "handlers": [],
+        "condition": {
+          "intent": "action_43808_intent_33082-2-2"
+        },
+        "variables": [
+          {
+            "variable": "step_167_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_169_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_217_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_222_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_237_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_237_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_239_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_286_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "variable": "step_291",
+            "data_type": "any"
+          },
+          {
+            "title": "I'm sorry, I encountered an connection error: {variable}",
+            "variable": "step_323",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_472_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_474_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_474_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_492_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "{variable}",
+            "variable": "step_525",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_597_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "privacy": {
+              "enabled": false
+            },
+            "variable": "step_657",
+            "data_type": "any"
+          },
+          {
+            "privacy": {
+              "enabled": false
+            },
+            "variable": "step_657_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "",
+            "variable": "step_714",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_890_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "I'm sorry, I was not able to find an answer to your question.",
+            "variable": "step_930",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_942_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_978_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_982_result_1",
+            "data_type": "any"
+          }
+        ],
+        "next_action": "action_44059-2-2",
+        "topic_switch": {
+          "allowed_from": true,
+          "allowed_into": true
+        },
+        "disambiguation_opt_out": false
+      },
+      {
+        "steps": [
+          {
+            "step": "step_291",
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "scalar": "Read the list of Products below and answer the question.  *** Product: Company A Term Life - Guaranteed level term is generally a good fit for young families looking for affordable protection for a specific period of time - Can be converted to any flexible premium, permanent life insurance policy  - Conversion is allowed for the term duration or to age 65 years, whichever is less  - Chronic Illness, Critical Illness and Terminal Illness benefits included on most policies  Product: Company A Whole Life - Provides coverage for an individual’s entire life, rather than for a specified term; a savings component, called cash value, builds over time  - Offers premium rates, cash values and death benefits that are all guaranteed  - Gives clients plenty of choices for protection, including lower minimum coverage amounts of $10,000 and a selection of payment lengths: level premiums to age 100 or for 20 years  - Chronic Illness, Critical Illness and Terminal Illness benefits included on most policies  Product: Company A Variable Life Insurance - An investment lineup that includes several 4- and 5-star Morningstar ratings  - 3 indexed options with guaranteed minimum interest rates  - Optional Long-Term Care Rider  - Guarantees to help build confidence — Our Company A VUL Rewards Program ensures that clients who satisfy certain requirements either enhance their growth potential or lower the cost of their policy  Product: Company A Indexed Universal Life - Designed to be low-cost without highly-leveraged features with significant charges that can undermine your client’s future income  - Offers new volatility control indices to help reduce the impact of erratic market performance on crediting rates; available in Company A IUL Accumulator II 2020  - Optional Long-Term Care Rider  Product: Company A 20 Pay Life Insurance - Available for ages from 0 – 75 - Policy amounts available from $15,000 to $4 million - Policyholders receive lifetime protection in exchange for paying a certain number of premiums according to policy requirements (10 premiums for a 10-Pay policy, 20 premiums for a 20-Pay policy), at which point the policy is paid for life - Guaranteed death benefit is payable to beneficiaries tax-free2 without going through probate - Cash value accumulates over time, offering growth - Borrow against the policy’s accumulated cash value if needed, or use the policy as collateral for a loan3 - Should dividends be payable they can be paid to you in cash, used to purchase more coverage, or left in the policy for additional growth with guaranteed interest  Product: Company B Permanent Life Insurance - Permanent life insurance is just that — permanent. It protects you and your family now and throughout your life and is more affordable than you may think. It offers a death benefit and cash value accumulation component.  - As long as you continue to pay the premiums, you are able to lock in coverage at a level premium rate. Part of the premium accrues as a cash value and earns interest over time.  The policy does not expire if payments are up to date.  - As the policy gains value, you may be able to borrow up to 90% of your policy’s cash value tax-free. Outstanding loans accrue interest, reduce the policy’s death benefit, and increase the chance that the policy will lapse.  - Any earning accumulated in your life insurance policy’s cash value grows free from taxes. (Please note that in a variable life insurance policy, cash value growth is not guaranteed.) - The death benefit of your permanent life insurance is generally passed on to your beneficiaries free from federal income tax. - Premium withdrawals may be tax-free, depending on the type of coverage you have. Withdrawals from life insurance policies may be subject to fees, penalties, and income taxes depending on the specific life insurance policy and the policy holder’s tax situation. Withdrawals reduce the policy value and death benefit.  - Transfers among the underlying investment options of a variable life insurance policy are generally not subject to current income or capital gains taxes. - Should your need for the policy’s death benefit decrease, you can take loans or withdrawals from a life insurance policy prior to age 59 ½ without the 10% early withdrawal penalty. - Premiums in whole (or permanent) life insurance policies are more expensive than for term life insurance but they won’t change during the policy’s lifetime, and the death benefit is guaranteed. - The potential to build cash value during your lifetime. - The ability to access your money through loans and withdrawals for things such as paying for college, retirement or long-term care. - A generally income tax-free payout to your loved ones upon your passing (known as a death benefit).  Product: Company B Variable Universal Life Insurance - What is Universal? Means you have flexibility in making payments. Your payments and the timing of those payments, can vary from nothing to a maximum amount. - Growth potential with investment options - Offer greater opportunities to increase cash value by investing directly in the market, with the security of a guaranteed minimum death benefit, with Variable Universal Life policies.3 - With Variable Universal Life (VUL), you can live more for today by protecting your family from life’s unknowns, keep more of the money you earn with potential tax-deferred growth and a generally tax-free financial protection death benefit, and build more for tomorrow with a growth component that compliments the protection this policy provides.1 - Variable Universal Life insurance is a type of life insurance that has potential to build cash value. When you make payments, you invest your money in investment options, selecting from any of the choices available. In addition, VUL pays a death benefit that can be used to replace your income or cover expenses. - When you make payments to your variable universal life policy, a portion of each payment goes toward the life insurance benefit that protects your family. The rest of it gets invested for potential growth. You have complete freedom to invest in the available options, with no restrictions.3 - Each time you make a payment, your cash value increases. - Your investments – and therefore your cash value – will fluctuate with the performance of your selected investment options. - You’ll automatically pay for the life insurance benefit that protects your family because a percentage of your cash value each month pays for the policy’s charges and any additional benefits you’ve selected. - The cash value you can potentially accumulate can build equity, which you can access through loans and withdrawals to help you meet important financial goals down the line.  - A variable universal life insurance contract is a contract with the primary purpose of providing a death benefit. It is also a long term financial investment that can also allow potential accumulation of assets through customized, professionally managed investment portfolios. These portfolios are closely managed in order to satisfy stated investment objectives. Variable investment options within variable life insurance policies are subject to fluctuation in value and market risk, including the possibility of loss of principal. Variable life insurance policies are sold by prospectus.There are fees and charges associated with variable life insurance contracts including mortality and risk charges, front end loads, administrative fees, investment management fees, surrender charges and charges for optional riders.  Product: Company B Indexed Universal Life insurance - Indexed refers to your ability to invest in an indexed-linked option that gives you the potential to accumulate cash value within your policy based on the performance of an index up to a cap. - With Indexed Universal Life (IUL), you can live more for today with financial security for life’s unknowns, keep more of the money you earn with potential tax-deferred growth and access to cash value through tax-free loans and withdrawals, and build more for tomorrow with a growth component that compliments the protection your policy provides. When you make a payment to your Indexed Universal Life policy, a portion of that payment goes toward the life insurance benefit that protects your family when you’re no longer around. The other portion has the potential to build cash value by tracking the performance of the S&P 500®Index. - You can access your cash value, tax-free, for important financial goals, help maintain your quality of life in retirement, or take care of emergency expenses - Indexed Universal Life is a type of life insurance that insures one person and pays a benefit to the beneficiary you select after the insured passes away. IUL has the potential to build cash value by allowing you to track a major market index through indexed-linked options.  Product: Company B Term life Insurance - Term life insurance is generally the most affordable type of coverage. It offers protection for a specific period of time - A term life insurance policy is written for a specific period of time – typically 1 to 10 years – and may be renewable at the end of each term. Also, the premiums for a term life insurance policy will likely increase at the end of each term and can become prohibitively expensive for older individuals. - Security that comes with knowing a death benefit will be paid to your loved ones if you pass away — for example, while your children are still young or your business is still growing.  ***"
+                  },
+                  "skill_variable": "identify_product_prompt"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_291",
+            "next_step": "step_657"
+          },
+          {
+            "step": "step_657",
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "${identify_product_prompt}.concat(\"\\n\\n\").concat(${query_text}).concat(\"\\n\\n\")"
+                  },
+                  "skill_variable": "identify_product_prompt_final"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "callout",
+              "callout": {
+                "path": "/ml/v1-beta/generation/text",
+                "type": "integration_interaction",
+                "method": "POST",
+                "internal": {
+                  "spec_hash_id": "cc50493e455de183d661b95360196ddb468a02051add6dcaf4a6479b34900be5",
+                  "catalog_item_id": "1cc3185c-eb89-4135-9afa-d6672146667d"
+                },
+                "request_mapping": {
+                  "body": [
+                    {
+                      "value": {
+                        "skill_variable": "identify_product_prompt_final"
+                      },
+                      "parameter": "input"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_id"
+                      },
+                      "parameter": "model_id"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "watsonx_project_id"
+                      },
+                      "parameter": "project_id"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_parameters_temperature"
+                      },
+                      "parameter": "parameters.temperature"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_parameters_max_new_tokens"
+                      },
+                      "parameter": "parameters.max_new_tokens"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_parameters_min_new_tokens"
+                      },
+                      "parameter": "parameters.min_new_tokens"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_parameters_stop_sequences"
+                      },
+                      "parameter": "parameters.stop_sequences"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "model_parameters_repetition_penalty"
+                      },
+                      "parameter": "parameters.repetition_penalty"
+                    }
+                  ],
+                  "query": [
+                    {
+                      "value": {
+                        "skill_variable": "watsonx_api_version"
+                      },
+                      "parameter": "version"
+                    }
+                  ]
+                },
+                "result_variable": "step_657_result_1"
+              }
+            },
+            "variable": "step_657",
+            "next_step": "step_323"
+          },
+          {
+            "step": "step_323",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": "I'm sorry, I encountered an connection error: "
+                          },
+                          {
+                            "variable": "step_657_result_1"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_323",
+            "condition": {
+              "eq": [
+                {
+                  "variable": "step_657_result_1",
+                  "variable_path": "success"
+                },
+                {
+                  "scalar": false
+                }
+              ]
+            },
+            "next_step": "step_714"
+          },
+          {
+            "step": "step_714",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "${step_657_result_1.body.results}.get(0).generated_text"
+                  },
+                  "skill_variable": "answer"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_714",
+            "next_step": "step_930"
+          },
+          {
+            "step": "step_930",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": "I'm sorry, I was not able to find an answer to your question."
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "end_action"
+            },
+            "variable": "step_930",
+            "condition": {
+              "expression": "${answer} == \"unanswerable\""
+            },
+            "next_step": "step_525"
+          },
+          {
+            "step": "step_525",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": ""
+                          },
+                          {
+                            "skill_variable": "answer"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_525"
+          }
+        ],
+        "title": "Identify Product (SW)",
+        "action": "action_20548-2-3",
+        "boosts": [],
+        "handlers": [],
+        "condition": {
+          "intent": "action_43808_intent_33082-2-3"
+        },
+        "variables": [
+          {
+            "variable": "step_167_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_169_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_217_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_222_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_237_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_237_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_239_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_286_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "variable": "step_291",
+            "data_type": "any"
+          },
+          {
+            "title": "I'm sorry, I encountered an connection error: {variable}",
+            "variable": "step_323",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_472_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_474_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_474_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_492_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "{variable}",
+            "variable": "step_525",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_597_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "privacy": {
+              "enabled": false
+            },
+            "variable": "step_657",
+            "data_type": "any"
+          },
+          {
+            "privacy": {
+              "enabled": false
+            },
+            "variable": "step_657_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "",
+            "variable": "step_714",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_890_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "I'm sorry, I was not able to find an answer to your question.",
+            "variable": "step_930",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_942_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_978_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_982_result_1",
+            "data_type": "any"
+          }
+        ],
+        "next_action": "fallback",
+        "topic_switch": {
+          "allowed_from": true,
+          "allowed_into": true
+        },
+        "disambiguation_opt_out": false
+      },
+      {
+        "steps": [
+          {
+            "step": "step_774",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "input.original_text"
+                  },
+                  "skill_variable": "query_text"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_774",
+            "next_step": "step_983"
+          },
+          {
+            "step": "step_983",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "input.text"
+                  },
+                  "skill_variable": "query_text"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_983",
+            "condition": {
+              "not": {
+                "exists": {
+                  "skill_variable": "query_text"
+                }
+              }
+            },
+            "next_step": "step_474"
+          },
+          {
+            "step": "step_474",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": []
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "callout",
+              "callout": {
+                "path": "/v2/projects/{project_id}/query",
+                "type": "integration_interaction",
+                "method": "POST",
+                "internal": {
+                  "spec_hash_id": "8566081a305e8f8ade4e9bd3887da0600e87948417fc10ba38ee121426f8c50b",
+                  "catalog_item_id": "a426dfdf-7e8d-4f3f-bef7-38005fc8579c"
+                },
+                "request_mapping": {
+                  "body": [
+                    {
+                      "value": {
+                        "expression": "3"
+                      },
+                      "parameter": "count"
+                    },
+                    {
+                      "value": {
+                        "expression": "[\"title\",\"metadata.source.url\"]"
+                      },
+                      "parameter": "return"
+                    },
+                    {
+                      "value": {
+                        "expression": "[\"text\"]"
+                      },
+                      "parameter": "passages.fields"
+                    },
+                    {
+                      "value": {
+                        "expression": "true"
+                      },
+                      "parameter": "passages.enabled"
+                    },
+                    {
+                      "value": {
+                        "expression": "250"
+                      },
+                      "parameter": "passages.characters"
+                    },
+                    {
+                      "value": {
+                        "expression": "true"
+                      },
+                      "parameter": "passages.find_answers"
+                    },
+                    {
+                      "value": {
+                        "expression": "false"
+                      },
+                      "parameter": "table_results.enabled"
+                    },
+                    {
+                      "value": {
+                        "skill_variable": "query_text"
+                      },
+                      "parameter": "natural_language_query"
+                    }
+                  ],
+                  "path": [
+                    {
+                      "value": {
+                        "skill_variable": "discovery_project_id"
+                      },
+                      "parameter": "project_id"
+                    }
+                  ],
+                  "query": [
+                    {
+                      "value": {
+                        "skill_variable": "discovery_date_version"
+                      },
+                      "parameter": "version"
+                    }
+                  ]
+                },
+                "result_variable": "step_474_result_2"
+              }
+            },
+            "variable": "step_474",
+            "next_step": "step_105"
+          },
+          {
+            "step": "step_105",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": "Sorry, the search failed!"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "context": {
+              "variables": []
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_105",
+            "condition": {
+              "eq": [
+                {
+                  "variable": "step_474_result_2",
+                  "variable_path": "success"
+                },
+                {
+                  "scalar": false
+                }
+              ]
+            },
+            "next_step": "step_237"
+          },
+          {
+            "step": "step_237",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "${step_474_result_2}.body.results"
+                  },
+                  "skill_variable": "search_results"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "invoke_another_action",
+              "invoke_action": {
+                "action": "action_20548-2",
+                "policy": "default",
+                "parameters": null,
+                "result_variable": "step_237_result_2"
+              }
+            },
+            "variable": "step_237",
+            "condition": {
+              "eq": [
+                {
+                  "variable": "step_474_result_2",
+                  "variable_path": "success"
+                },
+                {
+                  "scalar": true
+                }
+              ]
+            },
+            "next_step": "step_195"
+          },
+          {
+            "step": "step_195",
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "${step_474_result_2}.body.results=[]"
+                  },
+                  "skill_variable": "search_results"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "end_action"
+            },
+            "variable": "step_195"
+          }
+        ],
+        "title": "FAQ Search",
+        "action": "action_44059-2",
+        "boosts": [],
+        "handlers": [],
+        "condition": {
+          "intent": "action_47312_intent_17298-2"
+        },
+        "variables": [
+          {
+            "variable": "step_001_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "Sorry, the search failed!",
+            "variable": "step_105",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_117_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_146_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_164_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_167_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_169_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "variable": "step_195",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_222_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "",
+            "variable": "step_237",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_237_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_237_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_249_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_272_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_286_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_338_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_418_result_2",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "privacy": {
+              "enabled": false
+            },
+            "variable": "step_474",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_474_result_1",
+            "data_type": "any"
+          },
+          {
+            "privacy": {
+              "enabled": false
+            },
+            "variable": "step_474_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_492_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_543_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_597_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_748_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_749_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "",
+            "variable": "step_774",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_774_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_829_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_863_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_876_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_896_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_978_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "variable": "step_983",
+            "data_type": "any"
+          }
+        ],
+        "next_action": "action_20548-2-2",
+        "topic_switch": {
+          "allowed_from": true,
+          "allowed_into": true
+        },
+        "disambiguation_opt_out": false
+      },
+      {
+        "steps": [
+          {
+            "step": "step_774",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "input.original_text"
+                  },
+                  "skill_variable": "query_text"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_774",
+            "next_step": "step_983"
+          },
+          {
+            "step": "step_983",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "input.text"
+                  },
+                  "skill_variable": "query_text"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_983",
+            "condition": {
+              "not": {
+                "exists": {
+                  "skill_variable": "query_text"
+                }
+              }
+            },
+            "next_step": "step_105"
+          },
+          {
+            "step": "step_105",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": "Sorry, the search failed!"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "context": {
+              "variables": []
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_105",
+            "condition": {
+              "not": {
+                "exists": {
+                  "skill_variable": "query_text"
+                }
+              }
+            },
+            "next_step": "step_237"
+          },
+          {
+            "step": "step_237",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "scalar": "Product: Nationwide Term Life - Guaranteed level term is generally a good fit for young families looking for affordable protection  - Can be converted to any flexible premium, permanent life insurance policy  - Conversion is allowed for the term duration or to age 65 years, whichever is less  - Chronic Illness, Critical Illness and Terminal Illness benefits included on most policies   Product: Nationwide Whole Life - Provides coverage for an individual’s entire life, rather than for a specified term; a savings component, called cash value, builds over time  - Offers premium rates, cash values and death benefits that are all guaranteed  - Gives clients plenty of choices for protection, including lower minimum coverage amounts of $10,000 and a selection of payment lengths: level premiums to age 100 or for 20 years  - Chronic Illness, Critical Illness and Terminal Illness benefits included on most policies"
+                  },
+                  "skill_variable": "products_list"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "invoke_another_action",
+              "invoke_action": {
+                "action": "action_20548-2-2",
+                "policy": "default",
+                "parameters": null,
+                "result_variable": "step_237_result_2"
+              }
+            },
+            "variable": "step_237",
+            "condition": {
+              "exists": {
+                "skill_variable": "query_text"
+              }
+            },
+            "next_step": "step_195"
+          },
+          {
+            "step": "step_195",
+            "context": {
+              "variables": []
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "end_action"
+            },
+            "variable": "step_195"
+          }
+        ],
+        "title": "Product Search",
+        "action": "action_44059-2-2",
+        "boosts": [],
+        "handlers": [],
+        "condition": {
+          "intent": "action_47312_intent_17298-2-2"
+        },
+        "variables": [
+          {
+            "variable": "step_001_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "Sorry, the search failed!",
+            "variable": "step_105",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_117_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_146_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_164_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_167_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_169_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "variable": "step_195",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_222_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "variable": "step_237",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_237_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_237_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_249_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_272_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_286_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_338_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_418_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_474_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_492_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_543_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_597_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_748_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_749_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "",
+            "variable": "step_774",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_774_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_829_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_863_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_876_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_896_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_978_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "variable": "step_983",
+            "data_type": "any"
+          }
+        ],
+        "next_action": "action_44059-2-3",
+        "topic_switch": {
+          "allowed_from": true,
+          "allowed_into": true
+        },
+        "disambiguation_opt_out": false
+      },
+      {
+        "steps": [
+          {
+            "step": "step_774",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "input.original_text"
+                  },
+                  "skill_variable": "query_text"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_774",
+            "next_step": "step_983"
+          },
+          {
+            "step": "step_983",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "expression": "input.text"
+                  },
+                  "skill_variable": "query_text"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_983",
+            "condition": {
+              "not": {
+                "exists": {
+                  "skill_variable": "query_text"
+                }
+              }
+            },
+            "next_step": "step_105"
+          },
+          {
+            "step": "step_105",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": "Sorry, the search failed!"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "context": {
+              "variables": []
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "continue"
+            },
+            "variable": "step_105",
+            "condition": {
+              "not": {
+                "exists": {
+                  "skill_variable": "query_text"
+                }
+              }
+            },
+            "next_step": "step_237"
+          },
+          {
+            "step": "step_237",
+            "output": {
+              "generic": []
+            },
+            "context": {
+              "variables": [
+                {
+                  "value": {
+                    "scalar": "Product: Nationwide Term Life - Guaranteed level term is generally a good fit for young families looking for affordable protection  - Can be converted to any flexible premium, permanent life insurance policy  - Conversion is allowed for the term duration or to age 65 years, whichever is less  - Chronic Illness, Critical Illness and Terminal Illness benefits included on most policies   Product: Nationwide Whole Life - Provides coverage for an individual’s entire life, rather than for a specified term; a savings component, called cash value, builds over time  - Offers premium rates, cash values and death benefits that are all guaranteed  - Gives clients plenty of choices for protection, including lower minimum coverage amounts of $10,000 and a selection of payment lengths: level premiums to age 100 or for 20 years  - Chronic Illness, Critical Illness and Terminal Illness benefits included on most policies"
+                  },
+                  "skill_variable": "products_list"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "invoke_another_action",
+              "invoke_action": {
+                "action": "action_20548-2-3",
+                "policy": "default",
+                "parameters": null,
+                "result_variable": "step_237_result_2"
+              }
+            },
+            "variable": "step_237",
+            "condition": {
+              "exists": {
+                "skill_variable": "query_text"
+              }
+            },
+            "next_step": "step_195"
+          },
+          {
+            "step": "step_195",
+            "context": {
+              "variables": []
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "end_action"
+            },
+            "variable": "step_195"
+          }
+        ],
+        "title": "Product Search (SW)",
+        "action": "action_44059-2-3",
+        "boosts": [],
+        "handlers": [],
+        "condition": {
+          "intent": "action_47312_intent_17298-2-3"
+        },
+        "variables": [
+          {
+            "variable": "step_001_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "Sorry, the search failed!",
+            "variable": "step_105",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_117_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_146_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_164_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_167_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_169_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "variable": "step_195",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_222_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "privacy": {
+              "enabled": false
+            },
+            "variable": "step_237",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_237_result_1",
+            "data_type": "any"
+          },
+          {
+            "privacy": {
+              "enabled": false
+            },
+            "variable": "step_237_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_249_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_272_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_286_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_338_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_418_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_474_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_492_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_543_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_597_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_748_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_749_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "",
+            "variable": "step_774",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_774_result_2",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_829_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_863_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_876_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_896_result_1",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_978_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "variable": "step_983",
+            "data_type": "any"
+          }
+        ],
+        "next_action": "action_20548-2-3",
+        "topic_switch": {
+          "allowed_from": true,
+          "allowed_into": true
+        },
+        "disambiguation_opt_out": false
+      },
+      {
+        "steps": [
+          {
+            "step": "step_558",
+            "handlers": [],
+            "resolver": {
+              "type": "invoke_another_action_and_end",
+              "invoke_action": {
+                "action": "action_44059-2",
+                "policy": "default",
+                "parameters": null,
+                "result_variable": "step_558_result_1"
+              }
+            },
+            "variable": "step_558",
+            "next_step": "step_001"
+          },
+          {
+            "step": "step_001",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text": "I'm afraid I don't understand. Please rephrase your question."
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "end_action"
+            },
+            "variable": "step_001",
+            "condition": {
+              "lte": [
+                {
+                  "system_variable": "no_action_matches_count"
+                },
+                {
+                  "scalar": 3
+                }
+              ]
+            },
+            "next_step": "step_002"
+          },
+          {
+            "step": "step_002",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text": ""
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "invoke_another_action_and_end",
+              "invoke_action": {
+                "action": "fallback",
+                "policy": "default",
+                "parameters": null,
+                "result_variable": "step_002_result_1"
+              }
+            },
+            "variable": "step_002",
+            "condition": {
+              "gt": [
+                {
+                  "system_variable": "no_action_matches_count"
+                },
+                {
+                  "scalar": 3
+                }
+              ]
+            }
+          }
+        ],
+        "title": "No action matches",
+        "action": "anything_else",
+        "boosts": [],
+        "handlers": [],
+        "condition": {
+          "expression": "anything_else"
+        },
+        "variables": [
+          {
+            "title": "I am afraid I do not understand what you are asking, please re-p",
+            "variable": "step_001",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_002",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_002_result_1",
+            "data_type": "any"
+          },
+          {
+            "title": "No response",
+            "variable": "step_558",
+            "data_type": "any"
+          },
+          {
+            "variable": "step_558_result_1",
+            "data_type": "any"
+          }
+        ],
+        "disambiguation_opt_out": true
+      },
+      {
+        "steps": [
+          {
+            "step": "digression_failure",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text": "Sorry I couldn't confirm if you wanted to return to previous topic, let me connect to an agent."
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "connect_to_agent",
+              "response": {
+                "transfer_info": {
+                  "target": {}
+                },
+                "agent_available": {
+                  "message": "Let's send you to an available agent."
+                },
+                "agent_unavailable": {
+                  "message": "There are no agents available at this time. When one becomes available, we'll connect you."
+                },
+                "message_to_human_agent": ""
+              }
+            },
+            "variable": "digression_failure",
+            "condition": {
+              "eq": [
+                {
+                  "system_variable": "fallback_reason"
+                },
+                {
+                  "scalar": "Failed to confirm topic return"
+                }
+              ]
+            },
+            "next_step": "step_001"
+          },
+          {
+            "step": "step_001",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text": "I'm afraid I don't understand. I can connect you to an agent."
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "connect_to_agent",
+              "response": {
+                "transfer_info": {
+                  "target": {}
+                },
+                "agent_available": {
+                  "message": "Let's send you to an available agent."
+                },
+                "agent_unavailable": {
+                  "message": "There are no agents available at this time. When one becomes available, we'll connect you."
+                },
+                "message_to_human_agent": ""
+              }
+            },
+            "variable": "step_001",
+            "condition": {
+              "eq": [
+                {
+                  "system_variable": "fallback_reason"
+                },
+                {
+                  "scalar": "Step validation failed"
+                }
+              ]
+            },
+            "next_step": "step_002"
+          },
+          {
+            "step": "step_002",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text": "Sorry I couldn't assist you. I will connect you to an agent right away."
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "connect_to_agent",
+              "response": {
+                "transfer_info": {
+                  "target": {}
+                },
+                "agent_available": {
+                  "message": "Let's send you to an available agent."
+                },
+                "agent_unavailable": {
+                  "message": "There are no agents available at this time. When one becomes available, we'll connect you."
+                },
+                "message_to_human_agent": ""
+              }
+            },
+            "variable": "step_002",
+            "condition": {
+              "eq": [
+                {
+                  "system_variable": "fallback_reason"
+                },
+                {
+                  "scalar": "Agent requested"
+                }
+              ]
+            },
+            "next_step": "step_003"
+          },
+          {
+            "step": "step_003",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text": "I am afraid I do not understand what you are asking, let me connect you to an agent."
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "connect_to_agent",
+              "response": {
+                "transfer_info": {
+                  "target": {}
+                },
+                "agent_available": {
+                  "message": "Let's send you to an available agent."
+                },
+                "agent_unavailable": {
+                  "message": "There are no agents available at this time. When one becomes available, we'll connect you."
+                },
+                "message_to_human_agent": ""
+              }
+            },
+            "variable": "step_003",
+            "condition": {
+              "eq": [
+                {
+                  "system_variable": "fallback_reason"
+                },
+                {
+                  "scalar": "No action matches"
+                }
+              ]
+            },
+            "next_step": "step_004"
+          },
+          {
+            "step": "step_004",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text": "It seems this conversation would be best managed by a human agent. Let me connect you to one of our agents."
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "connect_to_agent",
+              "response": {
+                "transfer_info": {
+                  "target": {}
+                },
+                "agent_available": {
+                  "message": "Let's send you to an available agent."
+                },
+                "agent_unavailable": {
+                  "message": "There are no agents available at this time. When one becomes available, we'll connect you."
+                },
+                "message_to_human_agent": ""
+              }
+            },
+            "variable": "step_004",
+            "condition": {
+              "eq": [
+                {
+                  "system_variable": "fallback_reason"
+                },
+                {
+                  "scalar": "Danger word detected"
+                }
+              ]
+            },
+            "next_step": "step_005"
+          },
+          {
+            "step": "step_005",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text": "It seems this conversation would be best managed by a human agent. Let me connect you to one of our agents."
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "connect_to_agent",
+              "response": {
+                "transfer_info": {
+                  "target": {}
+                },
+                "agent_available": {
+                  "message": "Let's send you to an available agent."
+                },
+                "agent_unavailable": {
+                  "message": "There are no agents available at this time. When one becomes available, we'll connect you."
+                },
+                "message_to_human_agent": ""
+              }
+            },
+            "variable": "step_005",
+            "condition": {
+              "eq": [
+                {
+                  "system_variable": "fallback_reason"
+                },
+                {
+                  "scalar": "Profanity detected"
+                }
+              ]
+            }
+          }
+        ],
+        "title": "Fallback",
+        "action": "fallback",
+        "boosts": [],
+        "handlers": [],
+        "condition": {
+          "intent": "fallback_connect_to_agent"
+        },
+        "variables": [
+          {
+            "title": "Topic return failed",
+            "variable": "digression_failure",
+            "data_type": "any"
+          },
+          {
+            "title": "I'm afraid I don't understand. I can connect you to an agent.",
+            "variable": "step_001",
+            "data_type": "any"
+          },
+          {
+            "title": "Sorry I couldn't assist you. I will connect you to an agent righ",
+            "variable": "step_002",
+            "data_type": "any"
+          },
+          {
+            "title": "I am afraid I do not understand what you are asking, let me conn",
+            "variable": "step_003",
+            "data_type": "any"
+          },
+          {
+            "title": "It seems this conversation would be best managed",
+            "variable": "step_004",
+            "data_type": "any"
+          },
+          {
+            "title": "Profanity - It seems this conversation",
+            "variable": "step_005",
+            "data_type": "any"
+          }
+        ],
+        "next_action": "run_always",
+        "disambiguation_opt_out": true
+      },
+      {
+        "steps": [
+          {
+            "step": "danger_word_detected",
+            "title": "Connect to agent",
+            "handlers": [],
+            "resolver": {
+              "type": "fallback"
+            },
+            "variable": "danger_word_detected_variable",
+            "condition": {
+              "entity": "danger_words"
+            },
+            "next_step": "profanity_detected"
+          },
+          {
+            "step": "profanity_detected",
+            "title": "Show warning",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text_expression": {
+                        "concat": [
+                          {
+                            "scalar": "Please use appropriate language when interacting with the assistant."
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [
+              {
+                "type": "max_hits",
+                "handler": "max_hits_handler",
+                "resolver": {
+                  "type": "fallback"
+                }
+              }
+            ],
+            "max_hits": 2,
+            "resolver": {
+              "type": "end_action"
+            },
+            "variable": "profanity_detected_variable",
+            "condition": {
+              "entity": "profane_words"
+            }
+          }
+        ],
+        "title": "Trigger word detected",
+        "action": "run_always",
+        "boosts": [],
+        "handlers": [],
+        "variables": [
+          {
+            "title": "Profanity detected",
+            "variable": "danger_word_detected_variable",
+            "data_type": "any"
+          },
+          {
+            "title": "Profane word detected",
+            "variable": "profanity_detected_variable",
+            "data_type": "any"
+          }
+        ],
+        "next_action": "anything_else"
+      },
+      {
+        "steps": [
+          {
+            "step": "step_001",
+            "output": {
+              "generic": [
+                {
+                  "values": [
+                    {
+                      "text": "Welcome, how can I assist you?"
+                    }
+                  ],
+                  "response_type": "text",
+                  "selection_policy": "sequential"
+                }
+              ]
+            },
+            "handlers": [],
+            "resolver": {
+              "type": "end_action"
+            },
+            "variable": "step_001"
+          }
+        ],
+        "title": "Greet customer",
+        "action": "welcome",
+        "boosts": [],
+        "handlers": [],
+        "condition": {
+          "expression": "welcome"
+        },
+        "variables": [
+          {
+            "variable": "step_001",
+            "data_type": "any"
+          }
+        ],
+        "next_action": "action_20548-2",
+        "disambiguation_opt_out": true
+      }
+    ],
+    "intents": [
+      {
+        "intent": "action_43808_intent_33082-2",
+        "examples": []
+      },
+      {
+        "intent": "action_43808_intent_33082-2-2",
+        "examples": []
+      },
+      {
+        "intent": "action_43808_intent_33082-2-3",
+        "examples": []
+      },
+      {
+        "intent": "action_47312_intent_17298-2",
+        "examples": [
+          {
+            "text": "Am I required to have an escrow account?"
+          },
+          {
+            "text": "can i get loan if i dont have credit history"
+          },
+          {
+            "text": "does my credit score matter"
+          },
+          {
+            "text": "do i need to make down payment"
+          },
+          {
+            "text": "do you need my credit score"
+          },
+          {
+            "text": "How long does it take to get mortgage"
+          },
+          {
+            "text": "how much are the closing costs"
+          },
+          {
+            "text": "i don't have money for down payment, is it needed?"
+          },
+          {
+            "text": "is ARM a better choice"
+          },
+          {
+            "text": "is arm better choice"
+          },
+          {
+            "text": "is home appraisal needed"
+          },
+          {
+            "text": "what is a PMI"
+          },
+          {
+            "text": "what is ARM"
+          },
+          {
+            "text": "what is conventional fixed rate loan"
+          },
+          {
+            "text": "what is pre-approval"
+          },
+          {
+            "text": "what type of loans can i get"
+          },
+          {
+            "text": "what type of payments do i have to make"
+          },
+          {
+            "text": "when do arm rates change"
+          }
+        ]
+      },
+      {
+        "intent": "action_47312_intent_17298-2-2",
+        "examples": [
+          {
+            "text": "i don't have credit history, which mortgage should I get?"
+          },
+          {
+            "text": "which loan do you suggest for building new home"
+          },
+          {
+            "text": "which loan product doesn't need credit history"
+          },
+          {
+            "text": "which loan product is available for purchasing multiple property units"
+          },
+          {
+            "text": "which loan product is available for purchasing very expensive home"
+          },
+          {
+            "text": "which loan product is available for purchasing very expensive property"
+          },
+          {
+            "text": "which loan product is available if i don't have money for down payment"
+          },
+          {
+            "text": "which loan product is available if I have no money"
+          },
+          {
+            "text": "which loan product is available of I have home equity"
+          },
+          {
+            "text": "which loan product is available to build new home"
+          },
+          {
+            "text": "which loan products need established credit history"
+          },
+          {
+            "text": "which loans do you offer"
+          },
+          {
+            "text": "which mortgage needs established credit history"
+          },
+          {
+            "text": "which mortgage product is available to build new home"
+          }
+        ]
+      },
+      {
+        "intent": "action_47312_intent_17298-2-3",
+        "examples": []
+      },
+      {
+        "intent": "fallback_connect_to_agent",
+        "examples": [
+          {
+            "text": "Agent help"
+          },
+          {
+            "text": "Call agent"
+          },
+          {
+            "text": "Can I connect to an agent?"
+          },
+          {
+            "text": "I would like to speak to a human"
+          },
+          {
+            "text": "I would like to speak to someone"
+          }
+        ],
+        "description": "Please transfer me to an agent"
+      }
+    ],
+    "entities": [
+      {
+        "entity": "danger_words",
+        "values": [],
+        "fuzzy_match": false
+      },
+      {
+        "entity": "profane_words",
+        "values": [],
+        "fuzzy_match": false
+      },
+      {
+        "entity": "sys-yes-no",
+        "values": []
+      }
+    ],
+    "metadata": {
+      "skill": {
+        "counts": {
+          "actions": 10,
+          "intents": 7,
+          "entities": 3,
+          "data_types": 0,
+          "collections": 0,
+          "global_variables": 23
+        }
+      },
+      "api_version": {
+        "major_version": "v2",
+        "minor_version": "2018-11-08"
+      }
+    },
+    "variables": [
+      {
+        "title": "answer",
+        "variable": "answer",
+        "data_type": "any",
+        "description": "The text generated by the model in response to the user prompt."
+      },
+      {
+        "title": "discovery_date_version",
+        "variable": "discovery_date_version",
+        "data_type": "any",
+        "description": "Discovery date versions are documented in the release notes (https://cloud.ibm.com/docs/discovery-data?topic=discovery-data-release-notes).",
+        "initial_value": {
+          "scalar": "2022-08-01"
+        }
+      },
+      {
+        "title": "discovery_project_id",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "discovery_project_id",
+        "data_type": "string",
+        "description": "You MUST set this value to the project ID of the Discovery project containing your data",
+        "initial_value": {
+          "scalar": "32101171-41f5-49c9-8e9d-94231aa66bd3"
+        }
+      },
+      {
+        "title": "identify_product_prompt",
+        "variable": "identify_product_prompt",
+        "data_type": "string",
+        "description": ""
+      },
+      {
+        "title": "identify_product_prompt_final",
+        "variable": "identify_product_prompt_final",
+        "data_type": "string",
+        "description": ""
+      },
+      {
+        "title": "model_id",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "model_id",
+        "data_type": "string",
+        "description": "The ID of the model to be used for this user prompt. Please refer to the list of models at https://bam.res.ibm.com/docs/models",
+        "initial_value": {
+          "scalar": "ibm/granite-13b-chat-v2"
+        }
+      },
+      {
+        "title": "model_id_flanul2",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "model_id_flanul2",
+        "data_type": "string",
+        "description": "",
+        "initial_value": {
+          "scalar": "google/flan-ul2"
+        }
+      },
+      {
+        "title": "model_id_sw",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "model_id_sw",
+        "data_type": "string",
+        "description": "",
+        "initial_value": {
+          "scalar": "ibm/mpt-7b-instruct2"
+        }
+      },
+      {
+        "title": "model_input",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "model_input",
+        "data_type": "string",
+        "description": ""
+      },
+      {
+        "title": "model_parameters_max_new_tokens",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "model_parameters_max_new_tokens",
+        "data_type": "number",
+        "description": "The maximum number of new tokens to be generated.",
+        "initial_value": {
+          "scalar": 50
+        }
+      },
+      {
+        "title": "model_parameters_min_new_tokens",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "model_parameters_min_new_tokens",
+        "data_type": "number",
+        "description": "",
+        "initial_value": {
+          "scalar": 15
+        }
+      },
+      {
+        "title": "model_parameters_repetition_penalty",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "model_parameters_repetition_penalty",
+        "data_type": "number",
+        "description": "",
+        "initial_value": {
+          "scalar": 1
+        }
+      },
+      {
+        "title": "model_parameters_stop_sequences",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "model_parameters_stop_sequences",
+        "data_type": "any",
+        "description": "",
+        "initial_value": {
+          "expression": "[]"
+        }
+      },
+      {
+        "title": "model_parameters_temperature",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "model_parameters_temperature",
+        "data_type": "number",
+        "description": "",
+        "initial_value": {
+          "scalar": 0
+        }
+      },
+      {
+        "title": "model_response",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "model_response",
+        "data_type": "string",
+        "description": "The text generated by the model in response to the inputs."
+      },
+      {
+        "title": "passages",
+        "variable": "passages",
+        "data_type": "string",
+        "description": ""
+      },
+      {
+        "title": "products_list",
+        "variable": "products_list",
+        "data_type": "string",
+        "description": ""
+      },
+      {
+        "title": "prompt",
+        "variable": "prompt",
+        "data_type": "string",
+        "description": "You MAY change this to do prompt engineering, but a default will be used by watsonx if you don’t pass a prompt here."
+      },
+      {
+        "title": "query_text",
+        "variable": "query_text",
+        "data_type": "any",
+        "description": "You MAY change this to pass queries to Watson Discovery. By default the Search action passes the user’s input.text directly."
+      },
+      {
+        "title": "search_results",
+        "variable": "search_results",
+        "data_type": "any",
+        "description": "Response object from Discovery query (https://cloud.ibm.com/apidocs/discovery-data#query)."
+      },
+      {
+        "title": "snippet",
+        "variable": "snippet",
+        "data_type": "any",
+        "description": ""
+      },
+      {
+        "title": "watsonx_api_version",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "watsonx_api_version",
+        "data_type": "any",
+        "description": "",
+        "initial_value": {
+          "scalar": "2023-05-29"
+        }
+      },
+      {
+        "title": "watsonx_project_id",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "watsonx_project_id",
+        "data_type": "any",
+        "description": "",
+        "initial_value": {
+          "scalar": "0d01d1c8-7509-41b7-9aa1-4f363f2ad2a5"
+        }
+      },
+      {
+        "title": "watsonx_sw_project_id",
+        "privacy": {
+          "enabled": false
+        },
+        "variable": "watsonx_sw_project_id",
+        "data_type": "string",
+        "description": "",
+        "initial_value": {
+          "scalar": "506f85e3-f541-4d5e-a5e9-bc5b83e90067"
+        }
+      }
+    ],
+    "data_types": [],
+    "collections": [],
+    "counterexamples": [],
+    "system_settings": {
+      "variable": {
+        "format": {
+          "time": {
+            "pattern": "short"
+          },
+          "currency": {
+            "fraction_digits": 2
+          }
+        }
+      },
+      "off_topic": {
+        "enabled": true
+      },
+      "topic_switch": {
+        "enabled": true,
+        "messages": {
+          "enable_confirmation": true,
+          "confirmation_failure": {
+            "generic": [
+              {
+                "values": [
+                  {
+                    "text_expression": {
+                      "concat": [
+                        {
+                          "scalar": "I'm sorry, I did not catch that, please confirm."
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "response_type": "text",
+                "selection_policy": "sequential"
+              }
+            ]
+          },
+          "confirmation_request": {
+            "generic": [
+              {
+                "values": [
+                  {
+                    "text_expression": {
+                      "concat": [
+                        {
+                          "scalar": "Do you want to continue with the previous topic: "
+                        },
+                        {
+                          "system_variable": "digressed_from"
+                        },
+                        {
+                          "scalar": "?"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "response_type": "text",
+                "selection_policy": "sequential"
+              },
+              {
+                "options": [
+                  {
+                    "label": "Yes",
+                    "value": {
+                      "input": {
+                        "text": "Yes"
+                      }
+                    }
+                  },
+                  {
+                    "label": "No",
+                    "value": {
+                      "input": {
+                        "text": "No"
+                      }
+                    }
+                  }
+                ],
+                "response_type": "option",
+                "repeat_on_reprompt": true
+              }
+            ]
+          }
+        },
+        "max_tries": 3
+      },
+      "disambiguation": {
+        "prompt": "Did you mean:",
+        "enabled": true,
+        "randomize": true,
+        "max_suggestions": 5,
+        "suggestion_text_policy": "title",
+        "none_of_the_above_prompt": "None of the above",
+        "use_connect_to_support_prompt": "connect to support",
+        "single_answer_clarification_prompt": "Something else"
+      },
+      "spelling_auto_correct": true
+    },
+    "learning_opt_out": true
+  },
+  "description": "created for assistant 1c76effb-2430-4334-8897-6cdad3c6282b",
+  "assistant_id": "ac211658-3abd-4184-8954-75fb06d5bbcd",
+  "workspace_id": "b85ba827-af53-4ef0-bc22-bd5395e3e7ed",
+  "dialog_settings": {},
+  "next_snapshot_version": "2",
+  "environment_id": "7165bd5a-4084-4684-b442-1432dd6ecb07"
+}
