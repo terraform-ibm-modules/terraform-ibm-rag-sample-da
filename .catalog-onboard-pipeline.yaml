@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+offerings:
+  - name: customer-care-gen-ai-app-config-da
+    kind: solution
+    catalog_id: 7df1e4ca-d54c-4fd0-82ce-3d13247308cd
+    offering_id: c0e62838-544b-4d02-a946-e48cd5dd6fa0
+    variations:
+      - name: banking
+        mark_ready: true
+        install_type: fullstack
+        scc:
+          instance_id: 1c7d5f78-9262-44c3-b779-b28fe4d88c37
+          region: us-south
+          scc:
+            instance_id: 1c7d5f78-9262-44c3-b779-b28fe4d88c37
+            region: us-south
