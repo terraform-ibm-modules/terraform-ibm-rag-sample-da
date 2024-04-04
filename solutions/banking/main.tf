@@ -1,97 +1,129 @@
 locals {
   watsonx_assistant_url = "https://api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
   watsonx_discovery_url = "https://api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}"
+  # unique_identifier     = random_string.unique_identifier.result
+  sensitive_tokendata = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 }
 
+# Access random string generated with random_string.unique_identifier.result
+resource "random_string" "unique_identifier" {
+  length  = 6
+  special = false
+  upper   = false
+}
+
+data "ibm_iam_auth_token" "tokendata" {}
+
+# Resource group - create if it doesn't exist
+# module "resource_group" {
+#   source  = "terraform-ibm-modules/resource-group/ibm"
+#   version = "1.1.5"
+#   # If an existing resource group is not set (null), then create a new one
+#   resource_group_name          = var.resource_group_name == null ? local.unique_identifier : null
+#   existing_resource_group_name = var.resource_group_name
+# }
+
+# create COS instance for WatsonX.AI project
+# module "cos" {
+#   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
+#   version           = "7.5.3"
+#   resource_group_id = module.resource_group.resource_group_id
+#   cos_instance_name = "gen-ai-rag-sample-app-cos-instance"
+#   cos_plan          = "standard"
+# }
+
+# create watsonX.AI user - do we need this?
+# module "configure_user" {
+#   source            = "./configure_user"
+#   resource_group_id = module.resource_group.resource_group_id
+# }
+
+
+/*
+
+# create watsonx.AI project
+module "configure_project" {
+  depends_on            = [module.configure_user]
+  source                = "./configure_project"
+  project_name          = var.project_name
+  project_description   = var.project_description
+  project_tags          = var.project_tags
+  machine_learning_guid = ibm_resource_instance.machine_learning_instance.guid
+  machine_learning_crn  = ibm_resource_instance.machine_learning_instance.crn
+  machine_learning_name = ibm_resource_instance.machine_learning_instance.resource_name
+  cos_guid              = module.cos.cos_instance_guid
+  cos_crn               = module.cos.cos_instance_crn
+  providers = {
+    restapi = restapi.restapi_alias
+  }
+}
+
+*/
+
+# get zip file from code repo
+# add deployment space - not for demo scope
+
 # discovery project creation
+# possibly change type of project here - TBC
 resource "null_resource" "discovery_project_creation" {
   triggers = {
-    always_run            = timestamp()
-    ibmcloud_api_key      = var.ibmcloud_api_key
-    watsonx_discovery_url = local.watsonx_discovery_url
+    always_run = timestamp()
   }
 
   provisioner "local-exec" {
-    command = <<EOF
-      #!/bin/bash
-      curl -X POST -u "apikey:${var.ibmcloud_api_key}" --header "Content-Type: application/json" \
-        --data "{   \"name\": \"Customer Care - Bank Loans - v1\",   \"type\": \"document_retrieval\" }" "${local.watsonx_discovery_url}/v2/projects?version=2023-03-31"
-    EOF
+    command     = "${path.module}/watson-scripts/discovery-project-creation.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_discovery_url}\""
+    interpreter = ["/bin/bash", "-c"]
   }
 }
 
 # discovery collection creation
 resource "null_resource" "discovery_collection_creation" {
+  depends_on = [null_resource.discovery_project_creation]
   triggers = {
-    always_run            = timestamp()
-    ibmcloud_api_key      = var.ibmcloud_api_key
-    watsonx_discovery_url = local.watsonx_discovery_url
+    always_run = timestamp()
   }
 
   provisioner "local-exec" {
-    command = <<EOF
-      #!/bin/bash
-      PROJECT_ID=$(curl -X GET -u "apikey:${var.ibmcloud_api_key}" --header "Content-Type: application/json"  "${local.watsonx_discovery_url}/v2/projects?version=2023-03-31" \
-      | jq '.projects[] | select(.name == "Customer Care - Bank Loans - v1") | .project_id '")
-
-      curl -X POST -u "apikey:${var.ibmcloud_api_key}" --header "Content-Type: application/json" --data \
-        "{ \"name\": \"Bank Loans FAQs - v1\",   \"description\": \"Instructional PDFs\" }" \
-        "${local.watsonx_discovery_url}/v2/projects/$PROJECT_ID/collections?version=2023-03-31"
-    EOF
+    command     = "${path.module}/watson-scripts/discovery-collection-creation.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_discovery_url}\""
+    interpreter = ["/bin/bash", "-c"]
   }
 }
 
 # discovery file upload
 resource "null_resource" "discovery_file_upload" {
+  depends_on = [null_resource.discovery_collection_creation]
   triggers = {
-    always_run            = timestamp()
-    ibmcloud_api_key      = var.ibmcloud_api_key
-    watsonx_discovery_url = local.watsonx_discovery_url
+    always_run = timestamp()
   }
 
   provisioner "local-exec" {
-    command = <<EOF
-      #!/bin/bash
-      PROJECT_ID=$(curl -X GET -u "apikey:${var.ibmcloud_api_key}" --header "Content-Type: application/json"  "${local.watsonx_discovery_url}/v2/projects?version=2023-03-31" \
-      | jq '.projects[] | select(.name == "Customer Care - Bank Loans - v1") | .project_id '")
-
-      COLLECTION_ID=$(curl -X GET -u "apikey:${var.ibmcloud_api_key}" \
-        "${local.watsonx_discovery_url}/v2/projects/$PROJECT_ID/collections?version=2023-03-31" \
-        | jq '.collections[] | select(.name == "Bank Loans FAQs - v1") | .collection_id ')
-
-      for i in {1..7};
-      do
-        curl -X POST -u "apikey:${var.ibmcloud_api_key}" --form "file=@./artifacts/WatsonDiscovery/FAQ-$i.pdf" \
-          --form metadata="{\"field_name\": \"text"}" \
-          "${local.watsonx_discovery_url}/v2/projects/$PROJECT_ID/collections/$COLLECTION_ID/documents?version=2023-03-31" \
-      done
-    EOF
+    command     = "${path.module}/watson-scripts/discovery-file-upload.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_discovery_url}\" \"${path.module}/artifacts/WatsonDiscovery\" "
+    interpreter = ["/bin/bash", "-c"]
   }
 }
 
-# assistant project creation
+# assistant creation
 resource "null_resource" "assistant_project_creation" {
   triggers = {
-    always_run            = timestamp()
-    ibmcloud_api_key      = var.ibmcloud_api_key
-    watsonx_assistant_url = local.watsonx_assistant_url
+    always_run = timestamp()
   }
 
   provisioner "local-exec" {
-    command = <<EOF
-      #!/bin/bash
-      curl -X POST -u "apikey:${var.ibmcloud_api_key}" --header "Content-Type: application/json" \
-        --data "{\"name\":\"cc-bank-loan-demo-v1\",\"language\":\"en\",\"description\":\"Bank loan demo assistant\"}" \
-        "${local.watsonx_assistant_url}/v2/assistants?version=2023-06-15"
-    EOF
+    command     = "${path.module}/watson-scripts/assistant-project-creation.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_assistant_url}\""
+    interpreter = ["/bin/bash", "-c"]
   }
 }
 
+# assistant custom extensions
+# manual step - awaiting API
+
 # assistant skills import
-resource "null_resource" "assistant_import_rag_pattern_action_skill" {
+# skip for now - depends on manual step for custom extensions
+/*
+resource "null_resource" "assistant_import_rag_pattern-action-skill" {
   triggers = {
-    always_run            = timestamp()
-    ibmcloud_api_key      = var.ibmcloud_api_key
+    always_run = timestamp()
+    ibmcloud_api_key     = var.ibmcloud_api_key
     watsonx_assistant_url = local.watsonx_assistant_url
   }
 
@@ -99,7 +131,7 @@ resource "null_resource" "assistant_import_rag_pattern_action_skill" {
     command = <<EOF
       #!/bin/bash
       ASSISTANT_ID=$(curl -X GET -u "apikey:${var.ibmcloud_api_key}" "${local.watsonx_assistant_url}/v2/assistants?version=2023-06-15" \
-        | jq '.assistants[] | select(.name == "cc bank loan v1") | .assistant_id ')
+        | jq '.assistants[] | select(.name == "gen-ai-rag-sample-app-assistant") | .assistant_id ')
 
       curl -X POST -u "apikey:${var.ibmcloud_api_key}" --header "Content-Type: application/json" \
          --data "@./artifacts/watsonX.Assistant/cc-bank-loan-v1-action.json" \
@@ -107,26 +139,15 @@ resource "null_resource" "assistant_import_rag_pattern_action_skill" {
     EOF
   }
 }
+*/
 
 # get assistant integration ID
-resource "null_resource" "assistant_retrieve_integration_id" {
-  triggers = {
-    always_run            = timestamp()
-    ibmcloud_api_key      = var.ibmcloud_api_key
-    watsonx_assistant_url = local.watsonx_assistant_url
-  }
-
-  # put in local file for now - need to develop more sophisticated method for grabbing integration ID
-  provisioner "local-exec" {
-    command = <<EOF
-      #!/bin/bash
-      ASSISTANT_ID=$(curl -X GET -u "apikey:${var.ibmcloud_api_key}" "${local.watsonx_assistant_url}/v2/assistants?version=2023-06-15" \
-        | jq '.assistants[] | select(.name == "cc bank loan v1") | .assistant_id ')
-
-      ENVIRONMENT_OUTPUT=$(curl -X GET -u "apikey:${var.ibmcloud_api_key}" "${local.watsonx_assistant_url}/v2/assistants/$ASSISTANT_ID/environments?version=2023-06-15" \
-        | jq '.environments[] | select(.name == "draft") ')
-      echo $ENVIRONMENT_OUTPUT | jq '.integration_references[] | select(.type == "web_chat") | .integration_id ' >> .integration_id
-    EOF
+data "external" "assistant_get_integration_id" {
+  depends_on = [null_resource.assistant_project_creation]
+  program    = ["bash", "${path.module}/watson-scripts/assistant-get-integration-id.sh"]
+  query = {
+    tokendata            = local.sensitive_tokendata
+    watson_assistant_url = local.watsonx_assistant_url
   }
 }
 
@@ -164,16 +185,18 @@ resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property
 
 # Update CI pipeline with Assistant integration ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_ci" {
+  depends_on  = [data.external.assistant_get_integration_id]
   name        = "watsonx_assistant_integration_id"
   pipeline_id = var.ci_pipeline_id
   type        = "text"
-  value       = file("./.integration_id")
+  value       = data.external.assistant_get_integration_id.result.assistant_integration_id
 }
 
 # Update CD pipeline with Assistant integration ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_cd" {
+  depends_on  = [data.external.assistant_get_integration_id]
   name        = "watsonx_assistant_integration_id"
   pipeline_id = var.cd_pipeline_id
   type        = "text"
-  value       = file("./.integration_id")
+  value       = data.external.assistant_get_integration_id.result.assistant_integration_id
 }

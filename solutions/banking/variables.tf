@@ -38,3 +38,10 @@ variable "watson_discovery_region" {
   description = "Region where Watson Discovery resides"
   type        = string
 }
+
+# to be used later
+# variable "resource_group_name" {
+#   default     = null
+#   description = "Name of the IBM Cloud resource group in which resources should be created"
+#   type        = string
+# }
