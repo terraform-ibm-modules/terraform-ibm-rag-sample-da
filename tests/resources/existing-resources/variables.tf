@@ -16,12 +16,7 @@ variable "resource_group" {
   default     = null
 }
 
-variable "watson_assistant_region" {
-  description = "Region where WatsonX Assistant resides"
-  type        = string
-}
-
-variable "watson_discovery_region" {
-  description = "Region where Watson Discovery resides"
+variable "region" {
+  description = "Region where resources are deployed"
   type        = string
 }

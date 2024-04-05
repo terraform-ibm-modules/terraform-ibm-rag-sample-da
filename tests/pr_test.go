@@ -3,14 +3,15 @@ package test
 
 import (
 	"fmt"
+	"os"
+	"strings"
+	"testing"
+
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/require"
-	"os"
-	"strings"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
@@ -18,6 +19,8 @@ import (
 
 const bankingSolutionsDir = "solutions/banking"
 const region = "us-south" // Binding all the resources to the us-south locaiton.
+
+const resourceGroup = "geretain-test-resources"
 
 func TestRunBankingSolutions(t *testing.T) {
 	t.Parallel()
@@ -39,10 +42,9 @@ func TestRunBankingSolutions(t *testing.T) {
 	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
-			"prefix":                  prefix,
-			"watson_discovery_region": region,
-			"watson_assistant_region": region,
-			"resource_group":          prefix + "-rg",
+			"prefix":         prefix,
+			"region":         region,
+			"resource_group": resourceGroup,
 		},
 		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
 		// This is the same as setting the -upgrade=true flag with terraform.
@@ -65,8 +67,8 @@ func TestRunBankingSolutions(t *testing.T) {
 			Region:           region,
 			TerraformVars: map[string]interface{}{
 				"toolchain_region":             region,
-				"ci_pipeline_id":               "abc", //TODO: determine how to get this ID.
-				"cd_pipeline_id":               "abc", //TODO: determine how to get this ID.
+				"ci_pipeline_id":               terraform.Output(t, existingTerraformOptions, "ci_pipeline_id"),
+				"cd_pipeline_id":               terraform.Output(t, existingTerraformOptions, "cd_pipeline_id"),
 				"watson_assistant_instance_id": terraform.Output(t, existingTerraformOptions, "watson_assistant_instance_id"),
 				"watson_assistant_region":      terraform.Output(t, existingTerraformOptions, "watson_assistant_region"),
 				"watson_discovery_instance_id": terraform.Output(t, existingTerraformOptions, "watson_discovery_instance_id"),
