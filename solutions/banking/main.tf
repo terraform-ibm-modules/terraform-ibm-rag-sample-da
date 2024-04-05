@@ -73,6 +73,7 @@ resource "null_resource" "discovery_project_creation" {
   provisioner "local-exec" {
     command     = "${path.module}/watson-scripts/discovery-project-creation.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_discovery_url}\""
     interpreter = ["/bin/bash", "-c"]
+    quiet       = true
   }
 }
 
@@ -86,6 +87,7 @@ resource "null_resource" "discovery_collection_creation" {
   provisioner "local-exec" {
     command     = "${path.module}/watson-scripts/discovery-collection-creation.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_discovery_url}\""
     interpreter = ["/bin/bash", "-c"]
+    quiet       = true
   }
 }
 
@@ -99,6 +101,7 @@ resource "null_resource" "discovery_file_upload" {
   provisioner "local-exec" {
     command     = "${path.module}/watson-scripts/discovery-file-upload.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_discovery_url}\" \"${path.module}/artifacts/WatsonDiscovery\" "
     interpreter = ["/bin/bash", "-c"]
+    quiet       = true
   }
 }
 
@@ -111,6 +114,7 @@ resource "null_resource" "assistant_project_creation" {
   provisioner "local-exec" {
     command     = "${path.module}/watson-scripts/assistant-project-creation.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_assistant_url}\""
     interpreter = ["/bin/bash", "-c"]
+    quiet       = true
   }
 }
 
