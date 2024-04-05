@@ -1,5 +1,5 @@
 output "watson_assistant_instance_id" {
-  value       = ibm_resource_instance.assistant_instance.id
+  value       = ibm_resource_instance.assistant_instance.guid
   description = "Watson Assistant instance ID."
 }
 
@@ -9,7 +9,7 @@ output "watson_assistant_region" {
 }
 
 output "watson_discovery_instance_id" {
-  value       = ibm_resource_instance.discovery_instance.id
+  value       = ibm_resource_instance.discovery_instance.guid
   description = "Watson Discovery instance ID."
 }
 
