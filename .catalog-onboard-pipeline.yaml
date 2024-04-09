@@ -9,8 +9,8 @@ offerings:
       - name: banking
         mark_ready: true
         install_type: fullstack
+        pre_validation: "tests/scripts/pre-validation.sh"
+        post_validation: "tests/scripts/post-validation.sh"
         scc:
           instance_id: 1c7d5f78-9262-44c3-b779-b28fe4d88c37
           region: us-south
-          pre_validation: "tests/scripts/pre-validation.sh"
-          post_validation: "tests/scripts/post-validation.sh"
