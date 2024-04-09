@@ -6,7 +6,7 @@
 
 set -e
 
-TERRAFORM_SOURCE_DIR="tests/resources"
+TERRAFORM_SOURCE_DIR="tests/resources/existing-resources"
 TF_VARS_FILE="terraform.tfvars"
 
 (
