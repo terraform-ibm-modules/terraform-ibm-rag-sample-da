@@ -22,12 +22,10 @@
           "working_directory": "solutions/banking",
           "compliance": {
             "authority": "scc-v3",
-            "controls": [
+            "profiles": [
               {
-                "profile": {
-                  "name": "IBM Cloud for Financial Services",
-                  "version": "1.6.0"
-                }
+                "profile_name": "IBM Cloud Framework for Financial Services",
+                "profile_version": "1.6.0"
               }
             ]
           },
