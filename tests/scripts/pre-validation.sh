@@ -21,6 +21,7 @@ TF_VARS_FILE="terraform.tfvars"
     # $VALIDATION_APIKEY is available in the catalog runtime
     echo "ibmcloud_api_key=\"${VALIDATION_APIKEY}\""
     echo "region=\"${REGION}\""
+    echo "prefix=\"rag-da-$(openssl rand -hex 2)\""
   } >> ${TF_VARS_FILE}
   terraform apply -input=false -auto-approve -var-file=${TF_VARS_FILE} || exit 1
 
