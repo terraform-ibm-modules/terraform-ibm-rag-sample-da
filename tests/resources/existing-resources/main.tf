@@ -49,7 +49,16 @@ resource "ibm_resource_instance" "discovery_instance" {
 # Pipeline resources
 ########################################################################################################################
 
+resource "ibm_resource_instance" "cd_instance" {
+  name              = "${var.prefix}-cd-instance"
+  service           = "continuous-delivery"
+  plan              = "professional"
+  location          = var.region
+  resource_group_id = module.resource_group.resource_group_id
+}
+
 resource "ibm_cd_toolchain" "cd_toolchain_instance" {
+  depends_on        = [ibm_resource_instance.cd_instance]
   name              = "${var.prefix}-toolchain-instance"
   resource_group_id = module.resource_group.resource_group_id
 }

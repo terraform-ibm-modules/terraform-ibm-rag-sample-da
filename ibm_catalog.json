@@ -17,67 +17,15 @@
       ],
       "flavors": [
         {
-          "label": "Insurance Application",
-          "name": "insurance",
-          "working_directory": "./",
-          "compliance": {
-            "authority": "scc-v3",
-            "controls": [
-              {
-                "profile": {
-                  "name": "IBM Cloud for Financial Services",
-                  "version": "1.4.0"
-                },
-                "names": [
-                  "SA-4(b)"
-                ]
-              }
-            ]
-          },
-          "iam_permissions": [
-            {
-              "service_name": "iam-groups",
-              "role_crns": [
-                "crn:v1:bluemix:public:iam::::role:Administrator"
-              ]
-            }
-          ],
-          "architecture":[
-            {
-              "diagrams": [
-                {
-                  "diagram": {
-                    "url_proxy": {
-                      "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/main/reference-architecture/ce_da_architecture_diagram.drawio.svg"
-                    },
-                    "caption": "Diagram",
-                    "type": "image/svg+xml"
-                  },
-                  "description": "{Placeholder diagram}"
-                }
-              ]
-            }
-          ],
-          "release_notes_url": "RELEASE NOTES URL",
-          "outputs": [
-          ],
-          "install_type": "fullstack"
-        },
-        {
           "label": "Banking Application",
           "name": "banking",
           "working_directory": "solutions/banking",
           "compliance": {
             "authority": "scc-v3",
-            "controls": [
+            "profiles": [
               {
-                "profile": {
-                  "name": "IBM Cloud for Financial Services",
-                  "version": "1.4.0"
-                },
-                "names": [
-                  "SA-4(b)"
-                ]
+                "profile_name": "IBM Cloud Framework for Financial Services",
+                "profile_version": "1.6.0"
               }
             ]
           },
