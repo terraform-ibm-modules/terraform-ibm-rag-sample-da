@@ -18,7 +18,7 @@ import (
 )
 
 const bankingSolutionsDir = "solutions/banking"
-const region = "us-south" // Binding all the resources to the us-south locaiton.
+const region = "us-south" // Binding all the resources to the us-south location.
 
 const resourceGroup = "geretain-test-resources"
 
