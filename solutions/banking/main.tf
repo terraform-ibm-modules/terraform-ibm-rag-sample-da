@@ -1,26 +1,17 @@
 locals {
   watsonx_assistant_url = "https://api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
   watsonx_discovery_url = "https://api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}"
-  unique_identifier     = random_string.unique_identifier.result
   sensitive_tokendata   = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
-}
-
-# Access random string generated with random_string.unique_identifier.result
-resource "random_string" "unique_identifier" {
-  length  = 6
-  special = false
-  upper   = false
 }
 
 data "ibm_iam_auth_token" "tokendata" {}
 
 # Resource group - create if it doesn't exist
 module "resource_group" {
-  source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.1.5"
-  # If an existing resource group is not set (null), then create a new one
-  resource_group_name          = var.resource_group_name == null ? local.unique_identifier : null
-  existing_resource_group_name = var.resource_group_name
+  source                       = "terraform-ibm-modules/resource-group/ibm"
+  version                      = "1.1.5"
+  resource_group_name          = var.use_existing_resource_group == false ? var.resource_group_name : null
+  existing_resource_group_name = var.use_existing_resource_group == true ? var.resource_group_name : null
 }
 
 # create COS instance for WatsonX.AI project
@@ -28,12 +19,13 @@ module "cos" {
   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
   version           = "7.5.3"
   resource_group_id = module.resource_group.resource_group_id
-  cos_instance_name = "gen-ai-rag-sample-app-cos-instance"
+  cos_instance_name = "${var.prefix}-rag-sample-app-cos"
   cos_plan          = "standard"
 }
 
-# create CD service for toolchain use
+# create CD service for toolchain use if variable is set
 resource "ibm_resource_instance" "cd_instance" {
+  count             = var.create_continuous_delivery_service_instance ? 1 : 0
   name              = "${var.prefix}-cd-instance"
   service           = "continuous-delivery"
   plan              = "professional"

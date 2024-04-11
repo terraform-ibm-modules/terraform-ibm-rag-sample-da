@@ -9,6 +9,12 @@ variable "prefix" {
   type        = string
 }
 
+variable "use_existing_resource_group" {
+  type        = bool
+  description = "Whether to use an existing resource group."
+  default     = false
+}
+
 variable "resource_group_name" {
   default     = null
   description = "Name of the IBM Cloud resource group in which resources should be created"
@@ -23,6 +29,12 @@ variable "toolchain_region" {
 variable "toolchain_resource_group" {
   description = "The resource group where the toolchains previously created reside"
   type        = string
+}
+
+variable "create_continuous_delivery_service_instance" {
+  description = "Choose whether to install a Continuous Delivery service instance or not"
+  type        = bool
+  default     = true
 }
 
 variable "ci_pipeline_id" {
