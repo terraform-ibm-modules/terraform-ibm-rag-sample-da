@@ -1,7 +1,7 @@
 {
   "products": [
     {
-      "label": "Customer Care Generative AI Application - Config",
+      "label": "Sample Retrieval Augmented Generation App Config",
       "name": "customer-care-gen-ai-app-config-da",
       "product_kind": "solution",
       "tags": [],
@@ -42,13 +42,11 @@
               "diagrams": [
                 {
                   "diagram": {
-                    "url_proxy": {
-                      "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/main/reference-architecture/ce_da_architecture_diagram.drawio.svg"
-                    },
-                    "caption": "Diagram",
+                    "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/main/reference-architecture/ce_da_architecture_diagram.drawio.svg",
+                    "caption": "RAG DA reference architecture diagram",
                     "type": "image/svg+xml"
                   },
-                  "description": "{Placeholder diagram}"
+                  "description": "RAG DA reference architecture diagram"
                 }
               ]
             }
