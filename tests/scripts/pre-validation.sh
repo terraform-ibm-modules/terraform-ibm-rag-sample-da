@@ -41,7 +41,7 @@ TF_VARS_FILE="terraform.tfvars"
   watson_machine_learning_instance_resource_name_var_name="watson_machine_learning_instance_resource_name"
 
   resource_group_name_value=$(terraform output -state=terraform.tfstate -raw resource_group_name)
-  toolchain_resource_group_value=$(terraform output -state=terraform.tfstate -raw toolchain_resource_group)
+  toolchain_resource_group_value=$(terraform output -state=terraform.tfstate -raw resource_group_name)
   ci_pipeline_id_value=$(terraform output -state=terraform.tfstate -raw ci_pipeline_id)
   cd_pipeline_id_value=$(terraform output -state=terraform.tfstate -raw cd_pipeline_id)
   watson_assistant_instance_id_value=$(terraform output -state=terraform.tfstate -raw watson_assistant_instance_id)
