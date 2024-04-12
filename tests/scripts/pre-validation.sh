@@ -81,7 +81,7 @@ TF_VARS_FILE="terraform.tfvars"
         --arg watson_machine_learning_instance_crn_value "${watson_machine_learning_instance_crn_value}" \
         --arg watson_machine_learning_instance_guid_var_name "${watson_machine_learning_instance_guid_var_name}" \
         --arg watson_machine_learning_instance_guid_value "${watson_machine_learning_instance_guid_value}" \
-        --arg watson_machine_learning_instance_resource_name_var_name "${watson_machine_learning_instance_resource_name_var_name} "\
+        --arg watson_machine_learning_instance_resource_name_var_name "${watson_machine_learning_instance_resource_name_var_name}" \
         --arg watson_machine_learning_instance_resource_name_value "${watson_machine_learning_instance_resource_name_value}" \
         --arg use_existing_resource_group_var_name "${use_existing_resource_group_var_name}" \
         --arg use_existing_resource_group_value "${use_existing_resource_group_value}" \
