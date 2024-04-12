@@ -65,6 +65,7 @@ func TestRunBankingSolutions(t *testing.T) {
 			// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
 			ImplicitRequired: false,
 			Region:           region,
+			Prefix:           prefix,
 			TerraformVars: map[string]interface{}{
 				"toolchain_region":                               region,
 				"ci_pipeline_id":                                 terraform.Output(t, existingTerraformOptions, "ci_pipeline_id"),
@@ -76,6 +77,7 @@ func TestRunBankingSolutions(t *testing.T) {
 				"use_existing_resource_group":                    true,
 				"create_continuous_delivery_service_instance":    false,
 				"resource_group_name":                            terraform.Output(t, existingTerraformOptions, "resource_group_name"),
+				"toolchain_resource_group":                       terraform.Output(t, existingTerraformOptions, "resource_group_name"),
 				"watson_machine_learning_instance_crn":           terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"),
 				"watson_machine_learning_instance_guid":          terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_guid"),
 				"watson_machine_learning_instance_resource_name": terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
