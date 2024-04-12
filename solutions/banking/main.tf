@@ -41,7 +41,6 @@ resource "ibm_resource_instance" "cd_instance" {
 
 # create watsonx.AI project
 module "configure_project" {
-  # source                = "git::git@github.com:terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//configure_project?ref=v0.2.0"
   source                = "github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//configure_project?ref=v0.2.0"
   project_name          = "RAG-sample-project"
   project_description   = "WatsonX AI project for RAG pattern sample app"
