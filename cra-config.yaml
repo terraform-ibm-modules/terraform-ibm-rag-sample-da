@@ -7,7 +7,7 @@ CRA_TARGETS:
     CRA_ENVIRONMENT_VARIABLES:
       TF_VAR_prefix: "rag-test-"
       TF_VAR_toolchain_region: "us-south"
-      TF_VAR_toolchain_resource_group: "test-group"
+      TF_VAR_toolchain_resource_group: "default"
       TF_VAR_ci_pipeline_id: "4e621b22-5802-4013-896a-777fc345f424"
       TF_VAR_cd_pipeline_id: "4e621b22-5802-4013-896a-777fc345f424"
       TF_VAR_watson_assistant_instance_id: "4e621b22-5802-4013-896a-777fc345f424"
