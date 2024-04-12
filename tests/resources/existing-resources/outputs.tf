@@ -18,6 +18,21 @@ output "watson_discovery_region" {
   description = "Watson Discovery instance Region."
 }
 
+output "watson_machine_learning_instance_crn" {
+  value       = ibm_resource_instance.machine_learning_instance.crn
+  description = "Watson Machine Learning instance CRN."
+}
+
+output "watson_machine_learning_instance_guid" {
+  value       = ibm_resource_instance.machine_learning_instance.guid
+  description = "Watson Machine Learning instance GUID."
+}
+
+output "watson_machine_learning_instance_resource_name" {
+  value       = ibm_resource_instance.machine_learning_instance.resource_name
+  description = "Watson Machine Learning instance resource name."
+}
+
 output "ci_pipeline_id" {
   value       = ibm_cd_tekton_pipeline.ci_tekton_pipeline_instance.id
   description = "Id of the CI tekton pipeline instance."
@@ -26,4 +41,9 @@ output "ci_pipeline_id" {
 output "cd_pipeline_id" {
   value       = ibm_cd_tekton_pipeline.cd_tekton_pipeline_instance.id
   description = "Id of the CD tekton pipeline instance."
+}
+
+output "resource_group_name" {
+  value       = module.resource_group.resource_group_name
+  description = "Resource group name."
 }

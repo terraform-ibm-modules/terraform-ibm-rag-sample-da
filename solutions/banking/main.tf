@@ -1,36 +1,41 @@
 locals {
   watsonx_assistant_url = "https://api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
   watsonx_discovery_url = "https://api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}"
-  # unique_identifier     = random_string.unique_identifier.result
-  sensitive_tokendata = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
-}
-
-# Access random string generated with random_string.unique_identifier.result
-resource "random_string" "unique_identifier" {
-  length  = 6
-  special = false
-  upper   = false
+  sensitive_tokendata   = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 }
 
 data "ibm_iam_auth_token" "tokendata" {}
 
 # Resource group - create if it doesn't exist
-# module "resource_group" {
-#   source  = "terraform-ibm-modules/resource-group/ibm"
-#   version = "1.1.5"
-#   # If an existing resource group is not set (null), then create a new one
-#   resource_group_name          = var.resource_group_name == null ? local.unique_identifier : null
-#   existing_resource_group_name = var.resource_group_name
-# }
+module "resource_group" {
+  source                       = "terraform-ibm-modules/resource-group/ibm"
+  version                      = "1.1.5"
+  resource_group_name          = var.use_existing_resource_group == false ? var.resource_group_name : null
+  existing_resource_group_name = var.use_existing_resource_group == true ? var.resource_group_name : null
+}
 
 # create COS instance for WatsonX.AI project
-# module "cos" {
-#   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-#   version           = "7.5.3"
-#   resource_group_id = module.resource_group.resource_group_id
-#   cos_instance_name = "gen-ai-rag-sample-app-cos-instance"
-#   cos_plan          = "standard"
-# }
+module "cos" {
+  source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
+  version           = "7.5.3"
+  resource_group_id = module.resource_group.resource_group_id
+  cos_instance_name = "${var.prefix}-rag-sample-app-cos"
+  cos_plan          = "standard"
+}
+
+data "ibm_resource_group" "toolchain_resource_group_id" {
+  name = var.toolchain_resource_group
+}
+
+# create CD service for toolchain use if variable is set
+resource "ibm_resource_instance" "cd_instance" {
+  count             = var.create_continuous_delivery_service_instance ? 1 : 0
+  name              = "${var.prefix}-cd-instance"
+  service           = "continuous-delivery"
+  plan              = "professional"
+  location          = var.toolchain_region
+  resource_group_id = data.ibm_resource_group.toolchain_resource_group_id.id
+}
 
 # create watsonX.AI user - do we need this?
 # module "configure_user" {
@@ -38,27 +43,18 @@ data "ibm_iam_auth_token" "tokendata" {}
 #   resource_group_id = module.resource_group.resource_group_id
 # }
 
-
-/*
-
 # create watsonx.AI project
 module "configure_project" {
-  depends_on            = [module.configure_user]
-  source                = "./configure_project"
-  project_name          = var.project_name
-  project_description   = var.project_description
-  project_tags          = var.project_tags
-  machine_learning_guid = ibm_resource_instance.machine_learning_instance.guid
-  machine_learning_crn  = ibm_resource_instance.machine_learning_instance.crn
-  machine_learning_name = ibm_resource_instance.machine_learning_instance.resource_name
+  source                = "github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//configure_project?ref=v0.2.0"
+  project_name          = "${var.prefix}-RAG-sample-project"
+  project_description   = "WatsonX AI project for RAG pattern sample app"
+  project_tags          = ["watsonx-ai-SaaS", "RAG-sample-project"]
+  machine_learning_guid = var.watson_machine_learning_instance_guid
+  machine_learning_crn  = var.watson_machine_learning_instance_crn
+  machine_learning_name = var.watson_machine_learning_instance_resource_name
   cos_guid              = module.cos.cos_instance_guid
   cos_crn               = module.cos.cos_instance_crn
-  providers = {
-    restapi = restapi.restapi_alias
-  }
 }
-
-*/
 
 # get zip file from code repo
 # add deployment space - not for demo scope

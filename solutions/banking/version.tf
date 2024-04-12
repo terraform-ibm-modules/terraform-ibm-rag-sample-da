@@ -12,9 +12,9 @@ terraform {
       source  = "hashicorp/null"
       version = ">= 3.2.1"
     }
-    random = {
-      source  = "hashicorp/random"
-      version = ">= 3.6.0"
+    restapi = {
+      source  = "Mastercard/restapi"
+      version = ">= 1.19.1"
     }
   }
   required_version = ">= 1.3.0"

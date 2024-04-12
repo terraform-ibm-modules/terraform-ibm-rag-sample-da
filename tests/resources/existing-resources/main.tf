@@ -43,6 +43,20 @@ resource "ibm_resource_instance" "discovery_instance" {
   }
 }
 
+resource "ibm_resource_instance" "machine_learning_instance" {
+  name              = "${var.prefix}-watson-machine-learning-instance"
+  service           = "pm-20"
+  plan              = "v2-standard"
+  location          = var.region
+  resource_group_id = module.resource_group.resource_group_id
+
+  timeouts {
+    create = "15m"
+    update = "15m"
+    delete = "15m"
+  }
+}
+
 
 
 ########################################################################################################################
