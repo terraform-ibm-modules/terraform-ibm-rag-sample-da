@@ -14,6 +14,6 @@ CRA_TARGETS:
       TF_VAR_watson_assistant_region: "us-south"
       TF_VAR_watson_discovery_instance_id: "4e621b22-5802-4013-896a-777fc345f424"
       TF_VAR_watson_discovery_region: "us-south"
-      TF_VAR_watson_machine_learning_crn: ""
+      TF_VAR_watson_machine_learning_crn: "crn:v1:bluemix:public:pm-20:us-south:a/2e92ee435f984c5dbf970577b2ceec1f:6966b4da-de4c-4dfb-a1d2-8a635f7eeeae::"
       TF_VAR_watson_machine_learning_guid: "4e621b22-5802-4013-896a-777fc345f424"
-      TF_VAR_watson_machine_learning_resource_name: "crn:v1:bluemix:public:pm-20:us-south:a/2e92ee435f984c5dbf970577b2ceec1f:6966b4da-de4c-4dfb-a1d2-8a635f7eeeae::"
+      TF_VAR_watson_machine_learning_resource_name: "test-machine-learning-instance"
