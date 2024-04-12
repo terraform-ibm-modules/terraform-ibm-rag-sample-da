@@ -74,6 +74,7 @@ func TestRunBankingSolutions(t *testing.T) {
 				"watson_discovery_instance_id":                   terraform.Output(t, existingTerraformOptions, "watson_discovery_instance_id"),
 				"watson_discovery_region":                        terraform.Output(t, existingTerraformOptions, "watson_discovery_region"),
 				"use_existing_resource_group":                    true,
+				"create_continuous_delivery_service_instance":    false,
 				"resource_group_name":                            terraform.Output(t, existingTerraformOptions, "resource_group_name"),
 				"watson_machine_learning_instance_crn":           terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"),
 				"watson_machine_learning_instance_guid":          terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_guid"),
