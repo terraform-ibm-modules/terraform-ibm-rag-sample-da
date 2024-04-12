@@ -23,6 +23,10 @@ module "cos" {
   cos_plan          = "standard"
 }
 
+data "ibm_resource_group" "toolchain_resource_group_id" {
+  name = var.toolchain_resource_group
+}
+
 # create CD service for toolchain use if variable is set
 resource "ibm_resource_instance" "cd_instance" {
   count             = var.create_continuous_delivery_service_instance ? 1 : 0
@@ -30,7 +34,7 @@ resource "ibm_resource_instance" "cd_instance" {
   service           = "continuous-delivery"
   plan              = "professional"
   location          = var.toolchain_region
-  resource_group_id = var.toolchain_resource_group
+  resource_group_id = data.ibm_resource_group.toolchain_resource_group_id.id
 }
 
 # create watsonX.AI user - do we need this?
