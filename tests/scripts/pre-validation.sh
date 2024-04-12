@@ -39,7 +39,7 @@ TF_VARS_FILE="terraform.tfvars"
   watson_machine_learning_instance_crn_var_name="watson_machine_learning_instance_crn"
   watson_machine_learning_instance_guid_var_name="watson_machine_learning_instance_guid"
   watson_machine_learning_instance_resource_name_var_name="watson_machine_learning_instance_resource_name"
-  use_existing_resource_group_var_name="use_existing_resource_group_var_name"
+  use_existing_resource_group_var_name="use_existing_resource_group"
 
   resource_group_name_value=$(terraform output -state=terraform.tfstate -raw resource_group_name)
   toolchain_resource_group_value=$(terraform output -state=terraform.tfstate -raw resource_group_name)
@@ -95,7 +95,7 @@ TF_VARS_FILE="terraform.tfvars"
           ($watson_discovery_region_var_name): $watson_discovery_region_value,
           ($watson_machine_learning_instance_crn_var_name): $watson_machine_learning_instance_crn_value,
           ($watson_machine_learning_instance_guid_var_name): $watson_machine_learning_instance_guid_value,
-          ($use_existing_resource_group_var_name): true,
+          ($use_existing_resource_group_var_name): $use_existing_resource_group_value,
           ($watson_machine_learning_instance_resource_name_var_name): $watson_machine_learning_instance_resource_name_value}' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
 
   echo "Pre-validation complete successfully"
