@@ -65,9 +65,9 @@ func TestRunBankingSolutions(t *testing.T) {
 			// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
 			ImplicitRequired: false,
 			Region:           region,
-			Prefix:           prefix,
 			TerraformVars: map[string]interface{}{
 				"toolchain_region":                               region,
+				"prefix":                                         prefix,
 				"ci_pipeline_id":                                 terraform.Output(t, existingTerraformOptions, "ci_pipeline_id"),
 				"cd_pipeline_id":                                 terraform.Output(t, existingTerraformOptions, "cd_pipeline_id"),
 				"watson_assistant_instance_id":                   terraform.Output(t, existingTerraformOptions, "watson_assistant_instance_id"),
