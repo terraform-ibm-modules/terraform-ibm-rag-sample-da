@@ -1,7 +1,7 @@
 {
   "products": [
     {
-      "label": "Customer Care Generative AI Application - Config",
+      "label": "Sample Retrieval Augmented Generation App Config",
       "name": "customer-care-gen-ai-app-config-da",
       "product_kind": "solution",
       "tags": [],
