@@ -100,7 +100,7 @@ TF_VARS_FILE="terraform.tfvars"
           ($watson_machine_learning_instance_crn_var_name): $watson_machine_learning_instance_crn_value,
           ($watson_machine_learning_instance_guid_var_name): $watson_machine_learning_instance_guid_value,
           ($use_existing_resource_group_var_name): $use_existing_resource_group_value,
-          (create_continuous_delivery_service_instance_var_name): $create_continuous_delivery_service_instance_value,
+          ($create_continuous_delivery_service_instance_var_name): $create_continuous_delivery_service_instance_value,
           ($watson_machine_learning_instance_resource_name_var_name): $watson_machine_learning_instance_resource_name_value}' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
 
   echo "Pre-validation complete successfully"
