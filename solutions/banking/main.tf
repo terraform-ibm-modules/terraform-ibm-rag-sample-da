@@ -17,7 +17,7 @@ module "resource_group" {
 # create COS instance for WatsonX.AI project
 module "cos" {
   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-  version           = "7.5.3"
+  version           = "8.1.7"
   resource_group_id = module.resource_group.resource_group_id
   cos_instance_name = "${var.prefix}-rag-sample-app-cos"
   cos_plan          = "standard"
