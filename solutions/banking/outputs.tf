@@ -1,36 +1,26 @@
 output "project_id" {
-  description = "ID of the created project."
+  description = "ID of the created WatsonX project."
   value       = module.configure_project.project_id
 }
 
 output "project_url" {
-  description = "Project ID URL."
+  description = "WatsonX project ID URL."
   value       = "https://dataplatform.cloud.ibm.com/projects/${module.configure_project.project_id}"
 }
 
 output "watsonx_assistant_url" {
-  description = "WastonX Assistant URL."
+  description = "WatsonX Assistant URL."
   value       = local.watsonx_assistant_url
 }
 
 output "watsonx_discovery_url" {
-  description = "WastonX Discovery URL."
+  description = "WatsonX Discovery URL."
   value       = local.watsonx_discovery_url
 }
 
-output "cos_instance_guid" {
-  description = "COS instance GUID."
-  value       = module.cos.cos_instance_guid
-}
-
 output "cos_instance_crn" {
-  description = "COS instance CRN."
+  description = "COS instance CRN which is configured with the WatsonX project."
   value       = module.cos.cos_instance_crn
-}
-
-output "cos_instance_id" {
-  description = "COS instance ID."
-  value       = module.cos.cos_instance_id
 }
 
 output "assistant_integration_id" {
