@@ -151,6 +151,17 @@ data "external" "assistant_get_integration_id" {
   }
 }
 
+# get discovery project ID
+data "external" "discovery_project_id" {
+  depends_on = [null_resource.discovery_project_creation]
+  program    = ["bash", "${path.module}/watson-scripts/discovery-get-project.sh"]
+  query = {
+    tokendata            = local.sensitive_tokendata
+    watson_discovery_url = local.watsonx_discovery_url
+  }
+}
+
+
 # Update CI pipeline with Assistant instance ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_property_ci" {
   name        = "watsonx_assistant_id"

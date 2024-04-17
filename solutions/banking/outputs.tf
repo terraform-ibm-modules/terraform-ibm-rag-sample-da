@@ -1,6 +1,11 @@
-output "configure_project_id" {
+output "project_id" {
   description = "ID of the created project."
   value       = module.configure_project.project_id
+}
+
+output "project_url" {
+  description = "Project ID URL."
+  value       = "https://dataplatform.cloud.ibm.com/projects/${module.configure_project.project_id}"
 }
 
 output "watsonx_assistant_url" {
@@ -31,4 +36,9 @@ output "cos_instance_id" {
 output "assistant_integration_id" {
   description = "WatsonX assistant integration ID."
   value       = data.external.assistant_get_integration_id.result.assistant_integration_id
+}
+
+output "discovery_project_id" {
+  description = "WatsonX Discovery Project ID."
+  value       = data.external.discovery_project_id.result.discovery_project_id
 }
