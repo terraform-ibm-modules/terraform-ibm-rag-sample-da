@@ -236,6 +236,7 @@ resource "ibm_cd_tekton_pipeline_trigger" "ci_pipeline_webhook" {
 
 # Create git trigger for CD pipeline - to run inventory promotion once CI pipeline is complete
 resource "ibm_cd_tekton_pipeline_trigger" "cd_pipeline_inventory_promotion_trigger" {
+  count          = var.inventory_repo_url != null ? 1 : 0
   type           = "scm"
   pipeline_id    = var.cd_pipeline_id
   name           = "git-inventory-promotion-trigger"

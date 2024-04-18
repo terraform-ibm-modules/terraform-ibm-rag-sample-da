@@ -50,6 +50,7 @@ variable "cd_pipeline_id" {
 variable "inventory_repo_url" {
   description = "URL of the inventory repository"
   type        = string
+  default     = null
 }
 
 variable "watson_assistant_instance_id" {
