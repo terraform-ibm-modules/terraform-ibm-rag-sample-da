@@ -211,3 +211,60 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pip
   type        = "text"
   value       = data.external.assistant_get_integration_id.result.assistant_integration_id
 }
+
+# Random string for webhook token
+resource "random_string" "webhook_secret" {
+  length  = 48
+  special = false
+  upper   = false
+}
+
+# Create webhook for CI pipeline
+resource "ibm_cd_tekton_pipeline_trigger" "ci_pipeline_webhook" {
+  depends_on     = [random_string.webhook_secret]
+  type           = "generic"
+  pipeline_id    = var.ci_pipeline_id
+  name           = "rag-webhook-trigger"
+  event_listener = "ci-listener-gitlab"
+  secret {
+    type     = "token_matches"
+    source   = "payload"
+    key_name = "webhook-token"
+    value    = random_string.webhook_secret.result
+  }
+}
+
+# Create git trigger for CD pipeline - to run inventory promotion once CI pipeline is complete
+resource "ibm_cd_tekton_pipeline_trigger" "cd_pipeline_inventory_promotion_trigger" {
+  type           = "scm"
+  pipeline_id    = var.cd_pipeline_id
+  name           = "git-inventory-promotion-trigger"
+  event_listener = "promotion-listener"
+  events         = ["push"]
+  source {
+    type = "git"
+    properties {
+      url    = var.inventory_repo_url
+      branch = "master"
+    }
+  }
+}
+
+# Trigger webhook to start CI pipeline run
+resource "null_resource" "ci_pipeline_run" {
+  depends_on = [
+    ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook,
+    ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci,
+    ibm_cd_tekton_pipeline_property.watsonx_assistant_id_pipeline_property_ci,
+    ibm_resource_instance.cd_instance
+  ]
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command     = "${path.module}/watson-scripts/webhook-trigger.sh \"${ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook.webhook_url}\" \"${random_string.webhook_secret.result}\""
+    interpreter = ["/bin/bash", "-c"]
+    quiet       = true
+  }
+}
