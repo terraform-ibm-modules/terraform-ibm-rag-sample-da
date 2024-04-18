@@ -77,12 +77,6 @@ resource "ibm_cd_toolchain" "cd_toolchain_instance" {
   resource_group_id = module.resource_group.resource_group_id
 }
 
-resource "ibm_cd_toolchain" "cd_toolchain_instance" {
-  depends_on        = [ibm_resource_instance.cd_instance]
-  name              = "${var.prefix}-toolchain-instance"
-  resource_group_id = module.resource_group.resource_group_id
-}
-
 resource "ibm_cd_toolchain_tool_pipeline" "ci_toolchain_tool_pipeline_instance" {
   parameters {
     name = "${var.prefix}-pipeline-ci-01"
