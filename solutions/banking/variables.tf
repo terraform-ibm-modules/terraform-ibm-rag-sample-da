@@ -47,6 +47,12 @@ variable "cd_pipeline_id" {
   type        = string
 }
 
+variable "inventory_repo_url" {
+  description = "URL of the inventory repository"
+  type        = string
+  default     = null
+}
+
 variable "watson_assistant_instance_id" {
   description = "ID of the WatsonX Assistant service instance"
   type        = string
