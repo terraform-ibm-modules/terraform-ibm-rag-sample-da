@@ -23,6 +23,30 @@ module "cos" {
   cos_plan          = "standard"
 }
 
+# secrets manager secrets - IBM IAM API KEY
+module "secrets_manager_secret_ibm_iam" {
+  source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
+  version                 = "1.3.0"
+  region                  = var.toolchain_region
+  secrets_manager_guid    = var.secrets_manager_guid
+  secret_name             = "${var.prefix}-secret-api-key"
+  secret_description      = "IBM IAM Api key"
+  secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
+  secret_payload_password = var.ibmcloud_api_key
+}
+
+# secrets manager secrets - IBM signing key
+module "secrets_manager_secret_signing_key" {
+  source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
+  version                 = "1.3.0"
+  region                  = var.toolchain_region
+  secrets_manager_guid    = var.secrets_manager_guid
+  secret_name             = "${var.prefix}-secret-signing-key"
+  secret_description      = "IBM Signing GPG key"
+  secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
+  secret_payload_password = var.signing_key
+}
+
 data "ibm_resource_group" "toolchain_resource_group_id" {
   name = var.toolchain_resource_group
 }

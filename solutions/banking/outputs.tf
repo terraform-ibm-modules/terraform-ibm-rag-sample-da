@@ -32,3 +32,8 @@ output "discovery_project_id" {
   description = "WatsonX Discovery Project ID."
   value       = data.external.discovery_project_id.result.discovery_project_id
 }
+
+output "secrets_manager_crn" {
+  description = "Secrets Manager CRN."
+  value       = var.secrets_manager_crn
+}

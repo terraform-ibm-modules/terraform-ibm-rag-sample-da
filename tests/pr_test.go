@@ -81,6 +81,9 @@ func TestRunBankingSolutions(t *testing.T) {
 				"watson_machine_learning_instance_crn":           terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"),
 				"watson_machine_learning_instance_guid":          terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_guid"),
 				"watson_machine_learning_instance_resource_name": terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
+				"secrets_manager_guid":                           terraform.Output(t, existingTerraformOptions, "secrets_manager_guid"),
+				"secrets_manager_crn":                            terraform.Output(t, existingTerraformOptions, "secrets_manager_crn"),
+				"signing_key":                                    terraform.Output(t, existingTerraformOptions, "signing_key_payload"),
 			},
 		})
 

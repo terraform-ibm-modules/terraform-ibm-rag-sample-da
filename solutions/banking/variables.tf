@@ -87,3 +87,19 @@ variable "watson_machine_learning_instance_resource_name" {
   description = "Watson Machine Learning instance resource name"
   type        = string
 }
+
+variable "signing_key" {
+  description = "Signing GPG key."
+  type        = string
+  sensitive   = true
+}
+
+variable "secrets_manager_crn" {
+  description = "Secrets Manager CRN where the API key and signing key will be stored."
+  type        = string
+}
+
+variable "secrets_manager_guid" {
+  description = "Secrets Manager GUID where the API key and signing key will be stored."
+  type        = string
+}
