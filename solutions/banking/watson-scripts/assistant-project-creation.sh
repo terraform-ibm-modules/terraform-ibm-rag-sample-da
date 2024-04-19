@@ -20,6 +20,6 @@ if [[ -z "$ASSISTANT_ID" ]]; then
       --data "{\"name\":\"gen-ai-rag-sample-app-assistant\",\"language\":\"en\",\"description\":\"Generative AI sample app assistant\"}"
 else
   # If ASSISTANT_ID exists in a project then do not create another project.
-  echo "gen-ai-rag-sample-app-assistant project aleady exists."
+  echo "gen-ai-rag-sample-app-assistant project already exists."
   exit 0
 fi
