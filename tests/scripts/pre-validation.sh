@@ -54,7 +54,7 @@ TF_VARS_FILE="terraform.tfvars"
   watson_machine_learning_instance_resource_name_value=$(terraform output -state=terraform.tfstate -raw watson_machine_learning_instance_resource_name)
   use_existing_resource_group_value=true
   create_continuous_delivery_service_instance_value=false
-  inventory_repo_url_value="https://${REGION}.git.cloud.ibm.com/test-inventory-repo"
+  inventory_repo_url_value=""
 
   echo "Appending required input variable values to ${JSON_FILE}.."
 
