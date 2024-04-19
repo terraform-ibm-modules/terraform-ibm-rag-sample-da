@@ -4,6 +4,13 @@ variable "ibmcloud_api_key" {
   sensitive   = true
 }
 
+variable "watsonx_admin_api_key" {
+  default     = null
+  description = "Used to call Watson APIs to configure the user and the project."
+  sensitive   = true
+  type        = string
+}
+
 variable "prefix" {
   description = "Prefix for resources to be created"
   type        = string
@@ -85,5 +92,21 @@ variable "watson_machine_learning_instance_guid" {
 
 variable "watson_machine_learning_instance_resource_name" {
   description = "Watson Machine Learning instance resource name"
+  type        = string
+}
+
+variable "signing_key" {
+  description = "Signing GPG key."
+  type        = string
+  sensitive   = true
+}
+
+variable "secrets_manager_crn" {
+  description = "Secrets Manager CRN where the API key and signing key will be stored."
+  type        = string
+}
+
+variable "secrets_manager_guid" {
+  description = "Secrets Manager GUID where the API key and signing key will be stored."
   type        = string
 }
