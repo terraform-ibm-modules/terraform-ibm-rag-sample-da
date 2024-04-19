@@ -4,6 +4,13 @@ variable "ibmcloud_api_key" {
   sensitive   = true
 }
 
+variable "watsonx_admin_api_key" {
+  default     = null
+  description = "Used to call Watson APIs to configure the user and the project."
+  sensitive   = true
+  type        = string
+}
+
 variable "prefix" {
   description = "Prefix for resources to be created"
   type        = string

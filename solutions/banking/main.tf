@@ -8,6 +8,9 @@ data "ibm_iam_auth_token" "tokendata" {}
 
 # Resource group - create if it doesn't exist
 module "resource_group" {
+  providers = {
+    ibm = ibm.ibm_resources
+  }
   source                       = "terraform-ibm-modules/resource-group/ibm"
   version                      = "1.1.5"
   resource_group_name          = var.use_existing_resource_group == false ? var.resource_group_name : null
@@ -16,6 +19,9 @@ module "resource_group" {
 
 # create COS instance for WatsonX.AI project
 module "cos" {
+  providers = {
+    ibm = ibm.ibm_resources
+  }
   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
   version           = "8.1.7"
   resource_group_id = module.resource_group.resource_group_id
@@ -25,6 +31,9 @@ module "cos" {
 
 # secrets manager secrets - IBM IAM API KEY
 module "secrets_manager_secret_ibm_iam" {
+  providers = {
+    ibm = ibm.ibm_resources
+  }
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
   version                 = "1.3.0"
   region                  = var.toolchain_region
@@ -37,6 +46,9 @@ module "secrets_manager_secret_ibm_iam" {
 
 # secrets manager secrets - IBM signing key
 module "secrets_manager_secret_signing_key" {
+  providers = {
+    ibm = ibm.ibm_resources
+  }
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
   version                 = "1.3.0"
   region                  = var.toolchain_region
@@ -48,11 +60,13 @@ module "secrets_manager_secret_signing_key" {
 }
 
 data "ibm_resource_group" "toolchain_resource_group_id" {
-  name = var.toolchain_resource_group
+  provider = ibm.ibm_resources
+  name     = var.toolchain_resource_group
 }
 
 # create CD service for toolchain use if variable is set
 resource "ibm_resource_instance" "cd_instance" {
+  provider          = ibm.ibm_resources
   count             = var.create_continuous_delivery_service_instance ? 1 : 0
   name              = "${var.prefix}-cd-instance"
   service           = "continuous-delivery"
@@ -69,7 +83,8 @@ resource "ibm_resource_instance" "cd_instance" {
 
 # create watsonx.AI project
 module "configure_project" {
-  source                = "github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//configure_project?ref=v0.2.0"
+  watsonx_admin_api_key = var.watsonx_admin_api_key != null ? var.watsonx_admin_api_key : var.ibmcloud_api_key
+  source                = "github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//configure_project?ref=v0.4.1"
   project_name          = "${var.prefix}-RAG-sample-project"
   project_description   = "WatsonX AI project for RAG pattern sample app"
   project_tags          = ["watsonx-ai-SaaS", "RAG-sample-project"]
@@ -188,6 +203,7 @@ data "external" "discovery_project_id" {
 
 # Update CI pipeline with Assistant instance ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_property_ci" {
+  provider    = ibm.ibm_resources
   name        = "watsonx_assistant_id"
   pipeline_id = var.ci_pipeline_id
   type        = "text"
@@ -196,6 +212,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
 
 # Update CD pipeline with Assistant instance ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_property_cd" {
+  provider    = ibm.ibm_resources
   name        = "watsonx_assistant_id"
   pipeline_id = var.cd_pipeline_id
   type        = "text"
@@ -204,6 +221,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
 
 # Update CI pipeline with app flavor
 resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property_ci" {
+  provider    = ibm.ibm_resources
   name        = "app-flavor"
   pipeline_id = var.ci_pipeline_id
   type        = "text"
@@ -212,6 +230,7 @@ resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property
 
 # Update CD pipeline with app flavor
 resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property_cd" {
+  provider    = ibm.ibm_resources
   name        = "app-flavor"
   pipeline_id = var.cd_pipeline_id
   type        = "text"
@@ -220,6 +239,7 @@ resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property
 
 # Update CI pipeline with Assistant integration ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_ci" {
+  provider    = ibm.ibm_resources
   depends_on  = [data.external.assistant_get_integration_id]
   name        = "watsonx_assistant_integration_id"
   pipeline_id = var.ci_pipeline_id
@@ -229,6 +249,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pip
 
 # Update CD pipeline with Assistant integration ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_cd" {
+  provider    = ibm.ibm_resources
   depends_on  = [data.external.assistant_get_integration_id]
   name        = "watsonx_assistant_integration_id"
   pipeline_id = var.cd_pipeline_id
@@ -245,6 +266,7 @@ resource "random_string" "webhook_secret" {
 
 # Create webhook for CI pipeline
 resource "ibm_cd_tekton_pipeline_trigger" "ci_pipeline_webhook" {
+  provider       = ibm.ibm_resources
   depends_on     = [random_string.webhook_secret]
   type           = "generic"
   pipeline_id    = var.ci_pipeline_id
@@ -260,6 +282,7 @@ resource "ibm_cd_tekton_pipeline_trigger" "ci_pipeline_webhook" {
 
 # Create git trigger for CD pipeline - to run inventory promotion once CI pipeline is complete
 resource "ibm_cd_tekton_pipeline_trigger" "cd_pipeline_inventory_promotion_trigger" {
+  provider       = ibm.ibm_resources
   count          = var.inventory_repo_url != null ? 1 : 0
   type           = "scm"
   pipeline_id    = var.cd_pipeline_id
