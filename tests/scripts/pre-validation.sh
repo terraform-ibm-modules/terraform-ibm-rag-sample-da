@@ -41,6 +41,7 @@ TF_VARS_FILE="terraform.tfvars"
   watson_machine_learning_instance_resource_name_var_name="watson_machine_learning_instance_resource_name"
   use_existing_resource_group_var_name="use_existing_resource_group"
   create_continuous_delivery_service_instance_var_name="create_continuous_delivery_service_instance"
+  inventory_repo_url_var_name="inventory_repo_url"
 
   resource_group_name_value=$(terraform output -state=terraform.tfstate -raw resource_group_name)
   toolchain_resource_group_value=$(terraform output -state=terraform.tfstate -raw resource_group_name)
@@ -53,6 +54,7 @@ TF_VARS_FILE="terraform.tfvars"
   watson_machine_learning_instance_resource_name_value=$(terraform output -state=terraform.tfstate -raw watson_machine_learning_instance_resource_name)
   use_existing_resource_group_value=true
   create_continuous_delivery_service_instance_value=false
+  inventory_repo_url_value="https://${REGION}.git.cloud.ibm.com/test-inventory-repo"
 
   echo "Appending required input variable values to ${JSON_FILE}.."
 
@@ -87,6 +89,8 @@ TF_VARS_FILE="terraform.tfvars"
         --arg use_existing_resource_group_value "${use_existing_resource_group_value}" \
         --arg create_continuous_delivery_service_instance_var_name "${create_continuous_delivery_service_instance_var_name}" \
         --arg create_continuous_delivery_service_instance_value "${create_continuous_delivery_service_instance_value}" \
+        --arg inventory_repo_url_var_name "${inventory_repo_url_var_name}" \
+        --arg inventory_repo_url_value "${inventory_repo_url_value}" \
         '. + {($prefix_var_name): $prefix_value,
           ($resource_group_name_var_name): $resource_group_name_value,
           ($toolchain_region_var_name): $toolchain_region_value,
@@ -101,7 +105,8 @@ TF_VARS_FILE="terraform.tfvars"
           ($watson_machine_learning_instance_guid_var_name): $watson_machine_learning_instance_guid_value,
           ($use_existing_resource_group_var_name): $use_existing_resource_group_value,
           ($create_continuous_delivery_service_instance_var_name): $create_continuous_delivery_service_instance_value,
-          ($watson_machine_learning_instance_resource_name_var_name): $watson_machine_learning_instance_resource_name_value}' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
+          ($watson_machine_learning_instance_resource_name_var_name): $watson_machine_learning_instance_resource_name_value,
+          ($inventory_repo_url_var_name): $inventory_repo_url_value}' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
 
   echo "Pre-validation complete successfully"
 )
