@@ -114,10 +114,9 @@ TF_VARS_FILE="terraform.tfvars"
           ($use_existing_resource_group_var_name): $use_existing_resource_group_value,
           ($create_continuous_delivery_service_instance_var_name): $create_continuous_delivery_service_instance_value,
           ($watson_machine_learning_instance_resource_name_var_name): $watson_machine_learning_instance_resource_name_value,
-          ($secrets_manager_secrets_manager_crn_var_name): $secrets_manager_crn_value,
+          ($secrets_manager_crn_var_name): $secrets_manager_crn_value,
           ($secrets_manager_guid_var_name): $secrets_manager_guid_value,
-          ($signing_key_payload_var_name): $signing_key_payload_var_name,
-          ($signing_key_payload_value): signing_key_payload_value' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
+          ($signing_key_payload_var_name): $signing_key_payload_value' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
 
   echo "Pre-validation complete successfully"
 )
