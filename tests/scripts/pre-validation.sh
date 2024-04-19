@@ -41,7 +41,6 @@ TF_VARS_FILE="terraform.tfvars"
   watson_machine_learning_instance_resource_name_var_name="watson_machine_learning_instance_resource_name"
   use_existing_resource_group_var_name="use_existing_resource_group"
   create_continuous_delivery_service_instance_var_name="create_continuous_delivery_service_instance"
-  inventory_repo_url_var_name="inventory_repo_url"
   secrets_manager_guid_var_name="secrets_manager_guid"
   secrets_manager_crn_var_name="secrets_manager_crn"
   signing_key_payload_var_name="signing_key_payload"
@@ -57,7 +56,6 @@ TF_VARS_FILE="terraform.tfvars"
   watson_machine_learning_instance_resource_name_value=$(terraform output -state=terraform.tfstate -raw watson_machine_learning_instance_resource_name)
   use_existing_resource_group_value=true
   create_continuous_delivery_service_instance_value=false
-  inventory_repo_url_value="https://${REGION}.git.cloud.ibm.com/test-inventory-repo"
   secrets_manager_guid_value=$(terraform output -state=terraform.tfstate -raw secrets_manager_guid)
   secrets_manager_crn_value=$(terraform output -state=terraform.tfstate -raw secrets_manager_crn)
   signing_key_payload_value=$(terraform output -state=terraform.tfstate -raw signing_key_payload)
@@ -95,8 +93,6 @@ TF_VARS_FILE="terraform.tfvars"
         --arg use_existing_resource_group_value "${use_existing_resource_group_value}" \
         --arg create_continuous_delivery_service_instance_var_name "${create_continuous_delivery_service_instance_var_name}" \
         --arg create_continuous_delivery_service_instance_value "${create_continuous_delivery_service_instance_value}" \
-        --arg inventory_repo_url_var_name "${inventory_repo_url_var_name}" \
-        --arg inventory_repo_url_value "${inventory_repo_url_value}" \
         --arg secrets_manager_crn_var_name "${secrets_manager_crn_var_name}" \
         --arg secrets_manager_crn_value "${secrets_manager_crn_value}" \
         --arg secrets_manager_guid_var_name "${secrets_manager_guid_var_name}" \
@@ -121,8 +117,7 @@ TF_VARS_FILE="terraform.tfvars"
           ($secrets_manager_secrets_manager_crn_var_name): $secrets_manager_crn_value,
           ($secrets_manager_guid_var_name): $secrets_manager_guid_value,
           ($signing_key_payload_var_name): $signing_key_payload_var_name,
-          ($signing_key_payload_value): signing_key_payload_value,
-          ($inventory_repo_url_var_name): $inventory_repo_url_value}' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
+          ($signing_key_payload_value): signing_key_payload_value' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
 
   echo "Pre-validation complete successfully"
 )
