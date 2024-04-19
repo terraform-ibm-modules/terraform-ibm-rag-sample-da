@@ -8,6 +8,9 @@ data "ibm_iam_auth_token" "tokendata" {}
 
 # Resource group - create if it doesn't exist
 module "resource_group" {
+  providers = {
+    ibm = ibm.ibm_resources
+  }
   source                       = "terraform-ibm-modules/resource-group/ibm"
   version                      = "1.1.5"
   resource_group_name          = var.use_existing_resource_group == false ? var.resource_group_name : null
