@@ -12,7 +12,7 @@ ASSISTANT_ID=$(curl -X GET --location "$WATSON_ASSISTANT_URL/v2/assistants?versi
     --header "Content-Type: application/json" \
     | jq -r '.assistants[] | select(.name == "gen-ai-rag-sample-app-assistant") | .assistant_id ')
 
-if [ -z "$ASSISTANT_ID" ]; then
+if [[ -z "$ASSISTANT_ID" ]]; then
   # if not ASSISTANT_ID is found then create a new assistant project
   curl -X POST --location "$WATSON_ASSISTANT_URL/v2/assistants?version=2023-06-15" \
       --header "Authorization: Bearer $token" \
@@ -21,5 +21,5 @@ if [ -z "$ASSISTANT_ID" ]; then
 else
   # If ASSISTANT_ID exists in a project then do not create another project.
   echo "gen-ai-rag-sample-app-assistant project aleady exists."
-  exist 0
+  exit 0
 fi
