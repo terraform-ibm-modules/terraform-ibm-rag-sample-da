@@ -58,7 +58,7 @@ output "secrets_manager_crn" {
   description = "CRN of the Secrets Manager instance."
 }
 
-output "signing_key_payload" {
+output "signing_key" {
   value       = local.signing_key_payload
   sensitive   = true
   description = "Signing key payload."
