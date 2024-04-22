@@ -18,7 +18,7 @@ if [[ -z "$ASSISTANT_ID" ]]; then
   curl --retry 3 -fLsS -X POST --location "$WATSON_ASSISTANT_URL/v2/assistants?version=2023-06-15" \
       --header "Authorization: Bearer $token" \
       --header "Content-Type: application/json" \
-      --data "{\"name\":\"gen-ai-rag-sample-app-assistant\",\"language\":\"en\",\"description\":\"Generative AI sample app assistant\"}"
+      --data "{\"name\":\"$project_name\",\"language\":\"en\",\"description\":\"Generative AI sample app assistant\"}"
 else
   # If ASSISTANT_ID exists in a project then do not create another project.
   echo "$project_name project already exists."
