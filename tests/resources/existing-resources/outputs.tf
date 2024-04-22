@@ -53,11 +53,6 @@ output "secrets_manager_guid" {
   description = "GUID of Secrets Manager instance."
 }
 
-output "secrets_manager_crn" {
-  value       = module.secrets_manager.secrets_manager_crn
-  description = "CRN of the Secrets Manager instance."
-}
-
 output "signing_key" {
   value       = local.signing_key_payload
   sensitive   = true
