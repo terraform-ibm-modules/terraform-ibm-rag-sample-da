@@ -20,8 +20,6 @@ import (
 const bankingSolutionsDir = "solutions/banking"
 const region = "us-south" // Binding all the resources to the us-south location.
 
-const resourceGroup = "geretain-test-resources"
-
 func TestRunBankingSolutions(t *testing.T) {
 	t.Parallel()
 
@@ -42,9 +40,8 @@ func TestRunBankingSolutions(t *testing.T) {
 	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
-			"prefix":         prefix,
-			"region":         region,
-			"resource_group": resourceGroup,
+			"prefix": prefix,
+			"region": region,
 		},
 		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
 		// This is the same as setting the -upgrade=true flag with terraform.
