@@ -47,3 +47,19 @@ output "resource_group_name" {
   value       = module.resource_group.resource_group_name
   description = "Resource group name."
 }
+
+output "secrets_manager_guid" {
+  value       = module.secrets_manager.secrets_manager_guid
+  description = "GUID of Secrets Manager instance."
+}
+
+output "secrets_manager_crn" {
+  value       = module.secrets_manager.secrets_manager_crn
+  description = "CRN of the Secrets Manager instance."
+}
+
+output "signing_key_payload" {
+  value       = local.signing_key_payload
+  sensitive   = true
+  description = "Signing key payload."
+}
