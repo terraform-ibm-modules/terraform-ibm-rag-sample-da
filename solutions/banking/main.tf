@@ -38,7 +38,7 @@ module "secrets_manager_secret_ibm_iam" {
   version                 = "1.3.0"
   region                  = var.toolchain_region
   secrets_manager_guid    = var.secrets_manager_guid
-  secret_name             = "${var.prefix}-secret-api-key"
+  secret_name             = "ibmcloud-api-key"
   secret_description      = "IBM IAM Api key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_payload_password = var.ibmcloud_api_key
@@ -53,7 +53,7 @@ module "secrets_manager_secret_signing_key" {
   version                 = "1.3.0"
   region                  = var.toolchain_region
   secrets_manager_guid    = var.secrets_manager_guid
-  secret_name             = "${var.prefix}-secret-signing-key"
+  secret_name             = "signing-key"
   secret_description      = "IBM Signing GPG key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_payload_password = var.signing_key
