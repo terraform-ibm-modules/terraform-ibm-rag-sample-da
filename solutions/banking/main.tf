@@ -32,11 +32,11 @@ module "cos" {
 # secrets manager secrets - IBM IAM API KEY
 module "secrets_manager_secret_ibm_iam" {
   providers = {
-    ibm = ibm.ibm_resources
+    ibm = ibm.sm_resources
   }
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
   version                 = "1.3.0"
-  region                  = var.toolchain_region
+  region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "${var.prefix}-secret-api-key"
   secret_description      = "IBM IAM Api key"
@@ -47,11 +47,11 @@ module "secrets_manager_secret_ibm_iam" {
 # secrets manager secrets - IBM signing key
 module "secrets_manager_secret_signing_key" {
   providers = {
-    ibm = ibm.ibm_resources
+    ibm = ibm.sm_resources
   }
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
   version                 = "1.3.0"
-  region                  = var.toolchain_region
+  region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "${var.prefix}-secret-signing-key"
   secret_description      = "IBM Signing GPG key"
