@@ -112,6 +112,23 @@ resource "null_resource" "discovery_project_creation" {
   }
 }
 
+# discogery project deletion - it will also delete the collection and uploaded files. See https://cloud.ibm.com/apidocs/discovery-data#deleteproject
+resource "null_resource" "discovery_project_destruction" {
+  triggers = {
+    always_run            = timestamp()
+    token                 = local.sensitive_tokendata
+    watsonx_discovery_url = local.watsonx_discovery_url
+  }
+
+  provisioner "local-exec" {
+    command     = "${path.module}/watson-scripts/discovery-project-destruction.sh \"${self.triggers.token}\" \"${self.triggers.watsonx_discovery_url}\""
+    interpreter = ["/bin/bash", "-c"]
+    quiet       = true
+    when        = destroy
+  }
+}
+
+
 # discovery collection creation
 resource "null_resource" "discovery_collection_creation" {
   depends_on = [null_resource.discovery_project_creation]
@@ -150,6 +167,22 @@ resource "null_resource" "assistant_project_creation" {
     command     = "${path.module}/watson-scripts/assistant-project-creation.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_assistant_url}\""
     interpreter = ["/bin/bash", "-c"]
     quiet       = true
+  }
+}
+
+# assistant destruction
+resource "null_resource" "assistant_project_destruction" {
+  triggers = {
+    always_run            = timestamp()
+    token                 = local.sensitive_tokendata
+    watsonx_assistant_url = local.watsonx_assistant_url
+  }
+
+  provisioner "local-exec" {
+    command     = "${path.module}/watson-scripts/assistant-project-destruction.sh \"${self.triggers.token}\" \"${self.triggers.watsonx_assistant_url}\""
+    interpreter = ["/bin/bash", "-c"]
+    quiet       = true
+    when        = destroy
   }
 }
 
