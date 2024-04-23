@@ -5,6 +5,12 @@ provider "ibm" {
 }
 
 provider "ibm" {
+  alias            = "sm_resources"
+  ibmcloud_api_key = var.ibmcloud_api_key
+  region           = var.secrets_manager_region
+}
+
+provider "ibm" {
   ibmcloud_api_key = var.watsonx_admin_api_key != null ? var.watsonx_admin_api_key : var.ibmcloud_api_key
   region           = var.toolchain_region
 }

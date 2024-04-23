@@ -20,5 +20,5 @@ CRA_TARGETS:
       TF_VAR_watson_machine_learning_instance_resource_name: "test-machine-learning-instance"
       TF_VAR_inventory_repo_url: "https://us-south.git.cloud.ibm.com/yada.yada/04181-inventory-repo.git"
       TF_VAR_signing_key: "dummy value"
-      TF_VAR_secrets_manager_crn: "dummy crn"
       TF_VAR_secrets_manager_guid: "dummy guid"
+      TF_VAR_secrets_manager_region: "us-south"
