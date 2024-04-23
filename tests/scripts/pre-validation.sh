@@ -42,6 +42,7 @@ TF_VARS_FILE="terraform.tfvars"
   use_existing_resource_group_var_name="use_existing_resource_group"
   create_continuous_delivery_service_instance_var_name="create_continuous_delivery_service_instance"
   secrets_manager_guid_var_name="secrets_manager_guid"
+  secrets_manager_region_var_name="secrets_manager_region"
   signing_key_var_name="signing_key"
 
   resource_group_name_value=$(terraform output -state=terraform.tfstate -raw resource_group_name)
@@ -92,6 +93,8 @@ TF_VARS_FILE="terraform.tfvars"
         --arg create_continuous_delivery_service_instance_var_name "${create_continuous_delivery_service_instance_var_name}" \
         --arg create_continuous_delivery_service_instance_value "${create_continuous_delivery_service_instance_value}" \
         --arg secrets_manager_guid_var_name "${secrets_manager_guid_var_name}" \
+        --arg secrets_manager_region_var_name "${secrets_manager_region_var_name}" \
+        --arg secrets_manager_region_value "${REGION}" \
         --arg secrets_manager_guid_value "${secrets_manager_guid_value}" \
         --arg signing_key_var_name "${signing_key_var_name}" \
         --arg signing_key_value "${signing_key_value}" \
@@ -111,6 +114,7 @@ TF_VARS_FILE="terraform.tfvars"
           ($create_continuous_delivery_service_instance_var_name): $create_continuous_delivery_service_instance_value,
           ($watson_machine_learning_instance_resource_name_var_name): $watson_machine_learning_instance_resource_name_value,
           ($secrets_manager_guid_var_name): $secrets_manager_guid_value,
+          ($secrets_manager_region_var_name): $secrets_manager_region_value,
           ($signing_key_var_name): $signing_key_value}' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
 
   echo "Pre-validation complete successfully"

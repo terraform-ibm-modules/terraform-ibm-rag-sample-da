@@ -105,3 +105,8 @@ variable "secrets_manager_guid" {
   description = "Secrets Manager GUID where the API key and signing key will be stored."
   type        = string
 }
+
+variable "secrets_manager_region" {
+  description = "The region where the Secrets Manager instance previously created reside."
+  type        = string
+}
