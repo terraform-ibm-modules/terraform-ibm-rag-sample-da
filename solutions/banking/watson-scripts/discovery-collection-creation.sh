@@ -14,12 +14,12 @@ fi
 
 token="$(echo "$IAM_TOKEN" | awk '{print $2}')"
 
-PROJECT_ID=$(curl -X GET -retry 3 -flsS --location "$WATSON_DISCOVERY_URL/v2/projects?version=2023-03-31" \
+PROJECT_ID=$(curl -X GET --retry 3 -flsS --location "$WATSON_DISCOVERY_URL/v2/projects?version=2023-03-31" \
     --header "Authorization: Bearer $token" \
     --header "Content-Type: application/json" \
     | jq -r --arg DISCOVERY_PROJECT_NAME "$DISCOVERY_PROJECT_NAME" '.projects[] | select(.name==$DISCOVERY_PROJECT_NAME) | .project_id ')
 
-EXISTING_COLLECTION_ID=$(curl -X GET -retry 3 -flsS --location "$WATSON_DISCOVERY_URL/v2/projects/$PROJECT_ID/collections?version=2023-03-31" \
+EXISTING_COLLECTION_ID=$(curl -X GET --retry 3 -flsS --location "$WATSON_DISCOVERY_URL/v2/projects/$PROJECT_ID/collections?version=2023-03-31" \
     --header "Authorization: Bearer $token" \
     --header "Content-Type: application/json" \
     | jq -r --arg DISCOVERY_COLLECTION_NAME "$DISCOVERY_COLLECTION_NAME" '.collections[] | select(.name==$DISCOVERY_COLLECTION_NAME) | .collection_id ')
