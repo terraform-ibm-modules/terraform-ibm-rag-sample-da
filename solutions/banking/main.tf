@@ -75,12 +75,6 @@ resource "ibm_resource_instance" "cd_instance" {
   resource_group_id = data.ibm_resource_group.toolchain_resource_group_id.id
 }
 
-# create watsonX.AI user - do we need this?
-# module "configure_user" {
-#   source            = "./configure_user"
-#   resource_group_id = module.resource_group.resource_group_id
-# }
-
 # create watsonx.AI project
 module "configure_project" {
   watsonx_admin_api_key = var.watsonx_admin_api_key != null ? var.watsonx_admin_api_key : var.ibmcloud_api_key
@@ -106,9 +100,12 @@ resource "null_resource" "discovery_project_creation" {
   }
 
   provisioner "local-exec" {
-    command     = "${path.module}/watson-scripts/discovery-project-creation.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_discovery_url}\""
+    command     = "${path.module}/watson-scripts/discovery-project-creation.sh \"${local.watsonx_discovery_url}\""
     interpreter = ["/bin/bash", "-c"]
     quiet       = true
+    environment = {
+      IAM_TOKEN = local.sensitive_tokendata
+    }
   }
 }
 
@@ -120,9 +117,12 @@ resource "null_resource" "discovery_collection_creation" {
   }
 
   provisioner "local-exec" {
-    command     = "${path.module}/watson-scripts/discovery-collection-creation.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_discovery_url}\""
+    command     = "${path.module}/watson-scripts/discovery-collection-creation.sh \"${local.watsonx_discovery_url}\""
     interpreter = ["/bin/bash", "-c"]
     quiet       = true
+    environment = {
+      IAM_TOKEN = local.sensitive_tokendata
+    }
   }
 }
 
@@ -134,9 +134,12 @@ resource "null_resource" "discovery_file_upload" {
   }
 
   provisioner "local-exec" {
-    command     = "${path.module}/watson-scripts/discovery-file-upload.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_discovery_url}\" \"${path.module}/artifacts/WatsonDiscovery\" "
+    command     = "${path.module}/watson-scripts/discovery-file-upload.sh \"${local.watsonx_discovery_url}\" \"${path.module}/artifacts/WatsonDiscovery\" "
     interpreter = ["/bin/bash", "-c"]
     quiet       = true
+    environment = {
+      IAM_TOKEN = local.sensitive_tokendata
+    }
   }
 }
 
@@ -147,38 +150,14 @@ resource "null_resource" "assistant_project_creation" {
   }
 
   provisioner "local-exec" {
-    command     = "${path.module}/watson-scripts/assistant-project-creation.sh \"${local.sensitive_tokendata}\" \"${local.watsonx_assistant_url}\""
+    command     = "${path.module}/watson-scripts/assistant-project-creation.sh \"${local.watsonx_assistant_url}\""
     interpreter = ["/bin/bash", "-c"]
     quiet       = true
+    environment = {
+      IAM_TOKEN = local.sensitive_tokendata
+    }
   }
 }
-
-# assistant custom extensions
-# manual step - awaiting API
-
-# assistant skills import
-# skip for now - depends on manual step for custom extensions
-/*
-resource "null_resource" "assistant_import_rag_pattern-action-skill" {
-  triggers = {
-    always_run = timestamp()
-    ibmcloud_api_key     = var.ibmcloud_api_key
-    watsonx_assistant_url = local.watsonx_assistant_url
-  }
-
-  provisioner "local-exec" {
-    command = <<EOF
-      #!/bin/bash
-      ASSISTANT_ID=$(curl -X GET -u "apikey:${var.ibmcloud_api_key}" "${local.watsonx_assistant_url}/v2/assistants?version=2023-06-15" \
-        | jq '.assistants[] | select(.name == "gen-ai-rag-sample-app-assistant") | .assistant_id ')
-
-      curl -X POST -u "apikey:${var.ibmcloud_api_key}" --header "Content-Type: application/json" \
-         --data "@./artifacts/watsonX.Assistant/cc-bank-loan-v1-action.json" \
-         "${local.watsonx_assistant_url}/v2/assistants/$ASSISTANT_ID/skills_import?version=2023-06-15"
-    EOF
-  }
-}
-*/
 
 # get assistant integration ID
 data "external" "assistant_get_integration_id" {
