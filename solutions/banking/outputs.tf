@@ -1,20 +1,20 @@
-output "project_id" {
+output "watsonx_project_id" {
   description = "ID of the created WatsonX project."
   value       = module.configure_project.project_id
 }
 
-output "project_url" {
+output "watsonx_project_url" {
   description = "WatsonX project ID URL."
   value       = "https://dataplatform.cloud.ibm.com/projects/${module.configure_project.project_id}"
 }
 
-output "watsonx_assistant_url" {
-  description = "WatsonX Assistant URL."
+output "watsonx_assistant_api_url" {
+  description = "WatsonX Assistant API URL."
   value       = local.watsonx_assistant_url
 }
 
-output "watsonx_discovery_url" {
-  description = "WatsonX Discovery URL."
+output "watsonx_discovery_api_url" {
+  description = "WatsonX Discovery API URL."
   value       = local.watsonx_discovery_url
 }
 
