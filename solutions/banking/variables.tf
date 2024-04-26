@@ -110,3 +110,9 @@ variable "secrets_manager_region" {
   description = "The region where the Secrets Manager instance previously created reside."
   type        = string
 }
+
+variable "trigger_ci_pipeline_run" {
+  description = "Whether to trigger the CI pipeline to build and deploy the application when deploying this solution"
+  type        = bool
+  default     = true
+}
