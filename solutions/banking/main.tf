@@ -279,6 +279,7 @@ resource "ibm_cd_tekton_pipeline_trigger" "cd_pipeline_inventory_promotion_trigg
 
 # Trigger webhook to start CI pipeline run
 resource "null_resource" "ci_pipeline_run" {
+  count = var.trigger_ci_pipeline_run == true ? 1 : 0
   depends_on = [
     ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook,
     ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci,
