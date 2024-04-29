@@ -44,6 +44,7 @@ TF_VARS_FILE="terraform.tfvars"
   secrets_manager_guid_var_name="secrets_manager_guid"
   secrets_manager_region_var_name="secrets_manager_region"
   signing_key_var_name="signing_key"
+  trigger_ci_pipeline_run_var_name="trigger_ci_pipeline_run"
 
   resource_group_name_value=$(terraform output -state=terraform.tfstate -raw resource_group_name)
   toolchain_resource_group_value=$(terraform output -state=terraform.tfstate -raw resource_group_name)
@@ -58,6 +59,7 @@ TF_VARS_FILE="terraform.tfvars"
   create_continuous_delivery_service_instance_value=false
   secrets_manager_guid_value=$(terraform output -state=terraform.tfstate -raw secrets_manager_guid)
   signing_key_value=$(terraform output -state=terraform.tfstate -raw signing_key)
+  trigger_ci_pipeline_run_value=false
 
   echo "Appending required input variable values to ${JSON_FILE}.."
 
@@ -98,6 +100,8 @@ TF_VARS_FILE="terraform.tfvars"
         --arg secrets_manager_guid_value "${secrets_manager_guid_value}" \
         --arg signing_key_var_name "${signing_key_var_name}" \
         --arg signing_key_value "${signing_key_value}" \
+        --arg trigger_ci_pipeline_run_var_name "${trigger_ci_pipeline_run_var_name}" \
+        --arg trigger_ci_pipeline_run_value "${trigger_ci_pipeline_run_value}" \
         '. + {($prefix_var_name): $prefix_value,
           ($resource_group_name_var_name): $resource_group_name_value,
           ($toolchain_region_var_name): $toolchain_region_value,
@@ -115,6 +119,7 @@ TF_VARS_FILE="terraform.tfvars"
           ($watson_machine_learning_instance_resource_name_var_name): $watson_machine_learning_instance_resource_name_value,
           ($secrets_manager_guid_var_name): $secrets_manager_guid_value,
           ($secrets_manager_region_var_name): $secrets_manager_region_value,
+          ($trigger_ci_pipeline_run_var_name): $trigger_ci_pipeline_run_value,
           ($signing_key_var_name): $signing_key_value}' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
 
   echo "Pre-validation complete successfully"
