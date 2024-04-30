@@ -101,6 +101,12 @@ variable "signing_key" {
   sensitive   = true
 }
 
+variable "create_secrets" {
+  description = "Create Secrets in the existing Secrets Manager instance."
+  type        = bool
+  default     = true
+}
+
 variable "secrets_manager_guid" {
   description = "Secrets Manager GUID where the API key and signing key will be stored."
   type        = string
