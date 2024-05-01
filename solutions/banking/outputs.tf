@@ -13,8 +13,8 @@ output "watsonx_assistant_api_url" {
   value       = local.watsonx_assistant_url
 }
 
-output "watsonx_discovery_api_url" {
-  description = "WatsonX Discovery URL."
+output "watson_discovery_api_url" {
+  description = "Watson Discovery URL."
   value       = local.watsonx_discovery_url
 }
 
@@ -28,7 +28,7 @@ output "watsonx_assistant_integration_id" {
   value       = data.external.assistant_get_integration_id.result.assistant_integration_id
 }
 
-output "watsonx_discovery_project_id" {
-  description = "WatsonX Discovery Project ID."
+output "watson_discovery_project_id" {
+  description = "Watson Discovery Project ID."
   value       = data.external.discovery_project_id.result.discovery_project_id
 }
