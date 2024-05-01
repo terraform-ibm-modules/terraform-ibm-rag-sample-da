@@ -34,6 +34,7 @@ module "secrets_manager_secret_ibm_iam" {
   providers = {
     ibm = ibm.sm_resources
   }
+  count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
   version                 = "1.3.0"
   region                  = var.secrets_manager_region
@@ -49,6 +50,7 @@ module "secrets_manager_secret_signing_key" {
   providers = {
     ibm = ibm.sm_resources
   }
+  count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
   version                 = "1.3.0"
   region                  = var.secrets_manager_region
