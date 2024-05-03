@@ -15,14 +15,14 @@ fi
 
 token="$(echo "$IAM_TOKEN" | awk '{print $2}')"
 
-
 # Check if documents already exist
-DISCOVERY_QUERY=$(curl -X GET --retry 3 -fLsS --location "$WATSON_DISCOVERY_URL/v2/projects/$WATSON_DISCOVERY_PROJECT_ID/collections/$WATSON_DISCOVERY_COLLECTION_ID/documents?status=available&version=2023-03-31" \
+DISCOVERY_QUERY_RESULTS=$(curl -X GET --retry 3 -fLsS --location "$WATSON_DISCOVERY_URL/v2/projects/$WATSON_DISCOVERY_PROJECT_ID/collections/$WATSON_DISCOVERY_COLLECTION_ID/documents?status=available&version=2023-03-31" \
     --header "Authorization: Bearer $token" \
     --header "Content-Type: application/json" \
     | jq -r '.documents[] | .document_id' )
 
-EXISTING_DOCUMENTS=("${DISCOVERY_QUERY}")
+# shellcheck disable=SC2206
+EXISTING_DOCUMENTS=($DISCOVERY_QUERY_RESULTS)
 
 if [[ ${#EXISTING_DOCUMENTS[@]} -eq 0 ]]; then
     echo "Documents list is empty, skipping"
