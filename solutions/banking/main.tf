@@ -267,6 +267,16 @@ resource "ibm_cd_tekton_pipeline_trigger" "ci_pipeline_webhook" {
   }
 }
 
+# Ensure webhook trigger runs against correct git branch
+resource "ibm_cd_tekton_pipeline_trigger_property" "ci_pipeline_webhook_branch_property" {
+  depends_on  = [ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook]
+  name        = "branch"
+  pipeline_id = var.ci_pipeline_id
+  trigger_id  = ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook.trigger_id
+  type        = "text"
+  value       = "main"
+}
+
 # Create git trigger for CD pipeline - to run inventory promotion once CI pipeline is complete
 resource "ibm_cd_tekton_pipeline_trigger" "cd_pipeline_inventory_promotion_trigger" {
   provider       = ibm.ibm_resources
@@ -290,6 +300,7 @@ resource "null_resource" "ci_pipeline_run" {
   count = var.trigger_ci_pipeline_run == true ? 1 : 0
   depends_on = [
     ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook,
+    ibm_cd_tekton_pipeline_trigger_property.ci_pipeline_webhook_branch_property,
     ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci,
     ibm_cd_tekton_pipeline_property.watsonx_assistant_id_pipeline_property_ci,
     ibm_resource_instance.cd_instance
