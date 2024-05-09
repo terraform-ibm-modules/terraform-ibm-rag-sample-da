@@ -1,11 +1,11 @@
 output "watsonx_project_id" {
   description = "ID of the created WatsonX project."
-  value       = module.configure_project.project_id
+  value       = module.configure_project.watsonx_project_id
 }
 
 output "watsonx_project_url" {
   description = "WatsonX project ID URL."
-  value       = "https://dataplatform.cloud.ibm.com/projects/${module.configure_project.project_id}"
+  value       = "https://dataplatform.cloud.ibm.com/projects/${module.configure_project.watsonx_project_id}"
 }
 
 output "watsonx_assistant_api_url" {

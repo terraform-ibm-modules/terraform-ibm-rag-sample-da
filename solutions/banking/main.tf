@@ -79,16 +79,16 @@ resource "ibm_resource_instance" "cd_instance" {
 
 # create watsonx.AI project
 module "configure_project" {
-  watsonx_admin_api_key = var.watsonx_admin_api_key != null ? var.watsonx_admin_api_key : var.ibmcloud_api_key
-  source                = "github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//configure_project?ref=v0.5.5"
-  project_name          = "${var.prefix}-RAG-sample-project"
-  project_description   = "WatsonX AI project for RAG pattern sample app"
-  project_tags          = ["watsonx-ai-SaaS", "RAG-sample-project"]
-  machine_learning_guid = var.watson_machine_learning_instance_guid
-  machine_learning_crn  = var.watson_machine_learning_instance_crn
-  machine_learning_name = var.watson_machine_learning_instance_resource_name
-  cos_guid              = module.cos.cos_instance_guid
-  cos_crn               = module.cos.cos_instance_crn
+  watsonx_admin_api_key       = var.watsonx_admin_api_key != null ? var.watsonx_admin_api_key : var.ibmcloud_api_key
+  source                      = "github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//configure_project?ref=v0.5.6"
+  watsonx_project_name        = "${var.prefix}-RAG-sample-project"
+  watsonx_project_description = "WatsonX AI project for RAG pattern sample app"
+  watsonx_project_tags        = ["watsonx-ai-SaaS", "RAG-sample-project"]
+  machine_learning_guid       = var.watson_machine_learning_instance_guid
+  machine_learning_crn        = var.watson_machine_learning_instance_crn
+  machine_learning_name       = var.watson_machine_learning_instance_resource_name
+  cos_guid                    = module.cos.cos_instance_guid
+  cos_crn                     = module.cos.cos_instance_crn
 }
 
 # Discovery project creation
