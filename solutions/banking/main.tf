@@ -1,6 +1,6 @@
 locals {
   watsonx_assistant_url = "https://api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
-  watsonx_discovery_url = "https://api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}"
+  watsonx_discovery_url = "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}"
   sensitive_tokendata   = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 }
 
@@ -91,52 +91,69 @@ module "configure_project" {
   cos_crn               = module.cos.cos_instance_crn
 }
 
-# get zip file from code repo
-# add deployment space - not for demo scope
-
-# discovery project creation
-# possibly change type of project here - TBC
-resource "null_resource" "discovery_project_creation" {
-  triggers = {
-    always_run = timestamp()
-  }
-
-  provisioner "local-exec" {
-    command     = "${path.module}/watson-scripts/discovery-project-creation.sh \"${local.watsonx_discovery_url}\""
-    interpreter = ["/bin/bash", "-c"]
-    quiet       = true
-    environment = {
-      IAM_TOKEN = local.sensitive_tokendata
-    }
-  }
+# Discovery project creation
+resource "restapi_object" "configure_discovery_project" {
+  depends_on     = [data.ibm_iam_auth_token.tokendata]
+  path           = local.watsonx_discovery_url
+  read_path      = "${local.watsonx_discovery_url}/v2/projects/{id}?version=2023-03-31"
+  read_method    = "GET"
+  create_path    = "${local.watsonx_discovery_url}/v2/projects?version=2023-03-31"
+  create_method  = "POST"
+  id_attribute   = "project_id"
+  destroy_method = "DELETE"
+  destroy_path   = "${local.watsonx_discovery_url}/v2/projects/{id}?version=2023-03-31"
+  data           = <<-EOT
+                  {
+                    "name": "gen-ai-rag-sample-app-project",
+                    "type": "document_retrieval"
+                  }
+                  EOT
+  update_method  = "POST"
+  update_path    = "${local.watsonx_discovery_url}/v2/projects/{id}?version=2023-03-31"
+  update_data    = <<-EOT
+                  {
+                    "name": "gen-ai-rag-sample-app-project",
+                    "type": "document_retrieval"
+                  }
+                  EOT
 }
 
-# discovery collection creation
-resource "null_resource" "discovery_collection_creation" {
-  depends_on = [null_resource.discovery_project_creation]
-  triggers = {
-    always_run = timestamp()
-  }
-
-  provisioner "local-exec" {
-    command     = "${path.module}/watson-scripts/discovery-collection-creation.sh \"${local.watsonx_discovery_url}\""
-    interpreter = ["/bin/bash", "-c"]
-    quiet       = true
-    environment = {
-      IAM_TOKEN = local.sensitive_tokendata
-    }
-  }
+# Discovery collection creation
+resource "restapi_object" "configure_discovery_collection" {
+  depends_on     = [data.ibm_iam_auth_token.tokendata, restapi_object.configure_discovery_project]
+  path           = local.watsonx_discovery_url
+  read_path      = "${local.watsonx_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections/{id}?version=2023-03-31"
+  read_method    = "GET"
+  create_path    = "${local.watsonx_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections?version=2023-03-31"
+  create_method  = "POST"
+  id_attribute   = "collection_id"
+  destroy_method = "DELETE"
+  destroy_path   = "${local.watsonx_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections/{id}?version=2023-03-31"
+  data           = <<-EOT
+                  {
+                    "name": "gen-ai-rag-sample-app-data",
+                    "description": "Sample data"
+                  }
+                  EOT
+  update_method  = "POST"
+  update_path    = "${local.watsonx_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections/{id}?version=2023-03-31"
+  update_data    = <<-EOT
+                  {
+                    "name": "gen-ai-rag-sample-app-data",
+                    "description": "Sample data"
+                  }
+                  EOT
 }
 
 # discovery file upload
 resource "null_resource" "discovery_file_upload" {
-  depends_on = [null_resource.discovery_collection_creation]
+  depends_on = [restapi_object.configure_discovery_collection]
   triggers = {
     always_run = timestamp()
   }
 
   provisioner "local-exec" {
-    command     = "${path.module}/watson-scripts/discovery-file-upload.sh \"${local.watsonx_discovery_url}\" \"${path.module}/artifacts/WatsonDiscovery\" "
+    command     = "${path.module}/watson-scripts/discovery-file-upload.sh \"https:${local.watsonx_discovery_url}\" \"${restapi_object.configure_discovery_project.id}\" \"${restapi_object.configure_discovery_collection.id}\" \"${path.module}/artifacts/WatsonDiscovery\" "
     interpreter = ["/bin/bash", "-c"]
     quiet       = true
     environment = {
@@ -170,17 +187,6 @@ data "external" "assistant_get_integration_id" {
     watson_assistant_url = local.watsonx_assistant_url
   }
 }
-
-# get discovery project ID
-data "external" "discovery_project_id" {
-  depends_on = [null_resource.discovery_project_creation]
-  program    = ["bash", "${path.module}/watson-scripts/discovery-get-project.sh"]
-  query = {
-    tokendata            = local.sensitive_tokendata
-    watson_discovery_url = local.watsonx_discovery_url
-  }
-}
-
 
 # Update CI pipeline with Assistant instance ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_property_ci" {
@@ -261,6 +267,16 @@ resource "ibm_cd_tekton_pipeline_trigger" "ci_pipeline_webhook" {
   }
 }
 
+# Ensure webhook trigger runs against correct git branch
+resource "ibm_cd_tekton_pipeline_trigger_property" "ci_pipeline_webhook_branch_property" {
+  depends_on  = [ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook]
+  name        = "branch"
+  pipeline_id = var.ci_pipeline_id
+  trigger_id  = ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook.trigger_id
+  type        = "text"
+  value       = "main"
+}
+
 # Create git trigger for CD pipeline - to run inventory promotion once CI pipeline is complete
 resource "ibm_cd_tekton_pipeline_trigger" "cd_pipeline_inventory_promotion_trigger" {
   provider       = ibm.ibm_resources
@@ -284,6 +300,7 @@ resource "null_resource" "ci_pipeline_run" {
   count = var.trigger_ci_pipeline_run == true ? 1 : 0
   depends_on = [
     ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook,
+    ibm_cd_tekton_pipeline_trigger_property.ci_pipeline_webhook_branch_property,
     ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci,
     ibm_cd_tekton_pipeline_property.watsonx_assistant_id_pipeline_property_ci,
     ibm_resource_instance.cd_instance

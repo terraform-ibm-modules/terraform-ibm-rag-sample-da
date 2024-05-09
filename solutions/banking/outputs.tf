@@ -30,5 +30,5 @@ output "watsonx_assistant_integration_id" {
 
 output "watson_discovery_project_id" {
   description = "Watson Discovery Project ID."
-  value       = data.external.discovery_project_id.result.discovery_project_id
+  value       = restapi_object.configure_discovery_project.id
 }
