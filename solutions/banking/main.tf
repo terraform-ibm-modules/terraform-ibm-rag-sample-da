@@ -61,6 +61,23 @@ module "secrets_manager_secret_signing_key" {
   secret_payload_password = var.signing_key
 }
 
+# secrets manager secrets - WATSONX ADMIN API KEY
+module "secrets_manager_secret_watsonx_admin_api_key" {
+  providers = {
+    ibm = ibm.sm_resources
+  }
+  count                   = (var.create_secrets && var.watsonx_admin_api_key != null) ? 1 : 0
+  source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
+  version                 = "1.3.1"
+  region                  = var.secrets_manager_region
+  secrets_manager_guid    = var.secrets_manager_guid
+  secret_name             = "watsonx-admin-api-key"
+  secret_description      = "WatsonX Admin API Key"
+  secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
+  secret_payload_password = var.watsonx_admin_api_key
+}
+
+
 data "ibm_resource_group" "toolchain_resource_group_id" {
   provider = ibm.ibm_resources
   name     = var.toolchain_resource_group
