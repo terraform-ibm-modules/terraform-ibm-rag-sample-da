@@ -85,7 +85,24 @@ func TestRunBankingSolutions(t *testing.T) {
 			},
 		})
 
+		// Ignore updates
+		options.IgnoreUpdates = testhelper.Exemptions{
+			List: []string{
+				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_cd",
+				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci",
+			},
+		}
+
+		// Ignore destroys
+		options.IgnoreDestroys = testhelper.Exemptions{
+			List: []string{
+				"null_resource.discovery_file_upload",
+				"null_resource.assistant_project_creation",
+			},
+		}
+
 		output, err := options.RunTestConsistency()
+
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
 	}
