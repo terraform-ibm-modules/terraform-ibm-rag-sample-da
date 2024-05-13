@@ -85,7 +85,7 @@ func TestRunBankingSolutions(t *testing.T) {
 			},
 		})
 
-		output, err := options.RunTest()
+		output, err := options.RunTestConsistency()
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
 	}
