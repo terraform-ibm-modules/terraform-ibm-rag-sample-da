@@ -85,7 +85,7 @@ func TestRunBankingSolutions(t *testing.T) {
 			},
 		})
 
-		// Ignore updates
+		// Ignore updates - expected behaviour - as trying to update the ci/cd pipeline with the assistant ID in the subsequent applies.
 		options.IgnoreUpdates = testhelper.Exemptions{
 			List: []string{
 				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_cd",
@@ -93,7 +93,7 @@ func TestRunBankingSolutions(t *testing.T) {
 			},
 		}
 
-		// Ignore destroys
+		// Ignore destroys - using `always_run` in the code hence it tries to destroy and re-create following resources on the subsequent applies.
 		options.IgnoreDestroys = testhelper.Exemptions{
 			List: []string{
 				"null_resource.discovery_file_upload",
