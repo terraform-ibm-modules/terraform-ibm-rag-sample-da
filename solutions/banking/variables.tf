@@ -107,7 +107,7 @@ variable "create_secrets" {
   default     = true
 }
 
-variable "secrets_endpoint_type" {
+variable "secrets_manager_endpoint_type" {
   type        = string
   description = "The endpoint type to communicate with the provided secrets manager instance. Possible values are `public` or `private`"
   default     = "private"
