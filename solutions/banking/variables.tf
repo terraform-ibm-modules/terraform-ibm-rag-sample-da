@@ -107,6 +107,12 @@ variable "create_secrets" {
   default     = true
 }
 
+variable "secrets_endpoint_type" {
+  type        = string
+  description = "The endpoint type to communicate with the provided secrets manager instance. Possible values are `public` or `private`"
+  default     = "private"
+}
+
 variable "secrets_manager_guid" {
   description = "Secrets Manager GUID where the API key and signing key will be stored."
   type        = string

@@ -43,6 +43,7 @@ module "secrets_manager_secret_ibm_iam" {
   secret_description      = "IBM IAM Api key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_payload_password = var.ibmcloud_api_key
+  endpoint_type           = var.secrets_endpoint_type
 }
 
 # secrets manager secrets - IBM signing key
@@ -59,6 +60,7 @@ module "secrets_manager_secret_signing_key" {
   secret_description      = "IBM Signing GPG key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_payload_password = var.signing_key
+  endpoint_type           = var.secrets_endpoint_type
 }
 
 # secrets manager secrets - WATSONX ADMIN API KEY
@@ -75,6 +77,7 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   secret_description      = "WatsonX Admin API Key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_payload_password = var.watsonx_admin_api_key
+  endpoint_type           = var.secrets_endpoint_type
 }
 
 
