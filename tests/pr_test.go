@@ -82,7 +82,7 @@ func TestRunBankingSolutions(t *testing.T) {
 				"secrets_manager_region":                         region,
 				"signing_key":                                    terraform.Output(t, existingTerraformOptions, "signing_key"),
 				"trigger_ci_pipeline_run":                        false,
-				"secrets_endpoint_type":                          "public",
+				"secrets_manager_endpoint_type":                  "public",
 			},
 		})
 
