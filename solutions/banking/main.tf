@@ -23,7 +23,7 @@ module "cos" {
     ibm = ibm.ibm_resources
   }
   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-  version           = "8.2.6"
+  version           = "8.2.8"
   resource_group_id = module.resource_group.resource_group_id
   cos_instance_name = "${var.prefix}-rag-sample-app-cos"
   cos_plan          = "standard"
