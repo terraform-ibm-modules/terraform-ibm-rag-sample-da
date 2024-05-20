@@ -7,7 +7,7 @@ offerings:
     offering_id: c0e62838-544b-4d02-a946-e48cd5dd6fa0
     variations:
       - name: banking
-        mark_ready: true
+        mark_ready: false
         install_type: fullstack
         pre_validation: "tests/scripts/pre-validation.sh"
         post_validation: "tests/scripts/post-validation.sh"
