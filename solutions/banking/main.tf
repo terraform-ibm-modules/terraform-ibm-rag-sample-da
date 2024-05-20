@@ -23,7 +23,7 @@ module "cos" {
     ibm = ibm.ibm_resources
   }
   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-  version           = "8.2.6"
+  version           = "8.2.8"
   resource_group_id = module.resource_group.resource_group_id
   cos_instance_name = "${var.prefix}-rag-sample-app-cos"
   cos_plan          = "standard"
@@ -43,6 +43,7 @@ module "secrets_manager_secret_ibm_iam" {
   secret_description      = "IBM IAM Api key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_payload_password = var.ibmcloud_api_key
+  endpoint_type           = var.secrets_manager_endpoint_type
 }
 
 # secrets manager secrets - IBM signing key
@@ -59,6 +60,7 @@ module "secrets_manager_secret_signing_key" {
   secret_description      = "IBM Signing GPG key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_payload_password = var.signing_key
+  endpoint_type           = var.secrets_manager_endpoint_type
 }
 
 # secrets manager secrets - WATSONX ADMIN API KEY
@@ -75,6 +77,7 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   secret_description      = "WatsonX Admin API Key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_payload_password = var.watsonx_admin_api_key
+  endpoint_type           = var.secrets_manager_endpoint_type
 }
 
 
@@ -97,7 +100,7 @@ resource "ibm_resource_instance" "cd_instance" {
 # create watsonx.AI project
 module "configure_project" {
   watsonx_admin_api_key       = var.watsonx_admin_api_key != null ? var.watsonx_admin_api_key : var.ibmcloud_api_key
-  source                      = "github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//configure_project?ref=v0.5.8"
+  source                      = "github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//configure_project?ref=v1.0.2"
   watsonx_project_name        = "${var.prefix}-RAG-sample-project"
   watsonx_project_description = "WatsonX AI project for RAG pattern sample app"
   watsonx_project_tags        = ["watsonx-ai-SaaS", "RAG-sample-project"]
