@@ -6,15 +6,9 @@
       "product_kind": "solution",
       "tags": [],
       "keywords": [],
-      "short_description": "Configure Code Engine toolchains with variables provisioned in the earlier WatsonX DA",
-      "long_description": "This deployable architecture configures the previously deployed toolchain with WatsonX details",
-      "provider_name": "IBM Cloud FS",
-      "features": [
-        {
-          "title": "TITLE",
-          "description": "DESCRIPTION"
-        }
-      ],
+      "short_description": "Configures provided toolchain infrastructure and uploads PDF files to a Watson project, part of a larger automation workflow.",
+      "long_description": "This automation is a dependent component of a more comprehensive workflow, which can be found in the [Retrieval Augmented Generation Pattern](https://cloud.ibm.com/catalog/7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3/architecture/Retrieval_Augmented_Generation_Pattern-5fdd0045-30fc-4013-a8bc-6db9d5447a52-global) tile. \n\nFor a complete understanding of the automation process, please refer to the full workflow located in the [Retrieval Augmented Generation Pattern](https://cloud.ibm.com/catalog/7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3/architecture/Retrieval_Augmented_Generation_Pattern-5fdd0045-30fc-4013-a8bc-6db9d5447a52-global) tile, where you can find detailed information on the entire automation sequence.",
+      "provider_name": "IBM",
       "flavors": [
         {
           "label": "Banking Application",
