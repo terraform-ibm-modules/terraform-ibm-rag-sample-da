@@ -78,7 +78,7 @@ func TestRunBankingSolutions(t *testing.T) {
 				"watson_machine_learning_instance_crn":           terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"),
 				"watson_machine_learning_instance_guid":          terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_guid"),
 				"watson_machine_learning_instance_resource_name": terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
-				"secrets_manager_guid":                           terraform.Output(t, existingTerraformOptions, "secrets_manager_guid"),
+				"secrets_manager_guid":                           "79c6d411-c18f-4670-b009-b0044a238667", // Permanent Secrets Manager instance in the GEDEV account.
 				"secrets_manager_region":                         region,
 				"signing_key":                                    terraform.Output(t, existingTerraformOptions, "signing_key"),
 				"trigger_ci_pipeline_run":                        false,
