@@ -3,6 +3,9 @@ package test
 
 import (
 	"fmt"
+	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/cloudinfo"
+	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
+	"log"
 	"os"
 	"strings"
 	"testing"
@@ -19,6 +22,26 @@ import (
 
 const bankingSolutionsDir = "solutions/banking"
 const region = "us-south" // Binding all the resources to the us-south location.
+
+// Define a struct with fields that match the structure of the YAML data
+const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
+
+var permanentResources map[string]interface{}
+
+var sharedInfoSvc *cloudinfo.CloudInfoService
+
+// TestMain will be run before any parallel tests, used to read data from yaml for use with tests
+func TestMain(m *testing.M) {
+	sharedInfoSvc, _ = cloudinfo.NewCloudInfoServiceFromEnv("TF_VAR_ibmcloud_api_key", cloudinfo.CloudInfoServiceOptions{})
+
+	var err error
+	permanentResources, err = common.LoadMapFromYaml(yamlLocation)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	os.Exit(m.Run())
+}
 
 func TestRunBankingSolutions(t *testing.T) {
 	t.Parallel()
@@ -78,7 +101,7 @@ func TestRunBankingSolutions(t *testing.T) {
 				"watson_machine_learning_instance_crn":           terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"),
 				"watson_machine_learning_instance_guid":          terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_guid"),
 				"watson_machine_learning_instance_resource_name": terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
-				"secrets_manager_guid":                           "79c6d411-c18f-4670-b009-b0044a238667", // Permanent Secrets Manager instance in the GEDEV account.
+				"secrets_manager_guid":                           permanentResources["secretsManagerGuid"],
 				"secrets_manager_region":                         region,
 				"signing_key":                                    terraform.Output(t, existingTerraformOptions, "signing_key"),
 				"trigger_ci_pipeline_run":                        false,
