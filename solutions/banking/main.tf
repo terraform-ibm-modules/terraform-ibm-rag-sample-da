@@ -183,24 +183,26 @@ resource "null_resource" "discovery_file_upload" {
 }
 
 # assistant creation
-resource "null_resource" "assistant_project_creation" {
-  triggers = {
-    always_run = timestamp()
+resource "shell_script" "watson_assistant" {
+  lifecycle_commands {
+    create = file("${path.module}/watson-scripts/assistant-create.sh")
+    delete = file("${path.module}/watson-scripts/assistant-destroy.sh")
+    read   = file("${path.module}/watson-scripts/assistant-read.sh")
+    update = file("${path.module}/watson-scripts/assistant-create.sh")
   }
 
-  provisioner "local-exec" {
-    command     = "${path.module}/watson-scripts/assistant-project-creation.sh \"${local.watsonx_assistant_url}\""
-    interpreter = ["/bin/bash", "-c"]
-    quiet       = true
-    environment = {
-      IAM_TOKEN = local.sensitive_tokendata
-    }
+  environment = {
+    WATSON_ASSISTANT_URL = local.watsonx_assistant_url
+  }
+
+  sensitive_environment = {
+    API_KEY = var.ibmcloud_api_key
   }
 }
 
 # get assistant integration ID
 data "external" "assistant_get_integration_id" {
-  depends_on = [null_resource.assistant_project_creation]
+  depends_on = [shell_script.watson_assistant]
   program    = ["bash", "${path.module}/watson-scripts/assistant-get-integration-id.sh"]
   query = {
     tokendata            = local.sensitive_tokendata

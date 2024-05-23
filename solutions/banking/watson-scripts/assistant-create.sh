@@ -2,16 +2,8 @@
 
 set -e
 
-WATSON_ASSISTANT_URL=$1
 project_name="gen-ai-rag-sample-app-assistant"
-
-# Expects the environment variable $IBMCLOUD_API_KEY to be set
-if [[ -z "${IAM_TOKEN}" ]]; then
-    echo "API key must be set with IAM_TOKEN environment variable" >&2
-    exit 1
-fi
-
-token="$(echo "$IAM_TOKEN" | awk '{print $2}')"
+token=$(curl -fLsS -X POST 'https://iam.cloud.ibm.com/identity/token' -H 'Content-Type: application/x-www-form-urlencoded' -d "grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=$API_KEY" | jq -r '.access_token')
 
 ASSISTANT_ID=$(curl --retry 3 -fLsS -X GET --location "$WATSON_ASSISTANT_URL/v2/assistants?version=2023-06-15" \
     --header "Authorization: Bearer $token" \
