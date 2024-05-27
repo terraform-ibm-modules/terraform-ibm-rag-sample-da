@@ -10,7 +10,7 @@ DA_DIR="solutions/banking"
 TERRAFORM_SOURCE_DIR="tests/resources/existing-resources"
 JSON_FILE="${DA_DIR}/catalogValidationValues.json"
 REGION="us-south"
-FILE_PATH="../../../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
+FILE_PATH="common-dev-assets/common-go-assets/common-permanent-resources.yaml"
 SECRETS_MANAGER_GUID=$(yq e '.secretsManagerGuid' "$FILE_PATH")
 PREFIX="rag-da-$(openssl rand -hex 2)"
 TF_VARS_FILE="terraform.tfvars"
@@ -26,7 +26,7 @@ TF_VARS_FILE="terraform.tfvars"
     echo "region=\"${REGION}\""
     echo "prefix=\"${PREFIX}\""
   } >> ${TF_VARS_FILE}
-    terraform apply -input=false -auto-approve -var-file=${TF_VARS_FILE} || exit 1
+  terraform apply -input=false -auto-approve -var-file=${TF_VARS_FILE} || exit 1
 
   prefix_var_name="prefix"
   resource_group_name_var_name="resource_group_name"
