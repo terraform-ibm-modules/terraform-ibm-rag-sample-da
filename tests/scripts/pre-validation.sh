@@ -10,7 +10,8 @@ DA_DIR="solutions/banking"
 TERRAFORM_SOURCE_DIR="tests/resources/existing-resources"
 JSON_FILE="${DA_DIR}/catalogValidationValues.json"
 REGION="us-south"
-SECRETS_MANAGER_GUID=$(curl -X GET --retry 3 -fLsS https://raw.githubusercontent.com/terraform-ibm-modules/common-dev-assets/main/common-go-assets/common-permanent-resources.yaml | yq e '.secretsManagerGuid')
+FILE_PATH="../../../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
+SECRETS_MANAGER_GUID=$(yq e '.secretsManagerGuid' "$FILE_PATH")
 PREFIX="rag-da-$(openssl rand -hex 2)"
 TF_VARS_FILE="terraform.tfvars"
 
