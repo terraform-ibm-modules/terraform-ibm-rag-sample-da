@@ -10,6 +10,8 @@ DA_DIR="solutions/banking"
 TERRAFORM_SOURCE_DIR="tests/resources/existing-resources"
 JSON_FILE="${DA_DIR}/catalogValidationValues.json"
 REGION="us-south"
+FILE_PATH="common-dev-assets/common-go-assets/common-permanent-resources.yaml"
+SECRETS_MANAGER_GUID=$(yq e '.secretsManagerGuid' "$FILE_PATH")
 PREFIX="rag-da-$(openssl rand -hex 2)"
 TF_VARS_FILE="terraform.tfvars"
 
@@ -57,7 +59,6 @@ TF_VARS_FILE="terraform.tfvars"
   watson_machine_learning_instance_resource_name_value=$(terraform output -state=terraform.tfstate -raw watson_machine_learning_instance_resource_name)
   use_existing_resource_group_value=true
   create_continuous_delivery_service_instance_value=false
-  secrets_manager_guid_value=$(terraform output -state=terraform.tfstate -raw secrets_manager_guid)
   signing_key_value=$(terraform output -state=terraform.tfstate -raw signing_key)
   trigger_ci_pipeline_run_value=false
 
@@ -97,7 +98,7 @@ TF_VARS_FILE="terraform.tfvars"
         --arg secrets_manager_guid_var_name "${secrets_manager_guid_var_name}" \
         --arg secrets_manager_region_var_name "${secrets_manager_region_var_name}" \
         --arg secrets_manager_region_value "${REGION}" \
-        --arg secrets_manager_guid_value "${secrets_manager_guid_value}" \
+        --arg secrets_manager_guid_value "${SECRETS_MANAGER_GUID}" \
         --arg signing_key_var_name "${signing_key_var_name}" \
         --arg signing_key_value "${signing_key_value}" \
         --arg trigger_ci_pipeline_run_var_name "${trigger_ci_pipeline_run_var_name}" \

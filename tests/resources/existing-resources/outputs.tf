@@ -48,11 +48,6 @@ output "resource_group_name" {
   description = "Resource group name."
 }
 
-output "secrets_manager_guid" {
-  value       = module.secrets_manager.secrets_manager_guid
-  description = "GUID of Secrets Manager instance."
-}
-
 output "signing_key" {
   value       = local.signing_key_payload
   sensitive   = true
