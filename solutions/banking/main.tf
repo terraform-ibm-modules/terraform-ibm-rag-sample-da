@@ -46,6 +46,13 @@ module "secrets_manager_secret_ibm_iam" {
   endpoint_type           = var.secrets_manager_endpoint_type
 }
 
+# generate signing key if it is not provided.
+resource "tls_private_key" "tls_key_pair" {
+  count     = var.signing_key == null ? 1 : 0
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
 # secrets manager secrets - IBM signing key
 module "secrets_manager_secret_signing_key" {
   providers = {
@@ -59,7 +66,7 @@ module "secrets_manager_secret_signing_key" {
   secret_name             = "signing-key"
   secret_description      = "IBM Signing GPG key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
-  secret_payload_password = var.signing_key
+  secret_payload_password = var.signing_key == null ? tls_private_key.tls_key_pair[0].private_key_pem : var.signing_key
   endpoint_type           = var.secrets_manager_endpoint_type
 }
 
