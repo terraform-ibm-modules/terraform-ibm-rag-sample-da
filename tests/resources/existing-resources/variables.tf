@@ -20,9 +20,3 @@ variable "region" {
   description = "Region where resources are deployed"
   type        = string
 }
-
-variable "sm_service_plan" {
-  type        = string
-  description = "The Secrets Manager service plan to provision"
-  default     = "trial"
-}
