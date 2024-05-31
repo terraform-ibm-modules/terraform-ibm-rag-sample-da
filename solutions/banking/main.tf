@@ -194,12 +194,12 @@ resource "shell_script" "watson_assistant" {
     WATSON_ASSISTANT_API_VERSION = "2023-06-15"
     WATSON_ASSISTANT_DESCRIPTION = "Generative AI sample app assistant"
     WATSON_ASSISTANT_LANGUAGE    = "en"
-    WATSON_ASSISTANT_NAME        = "gen-ai-rag-sample-app-assistant"
+    WATSON_ASSISTANT_NAME        = var.prefix != "" ? "${var.prefix}-gen-ai-rag-sample-app-assistant" : "gen-ai-rag-sample-app-assistant"
     WATSON_ASSISTANT_URL         = local.watsonx_assistant_url
   }
 
   sensitive_environment = {
-    API_KEY = var.ibmcloud_api_key
+    IBMCLOUD_API_KEY = var.ibmcloud_api_key
   }
 }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-token=$(curl -fLsS -X POST 'https://iam.cloud.ibm.com/identity/token' -H 'Content-Type: application/x-www-form-urlencoded' -d "grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=$API_KEY" | jq -r '.access_token')
+token=$(curl -fLsS -X POST 'https://iam.cloud.ibm.com/identity/token' -H 'Content-Type: application/x-www-form-urlencoded' -d "grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=$IBMCLOUD_API_KEY" | jq -r '.access_token')
 
 OUTPUT=$(curl --retry 3 -fLsS -X POST --location "$WATSON_ASSISTANT_URL/v2/assistants?version=$WATSON_ASSISTANT_API_VERSION" \
     --header "Authorization: Bearer $token" \
