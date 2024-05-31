@@ -25,7 +25,7 @@ output "cos_instance_crn" {
 
 output "watsonx_assistant_integration_id" {
   description = "WatsonX assistant integration ID."
-  value       = data.external.assistant_get_integration_id.result.assistant_integration_id
+  value       = shell_script.watson_assistant.output["assistant_integration_id"]
 }
 
 output "watson_discovery_project_id" {

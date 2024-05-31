@@ -188,25 +188,18 @@ resource "shell_script" "watson_assistant" {
     create = file("${path.module}/watson-scripts/assistant-create.sh")
     delete = file("${path.module}/watson-scripts/assistant-destroy.sh")
     read   = file("${path.module}/watson-scripts/assistant-read.sh")
-    update = file("${path.module}/watson-scripts/assistant-create.sh")
   }
 
   environment = {
-    WATSON_ASSISTANT_URL = local.watsonx_assistant_url
+    WATSON_ASSISTANT_API_VERSION = "2023-06-15"
+    WATSON_ASSISTANT_DESCRIPTION = "Generative AI sample app assistant"
+    WATSON_ASSISTANT_LANGUAGE    = "en"
+    WATSON_ASSISTANT_NAME        = "gen-ai-rag-sample-app-assistant"
+    WATSON_ASSISTANT_URL         = local.watsonx_assistant_url
   }
 
   sensitive_environment = {
     API_KEY = var.ibmcloud_api_key
-  }
-}
-
-# get assistant integration ID
-data "external" "assistant_get_integration_id" {
-  depends_on = [shell_script.watson_assistant]
-  program    = ["bash", "${path.module}/watson-scripts/assistant-get-integration-id.sh"]
-  query = {
-    tokendata            = local.sensitive_tokendata
-    watson_assistant_url = local.watsonx_assistant_url
   }
 }
 
@@ -249,21 +242,21 @@ resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property
 # Update CI pipeline with Assistant integration ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_ci" {
   provider    = ibm.ibm_resources
-  depends_on  = [data.external.assistant_get_integration_id]
+  depends_on  = [shell_script.watson_assistant]
   name        = "watsonx_assistant_integration_id"
   pipeline_id = var.ci_pipeline_id
   type        = "text"
-  value       = data.external.assistant_get_integration_id.result.assistant_integration_id
+  value       = shell_script.watson_assistant.output["assistant_integration_id"]
 }
 
 # Update CD pipeline with Assistant integration ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_cd" {
   provider    = ibm.ibm_resources
-  depends_on  = [data.external.assistant_get_integration_id]
+  depends_on  = [shell_script.watson_assistant]
   name        = "watsonx_assistant_integration_id"
   pipeline_id = var.cd_pipeline_id
   type        = "text"
-  value       = data.external.assistant_get_integration_id.result.assistant_integration_id
+  value       = shell_script.watson_assistant.output["assistant_integration_id"]
 }
 
 # Random string for webhook token
