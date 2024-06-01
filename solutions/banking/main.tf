@@ -23,7 +23,7 @@ module "cos" {
     ibm = ibm.ibm_resources
   }
   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-  version           = "8.2.8"
+  version           = "8.2.12"
   resource_group_id = module.resource_group.resource_group_id
   cos_instance_name = "${var.prefix}-rag-sample-app-cos"
   cos_plan          = "standard"
@@ -100,7 +100,7 @@ resource "ibm_resource_instance" "cd_instance" {
 # create watsonx.AI project
 module "configure_project" {
   watsonx_admin_api_key       = var.watsonx_admin_api_key != null ? var.watsonx_admin_api_key : var.ibmcloud_api_key
-  source                      = "github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//configure_project?ref=v1.0.2"
+  source                      = "github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//configure_project?ref=v1.0.6"
   watsonx_project_name        = "${var.prefix}-RAG-sample-project"
   watsonx_project_description = "WatsonX AI project for RAG pattern sample app"
   watsonx_project_tags        = ["watsonx-ai-SaaS", "RAG-sample-project"]
