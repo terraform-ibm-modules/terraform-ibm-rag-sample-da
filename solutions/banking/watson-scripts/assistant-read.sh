@@ -7,7 +7,7 @@ token=$(curl -fLsS -X POST 'https://iam.cloud.ibm.com/identity/token' -H 'Conten
 IN=$(cat)
 EXISTING_ASSISTANT_ID=$(echo "$IN" | jq -r .assistant_id)
 
-OUTPUT=$(curl -X GET --location "$WATSON_ASSISTANT_URL/v2/assistants?version=$WATSON_ASSISTANT_API_VERSION" \
+OUTPUT=$(curl -X GET --retry 3 -fLsS --location "$WATSON_ASSISTANT_URL/v2/assistants?version=$WATSON_ASSISTANT_API_VERSION" \
   --header "Authorization: Bearer $token" \
   --header "Content-Type: application/json" | jq -r '.assistants[] | select(.assistant_id == "'"$EXISTING_ASSISTANT_ID"'")')
 
@@ -18,7 +18,7 @@ fi
 ASSISTANT_ID=$(echo "$OUTPUT" | jq -r '.assistant_id')
 ENVIRONMENT_ID=$(echo "$OUTPUT" | jq -r '.assistant_environments[] | select(.environment == "draft") | .environment_id')
 
-INTEGRATION_ID=$(curl -X GET -retry 3 -flsS --location "$WATSON_ASSISTANT_URL/v2/assistants/$ASSISTANT_ID/environments/$ENVIRONMENT_ID?version=$WATSON_ASSISTANT_API_VERSION" \
+INTEGRATION_ID=$(curl -X GET --retry 3 -flsS --location "$WATSON_ASSISTANT_URL/v2/assistants/$ASSISTANT_ID/environments/$ENVIRONMENT_ID?version=$WATSON_ASSISTANT_API_VERSION" \
     --header "Authorization: Bearer $token" \
     --header "Content-Type: application/json" \
     | jq -r '.integration_references[] | select(.type == "web_chat") | .integration_id ')
