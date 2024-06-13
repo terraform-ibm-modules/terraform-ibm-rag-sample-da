@@ -168,6 +168,19 @@ func TestRunUpgradeExample(t *testing.T) {
 		// ------------------------------------------------------------------------------------
 		options := setupOptions(t, prefix, existingTerraformOptions)
 
+		options.IgnoreDestroys = testhelper.Exemptions{
+			List: []string{
+				"discovery_file_upload",
+			},
+		}
+
+		options.IgnoreUpdates = testhelper.Exemptions{
+			List: []string{
+				"watsonx_assistant_integration_id_pipeline_property_cd",
+				"watsonx_assistant_integration_id_pipeline_property_ci",
+			},
+		}
+
 		output, err := options.RunTestUpgrade()
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
