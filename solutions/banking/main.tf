@@ -284,6 +284,7 @@ resource "ibm_cd_tekton_pipeline_trigger" "ci_pipeline_webhook" {
 
 # Ensure webhook trigger runs against correct git branch
 resource "ibm_cd_tekton_pipeline_trigger_property" "ci_pipeline_webhook_branch_property" {
+  provider    = ibm.ibm_resources
   depends_on  = [ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook]
   name        = "branch"
   pipeline_id = var.ci_pipeline_id
