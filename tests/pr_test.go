@@ -170,14 +170,14 @@ func TestRunUpgradeExample(t *testing.T) {
 
 		options.IgnoreDestroys = testhelper.Exemptions{
 			List: []string{
-				"discovery_file_upload",
+				"null_resource.discovery_file_upload",
 			},
 		}
 
 		options.IgnoreUpdates = testhelper.Exemptions{
 			List: []string{
-				"watsonx_assistant_integration_id_pipeline_property_cd",
-				"watsonx_assistant_integration_id_pipeline_property_ci",
+				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_cd",
+				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci",
 			},
 		}
 
