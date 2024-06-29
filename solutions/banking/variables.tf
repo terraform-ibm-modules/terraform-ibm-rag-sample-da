@@ -96,9 +96,21 @@ variable "watson_machine_learning_instance_resource_name" {
 }
 
 variable "signing_key" {
-  description = "Signing GPG key."
+  description = "Signing GPG key. If it is not provided by the user, then automation will create one."
   type        = string
   sensitive   = true
+}
+
+variable "gpg_name" {
+  type        = string
+  description = "The name to be associated with the GPG key."
+  default     = "IBMer"
+}
+
+variable "gpg_email" {
+  type        = string
+  description = "The email address associated with the GPG key."
+  default     = "ibmer@ibm.com"
 }
 
 variable "create_secrets" {
