@@ -15,7 +15,7 @@ output "watsonx_assistant_api_url" {
 
 output "watson_discovery_api_url" {
   description = "Watson Discovery URL."
-  value       = "https:${local.watsonx_discovery_url}"
+  value       = "https:${local.watson_discovery_url}"
 }
 
 output "cos_instance_crn" {
