@@ -1,8 +1,8 @@
 locals {
   watsonx_assistant_url            = "https://api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
   watson_discovery_url             = "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}"
-  watson_discovery_project_name    = var.prefix != "" ? "${var.prefix}-gen-ai-rag-sample-app-project" : "gen-ai-rag-sample-app-project"
-  watson_discovery_collection_name = var.prefix != "" ? "${var.prefix}-gen-ai-rag-sample-app-data" : "gen-ai-rag-sample-app-data"
+  watson_discovery_project_name    = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-project" : "gen-ai-rag-sample-app-project"
+  watson_discovery_collection_name = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-data" : "gen-ai-rag-sample-app-data"
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 }
 
