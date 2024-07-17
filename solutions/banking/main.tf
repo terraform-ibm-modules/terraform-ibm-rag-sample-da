@@ -1,7 +1,7 @@
 locals {
   use_watson_discovery = (var.watson_discovery_instance_id != null) ? true : false
   use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null) ? true : false
-  use_elastic_index = (var.elastic_instance_id != null) ? true : false
+  use_elastic_index = (var.elastic_instance_crn != null) ? true : false
 
   watsonx_assistant_url            = "https://api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
   watson_discovery_url             = local.use_watson_discovery ? "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}" : null
@@ -9,6 +9,8 @@ locals {
   watson_discovery_collection_name = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-data" : "gen-ai-rag-sample-app-data"
   watson_ml_project_name           = var.prefix != null ? "${var.prefix}-RAG-sample-project" : "RAG-sample-project"
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
+
+  elastic_index_name = var.prefix != null ? "${var.prefix}-${var.elastic_index_name}" : var.elastic_index_name
 
   cd_instance = var.create_continuous_delivery_service_instance ? ibm_resource_instance.cd_instance : null
 }
@@ -108,7 +110,7 @@ module "configure_wml_project" {
   watson_ml_project_name      = local.watson_ml_project_name
   resource_group_id           = module.resource_group.resource_group_id
   cos_instance_name           = "${var.prefix}-rag-sample-app-cos"
-  location = var.watson_discovery_region
+  location = var.watson_discovery_region  # WatsonX services needs to be in the same region anyway
 }
 
 moved {
@@ -150,6 +152,20 @@ moved {
 moved {
   from = null_resource.discovery_file_upload
   to = module.configure_discovery_project[0].null_resource.discovery_file_upload
+}
+
+# Elastic index creation
+module "configure_elastic_index" {
+  providers = {
+    ibm = ibm.ibm_resources
+  }
+  count = local.use_elastic_index ? 1 : 0
+  source = "./modules/elastic-index"
+  elastic_credentials_name = var.elastic_credentials_name
+  elastic_index_name = local.elastic_index_name
+  elastic_instance_crn = var.elastic_instance_crn
+  sensitive_tokendata = local.sensitive_tokendata
+  depends_on = [ data.ibm_iam_auth_token.tokendata ]
 }
 
 # assistant creation

@@ -35,3 +35,8 @@ provider "restapi" {
     Content-Type  = "application/json"
   }
 }
+
+provider "shell" {
+    interpreter = ["/bin/bash", "-c"]
+    enable_parallelism = false
+}

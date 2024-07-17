@@ -100,8 +100,8 @@ variable "watson_machine_learning_instance_resource_name" {
   default     = null   # WML usage is optional, elastic can be used instead
 }
 
-variable "elastic_instance_id" {
-  description = "Elastic ICD instance ID"
+variable "elastic_instance_crn" {
+  description = "Elastic ICD instance CRN"
   type        = string
   default     = null   # Elastic usage is optional
 }
