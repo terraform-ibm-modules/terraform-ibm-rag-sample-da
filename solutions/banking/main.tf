@@ -1,9 +1,16 @@
 locals {
+  use_watson_discovery = (var.watson_discovery_instance_id != null) ? true : false
+  use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null) ? true : false
+  use_elastic_index = (var.elastic_instance_id != null) ? true : false
+
   watsonx_assistant_url            = "https://api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
-  watson_discovery_url             = "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}"
+  watson_discovery_url             = local.use_watson_discovery ? "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}" : null
   watson_discovery_project_name    = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-project" : "gen-ai-rag-sample-app-project"
   watson_discovery_collection_name = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-data" : "gen-ai-rag-sample-app-data"
+  watson_ml_project_name           = var.prefix != null ? "${var.prefix}-RAG-sample-project" : "RAG-sample-project"
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
+
+  cd_instance = var.create_continuous_delivery_service_instance ? ibm_resource_instance.cd_instance : null
 }
 
 data "ibm_iam_auth_token" "tokendata" {}
@@ -17,18 +24,6 @@ module "resource_group" {
   version                      = "1.1.5"
   resource_group_name          = var.use_existing_resource_group == false ? var.resource_group_name : null
   existing_resource_group_name = var.use_existing_resource_group == true ? var.resource_group_name : null
-}
-
-# create COS instance for WatsonX.AI project
-module "cos" {
-  providers = {
-    ibm = ibm.ibm_resources
-  }
-  source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-  version           = "8.3.2"
-  resource_group_id = module.resource_group.resource_group_id
-  cos_instance_name = "${var.prefix}-rag-sample-app-cos"
-  cos_plan          = "standard"
 }
 
 # secrets manager secrets - IBM IAM API KEY
@@ -99,89 +94,62 @@ resource "ibm_resource_instance" "cd_instance" {
   resource_group_id = data.ibm_resource_group.toolchain_resource_group_id.id
 }
 
-# create watsonx.AI project
-module "configure_project" {
+module "configure_wml_project" {
+  providers = {
+    ibm.ibm_resources = ibm.ibm_resources
+    restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
+  }
+  count = local.use_watson_machine_learning ? 1 : 0
+  source                      = "./modules/watson-machine-learning"
   watsonx_admin_api_key       = var.watsonx_admin_api_key != null ? var.watsonx_admin_api_key : var.ibmcloud_api_key
-  source                      = "github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//configure_project?ref=v1.0.9"
-  watsonx_project_name        = "${var.prefix}-RAG-sample-project"
-  watsonx_project_description = "WatsonX AI project for RAG pattern sample app"
-  watsonx_project_tags        = ["watsonx-ai-SaaS", "RAG-sample-project"]
-  machine_learning_guid       = var.watson_machine_learning_instance_guid
-  machine_learning_crn        = var.watson_machine_learning_instance_crn
-  machine_learning_name       = var.watson_machine_learning_instance_resource_name
-  cos_guid                    = module.cos.cos_instance_guid
-  cos_crn                     = module.cos.cos_instance_crn
+  watson_ml_instance_guid     = var.watson_machine_learning_instance_guid
+  watson_ml_instance_crn      = var.watson_machine_learning_instance_crn
+  watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
+  watson_ml_project_name      = local.watson_ml_project_name
+  resource_group_id           = module.resource_group.resource_group_id
+  cos_instance_name           = "${var.prefix}-rag-sample-app-cos"
+  location = var.watson_discovery_region
+}
+
+moved {
+  from = module.configure_project
+  to = module.configure_wml_project[0].module.watson_ml_project
+}
+
+moved {
+  from = module.configure_project.restapi_object.configure_project[0]
+  to = module.configure_wml_project[0].restapi_object.configure_project
+}
+
+moved {
+  from = module.cos.module.cos_instance[0].ibm_resource_instance.cos_instance[0]
+  to = module.configure_wml_project[0].module.cos.module.cos_instance[0].ibm_resource_instance.cos_instance[0]
 }
 
 # Discovery project creation
-resource "restapi_object" "configure_discovery_project" {
-  depends_on     = [data.ibm_iam_auth_token.tokendata]
-  path           = local.watson_discovery_url
-  read_path      = "${local.watson_discovery_url}/v2/projects/{id}?version=2023-03-31"
-  read_method    = "GET"
-  create_path    = "${local.watson_discovery_url}/v2/projects?version=2023-03-31"
-  create_method  = "POST"
-  id_attribute   = "project_id"
-  destroy_method = "DELETE"
-  destroy_path   = "${local.watson_discovery_url}/v2/projects/{id}?version=2023-03-31"
-  data           = <<-EOT
-                  {
-                    "name": "${local.watson_discovery_project_name}",
-                    "type": "document_retrieval"
-                  }
-                  EOT
-  update_method  = "POST"
-  update_path    = "${local.watson_discovery_url}/v2/projects/{id}?version=2023-03-31"
-  update_data    = <<-EOT
-                  {
-                    "name": "${local.watson_discovery_project_name}",
-                    "type": "document_retrieval"
-                  }
-                  EOT
+module "configure_discovery_project" {
+  count = local.use_watson_discovery ? 1 : 0
+  source = "./modules/watson-discovery"
+  watson_discovery_url = local.watson_discovery_url
+  watson_discovery_project_name = local.watson_discovery_project_name
+  watson_discovery_collection_name = local.watson_discovery_collection_name
+  watson_discovery_collection_artifacts_path = "${path.module}/artifacts/WatsonDiscovery"
+  sensitive_tokendata = local.sensitive_tokendata
+  depends_on = [ data.ibm_iam_auth_token.tokendata ]
 }
 
-# Discovery collection creation
-resource "restapi_object" "configure_discovery_collection" {
-  depends_on     = [data.ibm_iam_auth_token.tokendata, restapi_object.configure_discovery_project]
-  path           = local.watson_discovery_url
-  read_path      = "${local.watson_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections/{id}?version=2023-03-31"
-  read_method    = "GET"
-  create_path    = "${local.watson_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections?version=2023-03-31"
-  create_method  = "POST"
-  id_attribute   = "collection_id"
-  destroy_method = "DELETE"
-  destroy_path   = "${local.watson_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections/{id}?version=2023-03-31"
-  data           = <<-EOT
-                  {
-                    "name": "${local.watson_discovery_collection_name}",
-                    "description": "Sample data"
-                  }
-                  EOT
-  update_method  = "POST"
-  update_path    = "${local.watson_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections/{id}?version=2023-03-31"
-  update_data    = <<-EOT
-                  {
-                    "name": "${local.watson_discovery_collection_name}",
-                    "description": "Sample data"
-                  }
-                  EOT
+moved {
+  from = restapi_object.configure_discovery_project
+  to = module.configure_discovery_project[0].restapi_object.configure_discovery_project
+}
+moved {
+  from = restapi_object.configure_discovery_collection
+  to = module.configure_discovery_project[0].restapi_object.configure_discovery_collection
 }
 
-# discovery file upload
-resource "null_resource" "discovery_file_upload" {
-  depends_on = [restapi_object.configure_discovery_collection]
-  triggers = {
-    always_run = timestamp()
-  }
-
-  provisioner "local-exec" {
-    command     = "${path.module}/watson-scripts/discovery-file-upload.sh \"https:${local.watson_discovery_url}\" \"${restapi_object.configure_discovery_project.id}\" \"${restapi_object.configure_discovery_collection.id}\" \"${path.module}/artifacts/WatsonDiscovery\" "
-    interpreter = ["/bin/bash", "-c"]
-    quiet       = true
-    environment = {
-      IAM_TOKEN = local.sensitive_tokendata
-    }
-  }
+moved {
+  from = null_resource.discovery_file_upload
+  to = module.configure_discovery_project[0].null_resource.discovery_file_upload
 }
 
 # assistant creation
@@ -203,10 +171,19 @@ resource "shell_script" "watson_assistant" {
   sensitive_environment = {
     IBMCLOUD_API_KEY = var.ibmcloud_api_key
   }
+  
+  # Change in apikey should not trigger assistant re-create
+  lifecycle {
+    ignore_changes = [ sensitive_environment ]
+  }
 }
+
+### Make all pipeline properties dependent on CD instance 
+### to avoid errors when the toolchains are out of grace period
 
 # Update CI pipeline with Assistant instance ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_property_ci" {
+  depends_on  = [local.cd_instance]  
   provider    = ibm.ibm_resources
   name        = "watsonx_assistant_id"
   pipeline_id = var.ci_pipeline_id
@@ -216,6 +193,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
 
 # Update CD pipeline with Assistant instance ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_property_cd" {
+  depends_on  = [local.cd_instance]  
   provider    = ibm.ibm_resources
   name        = "watsonx_assistant_id"
   pipeline_id = var.cd_pipeline_id
@@ -225,6 +203,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
 
 # Update CI pipeline with app flavor
 resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property_ci" {
+  depends_on  = [local.cd_instance]  
   provider    = ibm.ibm_resources
   name        = "app-flavor"
   pipeline_id = var.ci_pipeline_id
@@ -234,6 +213,7 @@ resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property
 
 # Update CD pipeline with app flavor
 resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property_cd" {
+  depends_on  = [local.cd_instance]  
   provider    = ibm.ibm_resources
   name        = "app-flavor"
   pipeline_id = var.cd_pipeline_id
@@ -244,7 +224,7 @@ resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property
 # Update CI pipeline with Assistant integration ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_ci" {
   provider    = ibm.ibm_resources
-  depends_on  = [shell_script.watson_assistant]
+  depends_on  = [shell_script.watson_assistant, local.cd_instance]
   name        = "watsonx_assistant_integration_id"
   pipeline_id = var.ci_pipeline_id
   type        = "text"
@@ -254,7 +234,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pip
 # Update CD pipeline with Assistant integration ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_cd" {
   provider    = ibm.ibm_resources
-  depends_on  = [shell_script.watson_assistant]
+  depends_on  = [shell_script.watson_assistant, local.cd_instance]
   name        = "watsonx_assistant_integration_id"
   pipeline_id = var.cd_pipeline_id
   type        = "text"
@@ -271,7 +251,7 @@ resource "random_string" "webhook_secret" {
 # Create webhook for CI pipeline
 resource "ibm_cd_tekton_pipeline_trigger" "ci_pipeline_webhook" {
   provider       = ibm.ibm_resources
-  depends_on     = [random_string.webhook_secret]
+  depends_on     = [random_string.webhook_secret, local.cd_instance]
   type           = "generic"
   pipeline_id    = var.ci_pipeline_id
   name           = "rag-webhook-trigger"
@@ -287,7 +267,7 @@ resource "ibm_cd_tekton_pipeline_trigger" "ci_pipeline_webhook" {
 # Ensure webhook trigger runs against correct git branch
 resource "ibm_cd_tekton_pipeline_trigger_property" "ci_pipeline_webhook_branch_property" {
   provider    = ibm.ibm_resources
-  depends_on  = [ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook]
+  depends_on  = [ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook, local.cd_instance]
   name        = "branch"
   pipeline_id = var.ci_pipeline_id
   trigger_id  = ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook.trigger_id
@@ -298,6 +278,7 @@ resource "ibm_cd_tekton_pipeline_trigger_property" "ci_pipeline_webhook_branch_p
 # Create git trigger for CD pipeline - to run inventory promotion once CI pipeline is complete
 resource "ibm_cd_tekton_pipeline_trigger" "cd_pipeline_inventory_promotion_trigger" {
   provider       = ibm.ibm_resources
+  depends_on  = [local.cd_instance]  
   count          = var.inventory_repo_url != null ? 1 : 0
   type           = "scm"
   pipeline_id    = var.cd_pipeline_id
