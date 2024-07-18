@@ -1,0 +1,25 @@
+{
+    "search_settings": {
+        "messages": {
+            "error": "I might have information related to your query to share, but am unable to connect to my knowledge base at the moment",
+            "success": "I searched my knowledge base and found this information which might be useful",
+            "no_result": "I searched my knowledge base, but did not find anything related to your query"
+        },
+        "schema_mapping": {
+            "url": "source",
+            "body": "text",
+            "title": "title"
+        },
+        "elastic_search": {
+            "url": "https://xxx.databases.appdomain.cloud:####",
+            "port": "",
+            "username": "",
+            "password": "",
+            "index": ""
+        },
+        "conversational_search": {
+            "enabled": true,
+            "citations_title": "How do we know?"
+        }
+    }
+}

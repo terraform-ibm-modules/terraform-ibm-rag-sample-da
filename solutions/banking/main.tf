@@ -3,7 +3,7 @@ locals {
   use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null) ? true : false
   use_elastic_index = (var.elastic_instance_crn != null) ? true : false
 
-  watsonx_assistant_url            = "https://api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
+  watsonx_assistant_url            = "//api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
   watson_discovery_url             = local.use_watson_discovery ? "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}" : null
   watson_discovery_project_name    = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-project" : "gen-ai-rag-sample-app-project"
   watson_discovery_collection_name = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-data" : "gen-ai-rag-sample-app-data"
@@ -169,30 +169,24 @@ module "configure_elastic_index" {
   depends_on = [ data.ibm_iam_auth_token.tokendata ]
 }
 
-# assistant creation
-resource "shell_script" "watson_assistant" {
-  lifecycle_commands {
-    create = file("${path.module}/watson-scripts/assistant-create.sh")
-    delete = file("${path.module}/watson-scripts/assistant-destroy.sh")
-    read   = file("${path.module}/watson-scripts/assistant-read.sh")
+# Elastic index creation
+module "configure_watson_assistant" {
+  providers = {
+    ibm.ibm_resources = ibm.ibm_resources
+    restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-
-  environment = {
-    WATSON_ASSISTANT_API_VERSION = "2023-06-15"
-    WATSON_ASSISTANT_DESCRIPTION = "Generative AI sample app assistant"
-    WATSON_ASSISTANT_LANGUAGE    = "en"
-    WATSON_ASSISTANT_NAME        = var.prefix != "" ? "${var.prefix}-gen-ai-rag-sample-app-assistant" : "gen-ai-rag-sample-app-assistant"
-    WATSON_ASSISTANT_URL         = local.watsonx_assistant_url
-  }
-
-  sensitive_environment = {
-    IBMCLOUD_API_KEY = var.ibmcloud_api_key
-  }
-  
-  # Change in apikey should not trigger assistant re-create
-  lifecycle {
-    ignore_changes = [ sensitive_environment ]
-  }
+  source = "./modules/watson-assistant"
+  watsonx_admin_api_key = var.watsonx_admin_api_key
+  prefix = var.prefix
+  watsonx_assistant_url = local.watsonx_assistant_url
+  assistant_search_skill = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/elastic-search-skill.json") : null
+  assistant_action_skill = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/wxa-conv-srch-es-v1.json") : null
+  elastic_service_binding =  local.use_elastic_index ? module.configure_elastic_index[0].elastic_connection_binding : null
+  depends_on = [ data.ibm_iam_auth_token.tokendata ]
+}
+moved {
+  from = shell_script.watson_assistant
+  to = module.configure_watson_assistant.shell_script.watson_assistant
 }
 
 ### Make all pipeline properties dependent on CD instance 
@@ -241,21 +235,21 @@ resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property
 # Update CI pipeline with Assistant integration ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_ci" {
   provider    = ibm.ibm_resources
-  depends_on  = [shell_script.watson_assistant, local.cd_instance]
+  depends_on  = [local.cd_instance]
   name        = "watsonx_assistant_integration_id"
   pipeline_id = var.ci_pipeline_id
   type        = "text"
-  value       = shell_script.watson_assistant.output["assistant_integration_id"]
+  value       = module.configure_watson_assistant.watsonx_assistant_integration_id
 }
 
 # Update CD pipeline with Assistant integration ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_cd" {
   provider    = ibm.ibm_resources
-  depends_on  = [shell_script.watson_assistant, local.cd_instance]
+  depends_on  = [local.cd_instance]
   name        = "watsonx_assistant_integration_id"
   pipeline_id = var.cd_pipeline_id
   type        = "text"
-  value       = shell_script.watson_assistant.output["assistant_integration_id"]
+  value       = module.configure_watson_assistant.watsonx_assistant_integration_id
 }
 
 # Random string for webhook token

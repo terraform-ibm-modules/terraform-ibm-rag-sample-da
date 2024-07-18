@@ -10,7 +10,7 @@ output "watsonx_project_url" {
 
 output "watsonx_assistant_api_url" {
   description = "WatsonX Assistant URL."
-  value       = local.watsonx_assistant_url
+  value       = "https:${local.watsonx_assistant_url}"
 }
 
 output "watson_discovery_api_url" {
@@ -25,10 +25,25 @@ output "cos_instance_crn" {
 
 output "watsonx_assistant_integration_id" {
   description = "WatsonX assistant integration ID."
-  value       = shell_script.watson_assistant.output["assistant_integration_id"]
+  value       = module.configure_watson_assistant.watsonx_assistant_integration_id
+}
+
+output "watsonx_assistant_environment" {
+  description = "WatsonX assistant target environment."
+  value = module.configure_watson_assistant.watsonx_assistant_environment
 }
 
 output "watson_discovery_project_id" {
   description = "Watson Discovery Project ID."
   value       = local.use_watson_discovery ? module.configure_discovery_project[0].watson_discovery_project_id : null
+}
+
+output "watsonx_assistant_skills_status" {
+  description = "WatsonX assistant skills status"
+  value = module.configure_watson_assistant.watsonx_assistant_skills_status
+}
+
+output "elastic_collection_count" {
+  description = "Count of sample data items uplaoded to elastic index"
+  value = local.use_elastic_index ? module.configure_elastic_index[0].elastic_upload_count : 0
 }
