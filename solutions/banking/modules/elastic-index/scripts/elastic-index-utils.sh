@@ -48,6 +48,41 @@ function delete_index() {
     echo "$OUTPUT" | jq '. | select( .acknowledged == true )'
 }
 
+function create_index_entries() {
+    local OUTPUT
+
+    OUTPUT=$(curl -LsS -X POST --location "$ELASTIC_URL/$ELASTIC_INDEX_NAME/_bulk" \
+    --header "Authorization: Basic $ELASTIC_AUTH_BASE64" \
+    --header "Content-Type: application/json" \
+    --header "Accepts: application/json" \
+    --data-binary @<(cat "$ELASTIC_ENTRIES_FILE" | jq -r '.[] | tojson | ("{\"index\" : {} }\n" + .)') \
+    --cacert <(cat <<< "$ELASTIC_CACERT" | base64 -d)
+     )
+    check_error "$OUTPUT"
+    if [[ $(echo "$OUTPUT" | jq -r '. | .errors') == "true" ]]; then
+        echo "$OUTPUT" | jq '[.items[] | select( .index?.error != null ) | .index]'
+        exit 1
+    fi
+    echo "$OUTPUT" | jq '{ "count": (.items | length) }'
+}
+
+function delete_index_entries() {
+    local OUTPUT
+
+    OUTPUT=$(curl -LsS -X POST --location "$ELASTIC_URL/$ELASTIC_INDEX_NAME/_delete_by_query?conflicts=proceed" \
+    --header "Authorization: Basic $ELASTIC_AUTH_BASE64" \
+    --header "Content-Type: application/json" \
+    --header "Accepts: application/json" \
+    --data '{"query": {"match_all": {}}}' \
+    --cacert <(cat <<< "$ELASTIC_CACERT" | base64 -d)
+     )
+    check_error "$OUTPUT"
+    if [[ ! $(echo "$OUTPUT" | jq -r '. | .failures | length') == "0" ]]; then
+        echo "$OUTPUT"
+        exit 1
+    fi
+}
+
 function check_error() {
     status=$?
     if [ $status -ne 0 ]; then

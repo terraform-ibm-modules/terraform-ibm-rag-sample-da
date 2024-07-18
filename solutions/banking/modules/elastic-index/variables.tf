@@ -16,8 +16,8 @@ variable "elastic_index_name" {
   default     = "sample-rag-app-content"
 }
 
-variable "collection_artifacts_path" {
-  description = "Local directory with artifacts to upload"
+variable "elastic_index_entries_file" {
+  description = "Path to JSON file with content entries"
   type        = string
   default = null
 }

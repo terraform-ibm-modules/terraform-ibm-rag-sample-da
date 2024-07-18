@@ -118,6 +118,12 @@ variable "elastic_index_name" {
   default     = "sample-rag-app-content"
 }
 
+variable "elastic_upload_sample_data" {
+  description = "Upload sample artifacts to elastic index"
+  type        = bool
+  default     = true
+}
+
 variable "signing_key" {
   description = "Signing GPG key."
   type        = string

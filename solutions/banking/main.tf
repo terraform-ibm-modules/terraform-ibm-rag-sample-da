@@ -164,6 +164,7 @@ module "configure_elastic_index" {
   elastic_credentials_name = var.elastic_credentials_name
   elastic_index_name = local.elastic_index_name
   elastic_instance_crn = var.elastic_instance_crn
+  elastic_index_entries_file = var.elastic_upload_sample_data ? "./artifacts/watsonx.Assistant/bank-loan-faqs.json" : null
   sensitive_tokendata = local.sensitive_tokendata
   depends_on = [ data.ibm_iam_auth_token.tokendata ]
 }

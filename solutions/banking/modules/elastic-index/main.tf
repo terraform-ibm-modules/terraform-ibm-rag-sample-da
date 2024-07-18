@@ -39,21 +39,32 @@ resource "shell_script" "elastic_index" {
     ignore_changes = [ sensitive_environment ]
   }
 }
-/*
-# discovery file upload
-resource "null_resource" "discovery_file_upload" {
-  depends_on = [restapi_object.configure_discovery_collection]
-  triggers = {
-    always_run = timestamp()
+
+## Upload sample data entries
+
+resource "shell_script" "elastic_index_entries" {
+  count = var.elastic_index_entries_file != null ? 1 : 0
+  depends_on = [ shell_script.elastic_index ]
+  lifecycle_commands {
+    create = file("${path.module}/scripts/elastic-index-upload.sh")
+    delete = file("${path.module}/scripts/elastic-index-clear.sh")
   }
 
-  provisioner "local-exec" {
-    command     = "${path.module}/scripts/discovery-file-upload.sh \"https:${local.watson_discovery_url}\" \"${restapi_object.configure_discovery_project.id}\" \"${restapi_object.configure_discovery_collection.id}\" \"${var.watson_discovery_collection_artifacts_path}\" "
-    interpreter = ["/bin/bash", "-c"]
-    quiet       = true
-    environment = {
-      IAM_TOKEN = var.sensitive_tokendata
-    }
+  environment = {
+    ELASTIC_URL         = local.elastic_url
+    ELASTIC_CACERT      = local.elastic_ca_cert
+    ELASTIC_INSTANCE_ID = local.elastic_instance_id
+    ELASTIC_INDEX_NAME  = urlencode(shell_script.elastic_index.output.index_name)
+    ELASTIC_ENTRIES_FILE = var.elastic_index_entries_file
+    MODULE_PATH         = path.module
+  }
+
+  sensitive_environment = {
+    ELASTIC_AUTH_BASE64 = local.elastic_auth_base64
+  }
+  
+  # Change in apikey should not trigger assistant re-create
+  lifecycle {
+    ignore_changes = [ sensitive_environment ]
   }
 }
-*/
