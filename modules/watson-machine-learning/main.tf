@@ -69,13 +69,13 @@ resource "restapi_object" "configure_project" {
                   EOT
 }
 
-resource "time_sleep" "wait_10_seconds" { # tflint-ignore: terraform_required_providers
+resource "time_sleep" "wait_60_seconds" { # tflint-ignore: terraform_required_providers
   depends_on      = [restapi_object.configure_project]
-  create_duration = "10s"
+  create_duration = "60s"
 }
 
 data "restapi_object" "get_project" {
-  depends_on   = [resource.restapi_object.configure_project, resource.time_sleep.wait_10_seconds]
+  depends_on   = [resource.restapi_object.configure_project, resource.time_sleep.wait_60_seconds]
   provider     = restapi.restapi_watsonx_admin
   path         = "${local.dataplatform_api}/v2/projects"
   results_key  = "resources"
