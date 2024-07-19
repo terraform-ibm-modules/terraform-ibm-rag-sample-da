@@ -14,7 +14,8 @@ function create_index() {
 
 function read_index() {
     IN=$(cat)
-    local existing_index_name=$(echo $IN | jq -r '.index_name')
+    local existing_index_name
+    existing_index_name="$(echo "$IN" | jq -r '.index_name')"
     if [[ -z "$existing_index_name" ]]; then
         exit 0
     fi
@@ -22,7 +23,8 @@ function read_index() {
 }
 
 function get_index() {
-    local existing_index_name=$1
+    local existing_index_name
+    existing_index_name=$1
     local OUTPUT
     OUTPUT=$(curl -LsS -X GET --location "${ELASTIC_URL}/$existing_index_name" \
     --header "Authorization: Basic $ELASTIC_AUTH_BASE64" \
@@ -35,7 +37,8 @@ function get_index() {
 
 function delete_index() {
     IN=$(cat)
-    local existing_index_name=$(echo $IN | jq -r '.index_name')
+    local existing_index_name
+    existing_index_name=$(echo "$IN" | jq -r '.index_name')
     if [[ -z "$existing_index_name" ]]; then
         exit 0
     fi
@@ -55,7 +58,7 @@ function create_index_entries() {
     --header "Authorization: Basic $ELASTIC_AUTH_BASE64" \
     --header "Content-Type: application/json" \
     --header "Accepts: application/json" \
-    --data-binary @<(cat "$ELASTIC_ENTRIES_FILE" | jq -r '.[] | tojson | ("{\"index\" : {} }\n" + .)') \
+    --data-binary @<(jq -r '.[] | tojson | ("{\"index\" : {} }\n" + .)' < "$ELASTIC_ENTRIES_FILE") \
     --cacert <(cat <<< "$ELASTIC_CACERT" | base64 -d)
      )
     check_error "$OUTPUT"
@@ -91,8 +94,9 @@ function check_error() {
         exit 1
     fi
 
-    local error=$(echo "$1" | jq '.error')
-    if [[ ! -z "$error" && ! "$error" == "null" ]]; then
+    local error
+    error=$(echo "$1" | jq '.error')
+    if [[ -n "$error" && ! "$error" == "null" ]]; then
         echo "$error" | jq
         exit 1
     fi
