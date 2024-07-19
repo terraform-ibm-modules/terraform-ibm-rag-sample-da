@@ -69,11 +69,11 @@ resource "restapi_object" "configure_project" {
                   EOT
 }
 
+/* Reading the project after creating it has some issues with the API - we do not need that data yet
 resource "time_sleep" "wait_60_seconds" { # tflint-ignore: terraform_required_providers
   depends_on      = [restapi_object.configure_project]
   create_duration = "60s"
 }
-
 data "restapi_object" "get_project" {
   depends_on   = [resource.restapi_object.configure_project, resource.time_sleep.wait_60_seconds]
   provider     = restapi.restapi_watsonx_admin
@@ -83,6 +83,7 @@ data "restapi_object" "get_project" {
   search_value = local.watsonx_project_id
   id_attribute = "metadata/guid"
 }
+*/
 
 locals {
   dataplatform_api_mapping = {
@@ -95,5 +96,4 @@ locals {
   dataplatform_api          = local.dataplatform_api_mapping[var.location]
   watsonx_project_id_object = restapi_object.configure_project.id
   watsonx_project_id        = regex("^.+/([a-f0-9\\-]+)$", local.watsonx_project_id_object)[0]
-  watsonx_project_data      = jsondecode(data.restapi_object.get_project.api_response)
 }

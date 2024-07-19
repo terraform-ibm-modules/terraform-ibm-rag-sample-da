@@ -9,11 +9,6 @@ output "watsonx_project_location" {
   description = "The location watsonx project that's created."
 }
 
-output "watsonx_project_bucket_name" {
-  value       = local.watsonx_project_data.entity.storage.properties.bucket_name
-  description = "The name of the COS bucket created by the watsonx project."
-}
-
 output "watson_ml_cos_instance" {
   description = "COS instance for Watson Machine Learning project."
   value       = module.cos
