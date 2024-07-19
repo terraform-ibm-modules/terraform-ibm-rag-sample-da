@@ -173,7 +173,7 @@ module "configure_watson_assistant" {
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
   source                  = "../../modules/watson-assistant"
-  watsonx_admin_api_key   = var.watsonx_admin_api_key
+  watsonx_admin_api_key   = coalesce(var.watsonx_admin_api_key, var.ibmcloud_api_key)
   prefix                  = var.prefix
   watsonx_assistant_url   = local.watsonx_assistant_url
   assistant_search_skill  = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/elastic-search-skill.json") : null
