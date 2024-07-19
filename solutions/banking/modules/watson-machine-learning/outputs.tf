@@ -18,4 +18,3 @@ output "watson_ml_cos_instance" {
   description = "COS instance for Watson Machine Learning project."
   value       = module.cos
 }
-

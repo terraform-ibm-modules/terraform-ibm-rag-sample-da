@@ -1,7 +1,7 @@
 locals {
-  use_watson_discovery = (var.watson_discovery_instance_id != null) ? true : false
+  use_watson_discovery        = (var.watson_discovery_instance_id != null) ? true : false
   use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null) ? true : false
-  use_elastic_index = (var.elastic_instance_crn != null) ? true : false
+  use_elastic_index           = (var.elastic_instance_crn != null) ? true : false
 
   watsonx_assistant_url            = "//api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
   watson_discovery_url             = local.use_watson_discovery ? "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}" : null
@@ -98,60 +98,59 @@ resource "ibm_resource_instance" "cd_instance" {
 
 module "configure_wml_project" {
   providers = {
-    ibm.ibm_resources = ibm.ibm_resources
+    ibm.ibm_resources             = ibm.ibm_resources
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-  count = local.use_watson_machine_learning ? 1 : 0
-  source                      = "./modules/watson-machine-learning"
-  watsonx_admin_api_key       = var.watsonx_admin_api_key != null ? var.watsonx_admin_api_key : var.ibmcloud_api_key
-  watson_ml_instance_guid     = var.watson_machine_learning_instance_guid
-  watson_ml_instance_crn      = var.watson_machine_learning_instance_crn
+  count                            = local.use_watson_machine_learning ? 1 : 0
+  source                           = "./modules/watson-machine-learning"
+  watson_ml_instance_guid          = var.watson_machine_learning_instance_guid
+  watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
   watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
-  watson_ml_project_name      = local.watson_ml_project_name
-  resource_group_id           = module.resource_group.resource_group_id
-  cos_instance_name           = "${var.prefix}-rag-sample-app-cos"
-  location = var.watson_discovery_region  # WatsonX services needs to be in the same region anyway
+  watson_ml_project_name           = local.watson_ml_project_name
+  resource_group_id                = module.resource_group.resource_group_id
+  cos_instance_name                = "${var.prefix}-rag-sample-app-cos"
+  location                         = var.watson_discovery_region # WatsonX services needs to be in the same region anyway
 }
 
 moved {
   from = module.configure_project
-  to = module.configure_wml_project[0].module.watson_ml_project
+  to   = module.configure_wml_project[0].module.watson_ml_project
 }
 
 moved {
   from = module.configure_project.restapi_object.configure_project[0]
-  to = module.configure_wml_project[0].restapi_object.configure_project
+  to   = module.configure_wml_project[0].restapi_object.configure_project
 }
 
 moved {
   from = module.cos.module.cos_instance[0].ibm_resource_instance.cos_instance[0]
-  to = module.configure_wml_project[0].module.cos.module.cos_instance[0].ibm_resource_instance.cos_instance[0]
+  to   = module.configure_wml_project[0].module.cos.module.cos_instance[0].ibm_resource_instance.cos_instance[0]
 }
 
 # Discovery project creation
 module "configure_discovery_project" {
-  count = local.use_watson_discovery ? 1 : 0
-  source = "./modules/watson-discovery"
-  watson_discovery_url = local.watson_discovery_url
-  watson_discovery_project_name = local.watson_discovery_project_name
-  watson_discovery_collection_name = local.watson_discovery_collection_name
+  count                                      = local.use_watson_discovery ? 1 : 0
+  source                                     = "./modules/watson-discovery"
+  watson_discovery_url                       = local.watson_discovery_url
+  watson_discovery_project_name              = local.watson_discovery_project_name
+  watson_discovery_collection_name           = local.watson_discovery_collection_name
   watson_discovery_collection_artifacts_path = "${path.module}/artifacts/WatsonDiscovery"
-  sensitive_tokendata = local.sensitive_tokendata
-  depends_on = [ data.ibm_iam_auth_token.tokendata ]
+  sensitive_tokendata                        = local.sensitive_tokendata
+  depends_on                                 = [data.ibm_iam_auth_token.tokendata]
 }
 
 moved {
   from = restapi_object.configure_discovery_project
-  to = module.configure_discovery_project[0].restapi_object.configure_discovery_project
+  to   = module.configure_discovery_project[0].restapi_object.configure_discovery_project
 }
 moved {
   from = restapi_object.configure_discovery_collection
-  to = module.configure_discovery_project[0].restapi_object.configure_discovery_collection
+  to   = module.configure_discovery_project[0].restapi_object.configure_discovery_collection
 }
 
 moved {
   from = null_resource.discovery_file_upload
-  to = module.configure_discovery_project[0].null_resource.discovery_file_upload
+  to   = module.configure_discovery_project[0].null_resource.discovery_file_upload
 }
 
 # Elastic index creation
@@ -159,42 +158,40 @@ module "configure_elastic_index" {
   providers = {
     ibm = ibm.ibm_resources
   }
-  count = local.use_elastic_index ? 1 : 0
-  source = "./modules/elastic-index"
-  elastic_credentials_name = var.elastic_credentials_name
-  elastic_index_name = local.elastic_index_name
-  elastic_instance_crn = var.elastic_instance_crn
+  count                      = local.use_elastic_index ? 1 : 0
+  source                     = "./modules/elastic-index"
+  elastic_credentials_name   = var.elastic_credentials_name
+  elastic_index_name         = local.elastic_index_name
+  elastic_instance_crn       = var.elastic_instance_crn
   elastic_index_entries_file = var.elastic_upload_sample_data ? "./artifacts/watsonx.Assistant/bank-loan-faqs.json" : null
-  sensitive_tokendata = local.sensitive_tokendata
-  depends_on = [ data.ibm_iam_auth_token.tokendata ]
+  depends_on                 = [data.ibm_iam_auth_token.tokendata]
 }
 
 # Elastic index creation
 module "configure_watson_assistant" {
   providers = {
-    ibm.ibm_resources = ibm.ibm_resources
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-  source = "./modules/watson-assistant"
-  watsonx_admin_api_key = var.watsonx_admin_api_key
-  prefix = var.prefix
-  watsonx_assistant_url = local.watsonx_assistant_url
-  assistant_search_skill = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/elastic-search-skill.json") : null
-  assistant_action_skill = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/wxa-conv-srch-es-v1.json") : null
-  elastic_service_binding =  local.use_elastic_index ? module.configure_elastic_index[0].elastic_connection_binding : null
-  depends_on = [ data.ibm_iam_auth_token.tokendata ]
+  source                  = "./modules/watson-assistant"
+  watsonx_admin_api_key   = var.watsonx_admin_api_key
+  prefix                  = var.prefix
+  watsonx_assistant_url   = local.watsonx_assistant_url
+  assistant_search_skill  = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/elastic-search-skill.json") : null
+  assistant_action_skill  = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/wxa-conv-srch-es-v1.json") : null
+  elastic_service_binding = local.use_elastic_index ? module.configure_elastic_index[0].elastic_connection_binding : null
+  depends_on              = [data.ibm_iam_auth_token.tokendata]
 }
 moved {
   from = shell_script.watson_assistant
-  to = module.configure_watson_assistant.shell_script.watson_assistant
+  to   = module.configure_watson_assistant.shell_script.watson_assistant
 }
 
-### Make all pipeline properties dependent on CD instance 
+### Make all pipeline properties dependent on CD instance
 ### to avoid errors when the toolchains are out of grace period
 
 # Update CI pipeline with Assistant instance ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_property_ci" {
-  depends_on  = [local.cd_instance]  
+  depends_on  = [local.cd_instance]
   provider    = ibm.ibm_resources
   name        = "watsonx_assistant_id"
   pipeline_id = var.ci_pipeline_id
@@ -204,7 +201,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
 
 # Update CD pipeline with Assistant instance ID
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_property_cd" {
-  depends_on  = [local.cd_instance]  
+  depends_on  = [local.cd_instance]
   provider    = ibm.ibm_resources
   name        = "watsonx_assistant_id"
   pipeline_id = var.cd_pipeline_id
@@ -214,7 +211,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
 
 # Update CI pipeline with app flavor
 resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property_ci" {
-  depends_on  = [local.cd_instance]  
+  depends_on  = [local.cd_instance]
   provider    = ibm.ibm_resources
   name        = "app-flavor"
   pipeline_id = var.ci_pipeline_id
@@ -224,7 +221,7 @@ resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property
 
 # Update CD pipeline with app flavor
 resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property_cd" {
-  depends_on  = [local.cd_instance]  
+  depends_on  = [local.cd_instance]
   provider    = ibm.ibm_resources
   name        = "app-flavor"
   pipeline_id = var.cd_pipeline_id
@@ -289,7 +286,7 @@ resource "ibm_cd_tekton_pipeline_trigger_property" "ci_pipeline_webhook_branch_p
 # Create git trigger for CD pipeline - to run inventory promotion once CI pipeline is complete
 resource "ibm_cd_tekton_pipeline_trigger" "cd_pipeline_inventory_promotion_trigger" {
   provider       = ibm.ibm_resources
-  depends_on  = [local.cd_instance]  
+  depends_on     = [local.cd_instance]
   count          = var.inventory_repo_url != null ? 1 : 0
   type           = "scm"
   pipeline_id    = var.cd_pipeline_id

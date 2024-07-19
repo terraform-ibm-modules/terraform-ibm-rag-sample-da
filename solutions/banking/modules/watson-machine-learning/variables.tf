@@ -1,9 +1,3 @@
-variable "watsonx_admin_api_key" {
-  description = "API key to create resources with"
-  type        = string
-  sensitive = true
-}
-
 variable "resource_group_id" {
   description = "Resource group for Watson ML COS instance"
   type        = string
@@ -37,13 +31,13 @@ variable "watson_ml_project_name" {
 variable "watson_ml_project_description" {
   description = "Watson Machine Learning project description"
   type        = string
-  default = "WatsonX AI project for RAG pattern sample app"
+  default     = "WatsonX AI project for RAG pattern sample app"
 }
 
 variable "watson_ml_project_tags" {
   description = "Watson Machine Learning project tags"
   type        = list(string)
-  default = ["watsonx-ai-SaaS", "RAG-sample-project"]
+  default     = ["watsonx-ai-SaaS", "RAG-sample-project"]
 }
 
 variable "location" {
@@ -54,6 +48,5 @@ variable "location" {
 variable "watsonx_project_delegated" {
   description = "Watson storage delegation."
   type        = bool
-  default = null
+  default     = null
 }
-

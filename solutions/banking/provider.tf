@@ -37,6 +37,6 @@ provider "restapi" {
 }
 
 provider "shell" {
-    interpreter = ["/bin/bash", "-c"]
-    enable_parallelism = false
+  interpreter        = ["/bin/bash", "-c"]
+  enable_parallelism = false
 }

@@ -1,7 +1,7 @@
 variable "elastic_instance_crn" {
   description = "Elastic ICD instance CRN"
   type        = string
-  default     = null   # Elastic usage is optional
+  default     = null # Elastic usage is optional
 }
 
 variable "elastic_credentials_name" {
@@ -19,11 +19,5 @@ variable "elastic_index_name" {
 variable "elastic_index_entries_file" {
   description = "Path to JSON file with content entries"
   type        = string
-  default = null
-}
-
-variable "sensitive_tokendata" {
-  description = "Access token"
-  type        = string
-  sensitive = true
+  default     = null
 }

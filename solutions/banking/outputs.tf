@@ -30,7 +30,7 @@ output "watsonx_assistant_integration_id" {
 
 output "watsonx_assistant_environment" {
   description = "WatsonX assistant target environment."
-  value = module.configure_watson_assistant.watsonx_assistant_environment
+  value       = module.configure_watson_assistant.watsonx_assistant_environment
 }
 
 output "watson_discovery_project_id" {
@@ -40,10 +40,10 @@ output "watson_discovery_project_id" {
 
 output "watsonx_assistant_skills_status" {
   description = "WatsonX assistant skills status"
-  value = module.configure_watson_assistant.watsonx_assistant_skills_status
+  value       = module.configure_watson_assistant.watsonx_assistant_skills_status
 }
 
 output "elastic_collection_count" {
   description = "Count of sample data items uplaoded to elastic index"
-  value = local.use_elastic_index ? module.configure_elastic_index[0].elastic_upload_count : 0
+  value       = local.use_elastic_index ? module.configure_elastic_index[0].elastic_upload_count : 0
 }

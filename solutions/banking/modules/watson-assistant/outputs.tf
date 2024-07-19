@@ -10,14 +10,14 @@ output "watsonx_assistant_integration_id" {
 }
 
 output "watsonx_assistant_environment" {
-  value       =  jsondecode(data.restapi_object.get_assistant_environment_after_update.api_response)
+  value       = jsondecode(data.restapi_object.get_assistant_environment_after_update.api_response)
   description = "Assistant environment."
 }
 
 output "watsonx_assistant_skills_status" {
-  value       =  { 
-      action = var.assistant_action_skill != null ? jsondecode(restapi_object.assistant_action_skill[0].api_response) : null
-      search = var.assistant_search_skill != null ? jsondecode(restapi_object.assistant_search_skill[0].api_response) : null
+  value = {
+    action = var.assistant_action_skill != null ? jsondecode(restapi_object.assistant_action_skill[0].api_response) : null
+    search = var.assistant_search_skill != null ? jsondecode(restapi_object.assistant_search_skill[0].api_response) : null
   }
   description = "Assistant skills status."
 }

@@ -6,7 +6,7 @@ variable "prefix" {
 variable "watsonx_admin_api_key" {
   description = "API key to create resources with"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 variable "watsonx_assistant_url" {
@@ -17,19 +17,19 @@ variable "watsonx_assistant_url" {
 variable "assistant_environment" {
   description = "Watson Assistant target environment"
   type        = string
-  default = "draft"
+  default     = "draft"
 }
 
 variable "assistant_search_skill" {
   description = "Search skill configuration in JSON format"
   type        = string
-  default = null
+  default     = null
 }
 
 variable "assistant_action_skill" {
   description = "Action skill configuration in JSON format"
   type        = string
-  default = null
+  default     = null
 }
 
 variable "elastic_service_binding" {
@@ -40,5 +40,5 @@ variable "elastic_service_binding" {
     password = string
     index    = string
   })
-  default = null 
+  default = null
 }

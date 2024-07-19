@@ -53,14 +53,14 @@ resource "restapi_object" "configure_project" {
   update_data    = <<-EOT
                   {
                     "name": "${var.watson_ml_project_name}",
-                    "type": "wx",    
-                    "description": "${var.watson_ml_project_description}", 
+                    "type": "wx",
+                    "description": "${var.watson_ml_project_description}",
                     "public": true,
                     "compute": [
                       {
-                        "name": "${var.watson_ml_instance_resource_name}", 
+                        "name": "${var.watson_ml_instance_resource_name}",
                         "guid": "${var.watson_ml_instance_guid}",
-                        "type": "machine_learning", 
+                        "type": "machine_learning",
                         "crn": "${var.watson_ml_instance_crn}",
                         "credentials": { }
                       }
@@ -69,7 +69,7 @@ resource "restapi_object" "configure_project" {
                   EOT
 }
 
-resource "time_sleep" "wait_10_seconds" {
+resource "time_sleep" "wait_10_seconds" { # tflint-ignore: terraform_required_providers
   depends_on      = [restapi_object.configure_project]
   create_duration = "10s"
 }

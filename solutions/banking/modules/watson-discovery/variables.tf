@@ -16,11 +16,11 @@ variable "watson_discovery_collection_name" {
 variable "watson_discovery_collection_artifacts_path" {
   description = "Local directory with artifacts to upload"
   type        = string
-  default = null
+  default     = null
 }
 
 variable "sensitive_tokendata" {
   description = "Access token"
   type        = string
-  sensitive = true
+  sensitive   = true
 }

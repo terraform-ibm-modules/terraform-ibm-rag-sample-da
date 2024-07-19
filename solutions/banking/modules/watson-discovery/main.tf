@@ -1,6 +1,6 @@
 locals {
-  watson_discovery_url = var.watson_discovery_url
-  watson_discovery_project_name = var.watson_discovery_project_name
+  watson_discovery_url             = var.watson_discovery_url
+  watson_discovery_project_name    = var.watson_discovery_project_name
   watson_discovery_collection_name = var.watson_discovery_collection_name
 }
 
@@ -73,5 +73,3 @@ resource "null_resource" "discovery_file_upload" {
     }
   }
 }
-
-

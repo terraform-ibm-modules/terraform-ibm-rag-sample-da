@@ -6,21 +6,24 @@ output "elastic_connection_url" {
 output "elastic_connection_username" {
   description = "Elastic DB connection user name."
   value       = sensitive(local.credentials_data.authentication.username)
+  sensitive   = true
 }
 
 output "elastic_connection_password" {
   description = "Elastic DB connection password."
   value       = sensitive(local.credentials_data.authentication.password)
+  sensitive   = true
 }
 
 output "elastic_connection_binding" {
   description = "Elastic DB connection attributes."
-  value       = sensitive({
-    url      : local.elastic_url
+  value = sensitive({
+    url : local.elastic_url
     username : local.credentials_data.authentication.username
     password : local.credentials_data.authentication.password
-    index    : var.elastic_index_name
+    index : var.elastic_index_name
   })
+  sensitive = true
 }
 
 output "elastic_upload_count" {

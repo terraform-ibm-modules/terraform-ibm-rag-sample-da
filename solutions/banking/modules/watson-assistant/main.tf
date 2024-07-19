@@ -1,12 +1,12 @@
 locals {
-  watson_assistant_api_version = "2023-06-15"
-  watsonx_assistant_environment = jsondecode(data.restapi_object.get_assistant_environment.api_response)
+  watson_assistant_api_version   = "2023-06-15"
+  watsonx_assistant_environment  = jsondecode(data.restapi_object.get_assistant_environment.api_response)
   assistant_environment_api_path = "${var.watsonx_assistant_url}/v2/assistants/${shell_script.watson_assistant.output.assistant_id}/environments/${data.restapi_object.get_assistant_environment.id}"
-  assistant_skills_api_path = "${var.watsonx_assistant_url}/v2/assistants/${shell_script.watson_assistant.output.assistant_id}"
-  assistant_skills = [for skill in local.watsonx_assistant_environment.skill_references : skill.type == "search" ? merge(skill, {"disabled": false }):skill]
-  assistant_skills_map = {for skill in local.watsonx_assistant_environment.skill_references : skill.type => skill.skill_id}
-  assistant_search_skill = var.assistant_search_skill != null ? {search_settings = merge(jsondecode(var.assistant_search_skill).search_settings, {elastic_search = var.elastic_service_binding })} : null
-  assistant_action_skill = var.assistant_action_skill != null ? jsondecode(var.assistant_action_skill) : null
+  assistant_skills_api_path      = "${var.watsonx_assistant_url}/v2/assistants/${shell_script.watson_assistant.output.assistant_id}"
+  assistant_skills               = [for skill in local.watsonx_assistant_environment.skill_references : skill.type == "search" ? merge(skill, { "disabled" : false }) : skill]
+  assistant_skills_map           = { for skill in local.watsonx_assistant_environment.skill_references : skill.type => skill.skill_id }
+  assistant_search_skill         = var.assistant_search_skill != null ? { search_settings = merge(jsondecode(var.assistant_search_skill).search_settings, { elastic_search = var.elastic_service_binding }) } : null
+  assistant_action_skill         = var.assistant_action_skill != null ? jsondecode(var.assistant_action_skill) : null
 }
 
 # assistant creation
@@ -28,10 +28,10 @@ resource "shell_script" "watson_assistant" {
   sensitive_environment = {
     IBMCLOUD_API_KEY = var.watsonx_admin_api_key
   }
-  
+
   # Change in apikey should not trigger assistant re-create
   lifecycle {
-    ignore_changes = [ sensitive_environment ]
+    ignore_changes = [sensitive_environment]
   }
 }
 
@@ -48,10 +48,10 @@ data "restapi_object" "get_assistant_environment" {
 
 # Assistant Search skill update
 resource "restapi_object" "assistant_search_skill" {
-  count = var.assistant_search_skill != null ? 1 : 0
-  provider     = restapi.restapi_watsonx_admin
-  path         = "${local.assistant_skills_api_path}/skills/${local.assistant_skills_map.search}"
-  query_string = "version=${local.watson_assistant_api_version}"
+  count          = var.assistant_search_skill != null ? 1 : 0
+  provider       = restapi.restapi_watsonx_admin
+  path           = "${local.assistant_skills_api_path}/skills/${local.assistant_skills_map.search}"
+  query_string   = "version=${local.watson_assistant_api_version}"
   read_path      = "${local.assistant_skills_api_path}/skills/${local.assistant_skills_map.search}"
   read_method    = "GET"
   create_path    = "${local.assistant_skills_api_path}/skills/${local.assistant_skills_map.search}"
@@ -68,16 +68,16 @@ resource "restapi_object" "assistant_search_skill" {
 
 # Assistant Action skill import
 resource "restapi_object" "assistant_action_skill" {
-  count = var.assistant_action_skill != null ? 1 : 0
-  provider     = restapi.restapi_watsonx_admin
-  path         = "${local.assistant_skills_api_path}/skills_import"
-  query_string = "version=${local.watson_assistant_api_version}"
+  count          = var.assistant_action_skill != null ? 1 : 0
+  provider       = restapi.restapi_watsonx_admin
+  path           = "${local.assistant_skills_api_path}/skills_import"
+  query_string   = "version=${local.watson_assistant_api_version}"
   read_path      = "${local.assistant_skills_api_path}/skills/${local.assistant_skills_map.action}"
   read_method    = "GET"
   create_path    = "${local.assistant_skills_api_path}/skills_import"
   create_method  = "POST"
   id_attribute   = "assistant_id" # The only attribute returned from skills_import call
-  destroy_method = "GET" # There is no destroy operation on default action skill
+  destroy_method = "GET"          # There is no destroy operation on default action skill
   destroy_path   = "${local.assistant_skills_api_path}/skills/${local.assistant_skills_map.action}"
   destroy_data   = "{}"
   data           = sensitive(jsonencode(local.assistant_action_skill))
@@ -86,19 +86,19 @@ resource "restapi_object" "assistant_action_skill" {
   update_data    = sensitive(jsonencode(local.assistant_action_skill))
 }
 
-resource "time_sleep" "wait_30_seconds" {
-  depends_on      = [restapi_object.assistant_search_skill,restapi_object.assistant_action_skill]
+resource "time_sleep" "wait_30_seconds" { # tflint-ignore: terraform_required_providers
+  depends_on      = [restapi_object.assistant_search_skill, restapi_object.assistant_action_skill]
   create_duration = "30s"
 }
 
 # Assistant skill references update - enable search skill
 resource "restapi_object" "assistant_skills_references" {
-  count = var.assistant_search_skill != null ? 1 : 0  # Only need to update it if the search skill was updated
-  depends_on = [ time_sleep.wait_30_seconds ]
-  provider     = restapi.restapi_watsonx_admin
-  path         = local.assistant_environment_api_path
-  query_string = "version=${local.watson_assistant_api_version}"
-  data           = jsonencode({"skill_references": local.assistant_skills})
+  count          = var.assistant_search_skill != null ? 1 : 0 # Only need to update it if the search skill was updated
+  depends_on     = [time_sleep.wait_30_seconds]
+  provider       = restapi.restapi_watsonx_admin
+  path           = local.assistant_environment_api_path
+  query_string   = "version=${local.watson_assistant_api_version}"
+  data           = jsonencode({ "skill_references" : local.assistant_skills })
   id_attribute   = "environment_id"
   read_path      = local.assistant_environment_api_path
   read_method    = "GET"
@@ -106,15 +106,15 @@ resource "restapi_object" "assistant_skills_references" {
   create_method  = "POST"
   destroy_path   = local.assistant_environment_api_path
   destroy_method = "POST"
-  destroy_data    = jsonencode({"skill_references": local.assistant_skills})
+  destroy_data   = jsonencode({ "skill_references" : local.assistant_skills })
   update_path    = local.assistant_environment_api_path
   update_method  = "POST"
-  update_data    = jsonencode({"skill_references": local.assistant_skills})
+  update_data    = jsonencode({ "skill_references" : local.assistant_skills })
 }
 
 data "restapi_object" "get_assistant_environment_after_update" {
   provider     = restapi.restapi_watsonx_admin
-  depends_on = [ restapi_object.assistant_skills_references ]
+  depends_on   = [restapi_object.assistant_skills_references]
   path         = "${var.watsonx_assistant_url}/v2/assistants/${shell_script.watson_assistant.output.assistant_id}/environments"
   query_string = "version=${local.watson_assistant_api_version}"
   results_key  = "environments"
