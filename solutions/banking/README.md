@@ -7,7 +7,7 @@ Deployable Architecture for Watsonx generative AI customer care application and 
 * `elastic_instance_crn` - if provided, the following resources will be provisioned:
   * New index in the Elastic DB
   * Sample data from [bank loan FAQs](artifacts/watsonx.Assistant/bank-loan-faqs.json) uploaded into the index (can be skipped if `elastic_upload_sample_data = false` )
-  * Search skill enabled in Watson Assistant workspace pointed to the Elastic index with specified credentials (needs Elastic service credentials `toolchain_db_user`)
+  * Search skill enabled in Watson Assistant workspace pointed to the Elastic index with specified credentials (needs Elastic service credentials `wxasst_db_user`). The credentials (`wxasst_db_user`) are used both to perform Elastic actions from terraform and to be used in the Assistant's Search action.
   * Action skill enabled in Watson Assistant workspace using [predefined action](artifacts/watsonx.Assistant/wxa-conv-srch-es-v1.json). 
 
 **NOTE**: the [bank loan FAQs](artifacts/watsonx.Assistant/bank-loan-faqs.csv) sample data is also available in CSV format which can be converted to json using `csvtojson` tool:

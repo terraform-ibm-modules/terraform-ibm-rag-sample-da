@@ -7,7 +7,7 @@ variable "elastic_instance_crn" {
 variable "elastic_credentials_name" {
   description = "Name of service credentials used to access Elastic instance"
   type        = string
-  default     = "toolchain_db_user"
+  default     = "wxasst_db_user"
 }
 
 variable "elastic_index_name" {
