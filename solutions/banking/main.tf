@@ -102,7 +102,7 @@ module "configure_wml_project" {
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
   count                            = local.use_watson_machine_learning ? 1 : 0
-  source                           = "./modules/watson-machine-learning"
+  source                           = "../../modules/watson-machine-learning"
   watson_ml_instance_guid          = var.watson_machine_learning_instance_guid
   watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
   watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
@@ -130,7 +130,7 @@ moved {
 # Discovery project creation
 module "configure_discovery_project" {
   count                                      = local.use_watson_discovery ? 1 : 0
-  source                                     = "./modules/watson-discovery"
+  source                                     = "../../modules/watson-discovery"
   watson_discovery_url                       = local.watson_discovery_url
   watson_discovery_project_name              = local.watson_discovery_project_name
   watson_discovery_collection_name           = local.watson_discovery_collection_name
@@ -159,7 +159,7 @@ module "configure_elastic_index" {
     ibm = ibm.ibm_resources
   }
   count                      = local.use_elastic_index ? 1 : 0
-  source                     = "./modules/elastic-index"
+  source                     = "../../modules/elastic-index"
   elastic_credentials_name   = var.elastic_credentials_name
   elastic_index_name         = local.elastic_index_name
   elastic_instance_crn       = var.elastic_instance_crn
@@ -172,7 +172,7 @@ module "configure_watson_assistant" {
   providers = {
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-  source                  = "./modules/watson-assistant"
+  source                  = "../../modules/watson-assistant"
   watsonx_admin_api_key   = var.watsonx_admin_api_key
   prefix                  = var.prefix
   watsonx_assistant_url   = local.watsonx_assistant_url
