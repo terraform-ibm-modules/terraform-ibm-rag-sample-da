@@ -32,8 +32,8 @@ resource "restapi_object" "configure_project" {
                     "storage": {
                       "type": "bmcos_object_storage",
                       "guid": "${module.cos.cos_instance_guid}",
-                      "resource_crn": "${module.cos.cos_instance_crn}",
-                      "delegated": ${coalesce(var.watsonx_project_delegated, "null")}
+                      ${var.watsonx_project_delegated == true ? "\"delegated\": true," : ""}
+                      "resource_crn": "${module.cos.cos_instance_crn}"
                     },
                     "description": "${var.watson_ml_project_description}",
                     "public": true,
