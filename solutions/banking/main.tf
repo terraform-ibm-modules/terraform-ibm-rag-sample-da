@@ -10,7 +10,15 @@ locals {
   watson_ml_project_name           = var.prefix != null ? "${var.prefix}-RAG-sample-project" : "RAG-sample-project"
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
-  elastic_index_name = var.prefix != null ? "${var.prefix}-${var.elastic_index_name}" : var.elastic_index_name
+  elastic_index_name       = var.prefix != null ? "${var.prefix}-${var.elastic_index_name}" : var.elastic_index_name
+  elastic_credentials_data = local.use_elastic_index ? jsondecode(data.ibm_resource_key.elastic_credentials[0].credentials_json).connection.https : null
+  # Compose the URL without credentials to keep the latter sensitive
+  elastic_service_binding = local.use_elastic_index ? {
+    url            = "${local.elastic_credentials_data.scheme}://${local.elastic_credentials_data.hosts[0].hostname}:${local.elastic_credentials_data.hosts[0].port}"
+    username       = local.elastic_credentials_data.authentication.username
+    password       = local.elastic_credentials_data.authentication.password
+    ca_data_base64 = local.elastic_credentials_data.certificate.certificate_base64
+  } : null
 
   cd_instance = var.create_continuous_delivery_service_instance ? ibm_resource_instance.cd_instance : null
 }
@@ -154,15 +162,17 @@ moved {
 }
 
 # Elastic index creation
+data "ibm_resource_key" "elastic_credentials" {
+  count                = local.use_elastic_index ? 1 : 0
+  resource_instance_id = var.elastic_instance_crn
+  name                 = var.elastic_credentials_name
+}
+
 module "configure_elastic_index" {
-  providers = {
-    ibm = ibm.ibm_resources
-  }
   count                      = local.use_elastic_index ? 1 : 0
   source                     = "../../modules/elastic-index"
-  elastic_credentials_name   = var.elastic_credentials_name
+  elastic_service_binding    = local.elastic_service_binding
   elastic_index_name         = local.elastic_index_name
-  elastic_instance_crn       = var.elastic_instance_crn
   elastic_index_entries_file = var.elastic_upload_sample_data ? "./artifacts/watsonx.Assistant/bank-loan-faqs.json" : null
   depends_on                 = [data.ibm_iam_auth_token.tokendata]
 }
@@ -178,7 +188,8 @@ module "configure_watson_assistant" {
   watsonx_assistant_url   = local.watsonx_assistant_url
   assistant_search_skill  = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/elastic-search-skill.json") : null
   assistant_action_skill  = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/wxa-conv-srch-es-v1.json") : null
-  elastic_service_binding = local.use_elastic_index ? module.configure_elastic_index[0].elastic_connection_binding : null
+  elastic_service_binding = local.use_elastic_index ? local.elastic_service_binding : null
+  elastic_index_name      = local.elastic_index_name
   depends_on              = [data.ibm_iam_auth_token.tokendata]
 }
 moved {

@@ -35,10 +35,16 @@ variable "assistant_action_skill" {
 variable "elastic_service_binding" {
   description = "Endpoint and credentials for Elastic instance"
   type = object({
-    url      = string
-    username = string
-    password = string
-    index    = string
+    url            = string
+    username       = string
+    password       = string
+    ca_data_base64 = optional(string)
   })
   default = null
+}
+
+variable "elastic_index_name" {
+  description = "Elastic index name"
+  type        = string
+  default     = null
 }

@@ -1,13 +1,11 @@
-variable "elastic_instance_crn" {
-  description = "Elastic ICD instance CRN"
-  type        = string
-  default     = null # Elastic usage is optional
-}
-
-variable "elastic_credentials_name" {
-  description = "Name of service credentials used to access Elastic instance"
-  type        = string
-  default     = "wxasst_db_user"
+variable "elastic_service_binding" {
+  description = "Elastic ICD instance credentials"
+  type = object({
+    url            = string
+    username       = string
+    password       = string
+    ca_data_base64 = optional(string)
+  })
 }
 
 variable "elastic_index_name" {

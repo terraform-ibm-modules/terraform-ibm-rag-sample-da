@@ -5,7 +5,7 @@ locals {
   assistant_skills_api_path      = "${var.watsonx_assistant_url}/v2/assistants/${shell_script.watson_assistant.output.assistant_id}"
   assistant_skills               = [for skill in local.watsonx_assistant_environment.skill_references : skill.type == "search" ? merge(skill, { "disabled" : false }) : skill]
   assistant_skills_map           = { for skill in local.watsonx_assistant_environment.skill_references : skill.type => skill.skill_id }
-  assistant_search_skill         = var.assistant_search_skill != null ? { search_settings = merge(jsondecode(var.assistant_search_skill).search_settings, { elastic_search = var.elastic_service_binding }) } : null
+  assistant_search_skill         = var.assistant_search_skill != null ? { search_settings = merge(jsondecode(var.assistant_search_skill).search_settings, { elastic_search = merge(var.elastic_service_binding, { "index" : var.elastic_index_name }) }) } : null
   assistant_action_skill         = var.assistant_action_skill != null ? jsondecode(var.assistant_action_skill) : null
 }
 

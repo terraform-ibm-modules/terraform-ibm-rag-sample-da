@@ -40,3 +40,12 @@ provider "shell" {
   interpreter        = ["/bin/bash", "-c"]
   enable_parallelism = false
 }
+
+provider "elasticstack" {
+  elasticsearch {
+    username  = local.use_elastic_index ? local.elastic_service_binding.username : ""
+    password  = local.use_elastic_index ? local.elastic_service_binding.password : ""
+    endpoints = local.use_elastic_index ? [local.elastic_service_binding.url] : []
+    ca_data   = local.use_elastic_index ? base64decode(local.elastic_service_binding.ca_data_base64) : null
+  }
+}
