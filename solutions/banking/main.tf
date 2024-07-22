@@ -1,7 +1,9 @@
 locals {
-  watsonx_assistant_url = "https://api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
-  watsonx_discovery_url = "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}"
-  sensitive_tokendata   = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
+  watsonx_assistant_url            = "https://api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
+  watson_discovery_url             = "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}"
+  watson_discovery_project_name    = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-project" : "gen-ai-rag-sample-app-project"
+  watson_discovery_collection_name = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-data" : "gen-ai-rag-sample-app-data"
+  sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 }
 
 data "ibm_iam_auth_token" "tokendata" {}
@@ -114,25 +116,25 @@ module "configure_project" {
 # Discovery project creation
 resource "restapi_object" "configure_discovery_project" {
   depends_on     = [data.ibm_iam_auth_token.tokendata]
-  path           = local.watsonx_discovery_url
-  read_path      = "${local.watsonx_discovery_url}/v2/projects/{id}?version=2023-03-31"
+  path           = local.watson_discovery_url
+  read_path      = "${local.watson_discovery_url}/v2/projects/{id}?version=2023-03-31"
   read_method    = "GET"
-  create_path    = "${local.watsonx_discovery_url}/v2/projects?version=2023-03-31"
+  create_path    = "${local.watson_discovery_url}/v2/projects?version=2023-03-31"
   create_method  = "POST"
   id_attribute   = "project_id"
   destroy_method = "DELETE"
-  destroy_path   = "${local.watsonx_discovery_url}/v2/projects/{id}?version=2023-03-31"
+  destroy_path   = "${local.watson_discovery_url}/v2/projects/{id}?version=2023-03-31"
   data           = <<-EOT
                   {
-                    "name": "gen-ai-rag-sample-app-project",
+                    "name": "${local.watson_discovery_project_name}",
                     "type": "document_retrieval"
                   }
                   EOT
   update_method  = "POST"
-  update_path    = "${local.watsonx_discovery_url}/v2/projects/{id}?version=2023-03-31"
+  update_path    = "${local.watson_discovery_url}/v2/projects/{id}?version=2023-03-31"
   update_data    = <<-EOT
                   {
-                    "name": "gen-ai-rag-sample-app-project",
+                    "name": "${local.watson_discovery_project_name}",
                     "type": "document_retrieval"
                   }
                   EOT
@@ -141,25 +143,25 @@ resource "restapi_object" "configure_discovery_project" {
 # Discovery collection creation
 resource "restapi_object" "configure_discovery_collection" {
   depends_on     = [data.ibm_iam_auth_token.tokendata, restapi_object.configure_discovery_project]
-  path           = local.watsonx_discovery_url
-  read_path      = "${local.watsonx_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections/{id}?version=2023-03-31"
+  path           = local.watson_discovery_url
+  read_path      = "${local.watson_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections/{id}?version=2023-03-31"
   read_method    = "GET"
-  create_path    = "${local.watsonx_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections?version=2023-03-31"
+  create_path    = "${local.watson_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections?version=2023-03-31"
   create_method  = "POST"
   id_attribute   = "collection_id"
   destroy_method = "DELETE"
-  destroy_path   = "${local.watsonx_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections/{id}?version=2023-03-31"
+  destroy_path   = "${local.watson_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections/{id}?version=2023-03-31"
   data           = <<-EOT
                   {
-                    "name": "gen-ai-rag-sample-app-data",
+                    "name": "${local.watson_discovery_collection_name}",
                     "description": "Sample data"
                   }
                   EOT
   update_method  = "POST"
-  update_path    = "${local.watsonx_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections/{id}?version=2023-03-31"
+  update_path    = "${local.watson_discovery_url}/v2/projects/${restapi_object.configure_discovery_project.id}/collections/{id}?version=2023-03-31"
   update_data    = <<-EOT
                   {
-                    "name": "gen-ai-rag-sample-app-data",
+                    "name": "${local.watson_discovery_collection_name}",
                     "description": "Sample data"
                   }
                   EOT
@@ -173,7 +175,7 @@ resource "null_resource" "discovery_file_upload" {
   }
 
   provisioner "local-exec" {
-    command     = "${path.module}/watson-scripts/discovery-file-upload.sh \"https:${local.watsonx_discovery_url}\" \"${restapi_object.configure_discovery_project.id}\" \"${restapi_object.configure_discovery_collection.id}\" \"${path.module}/artifacts/WatsonDiscovery\" "
+    command     = "${path.module}/watson-scripts/discovery-file-upload.sh \"https:${local.watson_discovery_url}\" \"${restapi_object.configure_discovery_project.id}\" \"${restapi_object.configure_discovery_collection.id}\" \"${path.module}/artifacts/WatsonDiscovery\" "
     interpreter = ["/bin/bash", "-c"]
     quiet       = true
     environment = {
