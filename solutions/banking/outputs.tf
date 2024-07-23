@@ -1,34 +1,49 @@
 output "watsonx_project_id" {
   description = "ID of the created WatsonX project."
-  value       = module.configure_project.watsonx_project_id
+  value       = local.use_watson_machine_learning ? module.configure_wml_project[0].watsonx_project_id : null
 }
 
 output "watsonx_project_url" {
   description = "WatsonX project ID URL."
-  value       = "https://dataplatform.cloud.ibm.com/projects/${module.configure_project.watsonx_project_id}"
+  value       = local.use_watson_machine_learning ? "https://dataplatform.cloud.ibm.com/projects/${module.configure_wml_project[0].watsonx_project_id}" : null
 }
 
 output "watsonx_assistant_api_url" {
   description = "WatsonX Assistant URL."
-  value       = local.watsonx_assistant_url
+  value       = "https:${local.watsonx_assistant_url}"
 }
 
 output "watson_discovery_api_url" {
   description = "Watson Discovery URL."
-  value       = "https:${local.watson_discovery_url}"
+  value       = local.use_watson_discovery ? "https:${local.watson_discovery_url}" : null
 }
 
 output "cos_instance_crn" {
   description = "COS instance CRN which is configured with the WatsonX project."
-  value       = module.cos.cos_instance_crn
+  value       = local.use_watson_machine_learning ? module.configure_wml_project[0].watson_ml_cos_instance.cos_instance_crn : null
 }
 
 output "watsonx_assistant_integration_id" {
   description = "WatsonX assistant integration ID."
-  value       = shell_script.watson_assistant.output["assistant_integration_id"]
+  value       = module.configure_watson_assistant.watsonx_assistant_integration_id
+}
+
+output "watsonx_assistant_environment" {
+  description = "WatsonX assistant target environment."
+  value       = module.configure_watson_assistant.watsonx_assistant_environment
 }
 
 output "watson_discovery_project_id" {
   description = "Watson Discovery Project ID."
-  value       = restapi_object.configure_discovery_project.id
+  value       = local.use_watson_discovery ? module.configure_discovery_project[0].watson_discovery_project_id : null
+}
+
+output "watsonx_assistant_skills_status" {
+  description = "WatsonX assistant skills status"
+  value       = module.configure_watson_assistant.watsonx_assistant_skills_status
+}
+
+output "elastic_collection_count" {
+  description = "Count of sample data items uplaoded to elastic index"
+  value       = local.use_elastic_index ? module.configure_elastic_index[0].elastic_upload_count : 0
 }

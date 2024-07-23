@@ -73,26 +73,55 @@ variable "watson_assistant_region" {
 variable "watson_discovery_instance_id" {
   description = "ID of the WatsonX Discovery instance"
   type        = string
+  default     = null # Discovery usage is optional, elastic can be used instead
 }
 
 variable "watson_discovery_region" {
   description = "Region where Watson Discovery resides"
   type        = string
+  default     = null # Discovery usage is optional, elastic can be used instead
 }
 
 variable "watson_machine_learning_instance_crn" {
   description = "Watson Machine Learning instance CRN"
   type        = string
+  default     = null # WML usage is optional, elastic can be used instead
 }
 
 variable "watson_machine_learning_instance_guid" {
   description = "Watson Machine Learning instance GUID"
   type        = string
+  default     = null # WML usage is optional, elastic can be used instead
 }
 
 variable "watson_machine_learning_instance_resource_name" {
   description = "Watson Machine Learning instance resource name"
   type        = string
+  default     = null # WML usage is optional, elastic can be used instead
+}
+
+variable "elastic_instance_crn" {
+  description = "Elastic ICD instance CRN"
+  type        = string
+  default     = null # Elastic usage is optional
+}
+
+variable "elastic_credentials_name" {
+  description = "Name of service credentials used to access Elastic instance"
+  type        = string
+  default     = "wxasst_db_user"
+}
+
+variable "elastic_index_name" {
+  description = "Name of index in Elastic instance"
+  type        = string
+  default     = "sample-rag-app-content"
+}
+
+variable "elastic_upload_sample_data" {
+  description = "Upload sample artifacts to elastic index"
+  type        = bool
+  default     = true
 }
 
 variable "signing_key" {
