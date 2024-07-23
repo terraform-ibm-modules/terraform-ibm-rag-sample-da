@@ -79,7 +79,12 @@ function delete_index_entries() {
     --data '{"query": {"match_all": {}}}' \
     --cacert <(cat <<< "$ELASTIC_CACERT" | base64 -d)
      )
-    check_error "$OUTPUT"
+    check_error "$OUTPUT" "index_not_found_exception"
+    if [[ ! $(echo "$OUTPUT" | jq -r '.error?.type') ==  "index_not_found_exception" ]]; then
+        echo "Index already deleted"
+        exit 0
+    fi
+
     if [[ ! $(echo "$OUTPUT" | jq -r '. | .failures | length') == "0" ]]; then
         echo "$OUTPUT"
         exit 1
@@ -95,7 +100,9 @@ function check_error() {
     fi
 
     local error
-    error=$(echo "$1" | jq '.error')
+    local ignore_error_type
+    ignore_error_type="${2:-none}"
+    error=$(echo "$1" | jq --arg ignore "$ignore_error_type" '.error | select(.type != $ignore)')
     if [[ -n "$error" && ! "$error" == "null" ]]; then
         echo "$error" | jq
         exit 1

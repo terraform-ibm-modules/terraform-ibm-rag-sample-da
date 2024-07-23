@@ -7,6 +7,9 @@ locals {
 resource "elasticstack_elasticsearch_index" "sample_index" {
   name                = var.elastic_index_name
   deletion_protection = false
+  mappings = jsonencode({ properties = {
+    for key, value in jsondecode(var.elastic_index_mapping) : value => { fields = { keyword = { ignore_above = 256, type = "keyword" } }, type = "text" }
+  } })
 }
 
 ## Upload sample data entries
@@ -18,7 +21,7 @@ resource "elasticstack_elasticsearch_index" "sample_index" {
 
 resource "shell_script" "elastic_index_entries" {
   count      = var.elastic_index_entries_file != null ? 1 : 0
-  depends_on = [elasticstack_elasticsearch_index.sample_index] #  shell_script.elastic_index
+  depends_on = [elasticstack_elasticsearch_index.sample_index]
   lifecycle_commands {
     create = <<-EOT
       set -e
@@ -35,7 +38,8 @@ resource "shell_script" "elastic_index_entries" {
   environment = {
     ELASTIC_URL          = var.elastic_service_binding.url
     ELASTIC_CACERT       = var.elastic_service_binding.ca_data_base64
-    ELASTIC_INDEX_NAME   = urlencode(elasticstack_elasticsearch_index.sample_index.name) # shell_script.elastic_index.output.index_name)
+    ELASTIC_INDEX_NAME   = urlencode(elasticstack_elasticsearch_index.sample_index.name)
+    ELASTIC_INDEX_ID     = elasticstack_elasticsearch_index.sample_index.id # Add dependency to force upload on index recreate
     ELASTIC_ENTRIES_FILE = var.elastic_index_entries_file
     MODULE_PATH          = path.module
   }
