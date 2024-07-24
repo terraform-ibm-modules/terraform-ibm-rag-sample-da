@@ -14,6 +14,12 @@ variable "elastic_index_name" {
   default     = "sample-rag-app-content"
 }
 
+variable "elastic_index_mapping" {
+  description = "Mapping configuration for the Elastic index"
+  type        = string
+  default     = "{}"
+}
+
 variable "elastic_index_entries_file" {
   description = "Path to JSON file with content entries"
   type        = string

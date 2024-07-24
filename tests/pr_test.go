@@ -170,7 +170,7 @@ func TestRunUpgradeExample(t *testing.T) {
 
 		options.IgnoreDestroys = testhelper.Exemptions{
 			List: []string{
-				"null_resource.discovery_file_upload",
+				"module.configure_discovery_project[0].null_resource.discovery_file_upload",
 			},
 		}
 
