@@ -22,7 +22,7 @@ terraform {
     }
     elasticstack = {
       source  = "elastic/elasticstack"
-      version = ">= 0.11.0"
+      version = ">= 0.11.4"
     }
   }
   required_version = ">= 1.3.0"
