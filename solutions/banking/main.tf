@@ -3,6 +3,8 @@ locals {
   use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null) ? true : false
   use_elastic_index           = (var.elastic_instance_crn != null) ? true : false
 
+  cos_instance_name                = var.prefix != null ? "${var.prefix}-rag-sample-app-cos" : "gen-ai-rag-sample-app-cos"
+  cos_kms_new_key_name             = var.prefix != null ? "${var.prefix}-${var.cos_kms_new_key_name}" : var.cos_kms_new_key_name
   watsonx_assistant_url            = "//api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
   watson_discovery_url             = local.use_watson_discovery ? "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}" : null
   watson_discovery_project_name    = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-project" : "gen-ai-rag-sample-app-project"
@@ -106,6 +108,7 @@ resource "ibm_resource_instance" "cd_instance" {
 
 module "configure_wml_project" {
   providers = {
+    ibm                           = ibm.ibm_resources
     ibm.ibm_resources             = ibm.ibm_resources
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
@@ -116,8 +119,12 @@ module "configure_wml_project" {
   watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
   watson_ml_project_name           = local.watson_ml_project_name
   resource_group_id                = module.resource_group.resource_group_id
-  cos_instance_name                = "${var.prefix}-rag-sample-app-cos"
-  location                         = var.watson_discovery_region # WatsonX services needs to be in the same region anyway
+  cos_instance_name                = local.cos_instance_name
+  cos_kms_crn                      = var.cos_kms_crn
+  cos_kms_key_crn                  = var.cos_kms_key_crn
+  cos_kms_ring_id                  = var.cos_kms_ring_id
+  cos_kms_new_key_name             = local.cos_kms_new_key_name
+  location                         = var.watson_assistant_region
 }
 
 moved {
