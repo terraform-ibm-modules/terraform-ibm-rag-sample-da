@@ -9,7 +9,7 @@ variable "cos_instance_name" {
 }
 
 variable "cos_kms_crn" {
-  description = "Key Protect service instance CRN used to encrypt the COS buckets used by the watsonx projects."
+  description = "KMS service instance CRN used to encrypt the COS buckets used by the watsonx projects."
   type        = string
   default     = null
 
@@ -23,19 +23,18 @@ variable "cos_kms_crn" {
 }
 
 variable "cos_kms_key_crn" {
-  description = "Key Protect key CRN used to encrypt the COS buckets used by the watsonx projects. If not set, then the cos_kms_new_key_name must be specified."
+  description = "KMS key CRN used to encrypt the COS buckets used by the watsonx projects. If not set, then the cos_kms_new_key_name must be specified."
   type        = string
   default     = null
 }
 
 variable "cos_kms_new_key_name" {
-  description = "Name of the Key Protect key to create for encrypting the COS buckets used by the watsonx projects."
+  description = "Name of the KMS key to create for encrypting the COS buckets used by the watsonx projects."
   type        = string
-  default     = ""
 }
 
 variable "cos_kms_ring_id" {
-  description = "The identifier of the Key Protect ring to create the cos_kms_new_key_name into. If it is not set, then the new key will be created in the default ring."
+  description = "The identifier of the KMS ring to create the cos_kms_new_key_name into. If it is not set, then the new key will be created in the default ring."
   type        = string
   default     = null
 }
