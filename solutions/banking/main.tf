@@ -114,7 +114,7 @@ module "configure_wml_project" {
   }
   count                            = local.use_watson_machine_learning ? 1 : 0
   source                           = "../../modules/watson-machine-learning"
-  watsonx_project_delegated        = var.cos_kms_crn ? true : false
+  watsonx_project_delegated        = var.cos_kms_crn != null ? true : false
   watson_ml_instance_guid          = var.watson_machine_learning_instance_guid
   watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
   watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
