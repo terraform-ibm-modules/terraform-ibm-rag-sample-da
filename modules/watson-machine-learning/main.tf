@@ -16,7 +16,7 @@ module "storage_delegation" {
     ibm.deployer                  = ibm
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//storage_delegation?ref=v1.4.7"
+  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//storage_delegation?ref=v1.4.8"
   count                = var.watsonx_project_delegated ? 1 : 0
   cos_kms_crn          = var.cos_kms_crn
   cos_kms_key_crn      = var.cos_kms_key_crn
