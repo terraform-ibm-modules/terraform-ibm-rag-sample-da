@@ -2,7 +2,7 @@ module github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da
 
 go 1.22
 
-toolchain go1.23.0
+toolchain go1.23.1
 
 require (
 	github.com/gruntwork-io/terratest v0.47.1
