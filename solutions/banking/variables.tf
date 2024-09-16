@@ -73,26 +73,87 @@ variable "watson_assistant_region" {
 variable "watson_discovery_instance_id" {
   description = "ID of the WatsonX Discovery instance"
   type        = string
+  default     = null # Discovery usage is optional, elastic can be used instead
 }
 
 variable "watson_discovery_region" {
   description = "Region where Watson Discovery resides"
   type        = string
+  default     = null # Discovery usage is optional, elastic can be used instead
 }
 
 variable "watson_machine_learning_instance_crn" {
   description = "Watson Machine Learning instance CRN"
   type        = string
+  default     = null # WML usage is optional, elastic can be used instead
 }
 
 variable "watson_machine_learning_instance_guid" {
   description = "Watson Machine Learning instance GUID"
   type        = string
+  default     = null # WML usage is optional, elastic can be used instead
 }
 
 variable "watson_machine_learning_instance_resource_name" {
   description = "Watson Machine Learning instance resource name"
   type        = string
+  default     = null # WML usage is optional, elastic can be used instead
+}
+
+variable "cos_kms_crn" {
+  description = "Key Protect service instance CRN used to encrypt the COS buckets used by the watsonx projects."
+  type        = string
+  default     = null
+
+  validation {
+    condition = anytrue([
+      can(regex("^crn:(.*:){3}kms:(.*:){2}[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.cos_kms_crn)),
+      var.cos_kms_crn == null,
+    ])
+    error_message = "Key Protect CRN validation failed."
+  }
+}
+
+variable "cos_kms_key_crn" {
+  description = "Key Protect key CRN used to encrypt the COS buckets used by the watsonx projects. If not set, then the cos_kms_new_key_name must be specified."
+  type        = string
+  default     = null
+}
+
+variable "cos_kms_new_key_name" {
+  description = "Name of the Key Protect key to create for encrypting the COS buckets used by the watsonx projects."
+  type        = string
+  default     = ""
+}
+
+variable "cos_kms_ring_id" {
+  description = "The identifier of the Key Protect ring to create the cos_kms_new_key_name into. If it is not set, then the new key will be created in the default ring."
+  type        = string
+  default     = null
+}
+
+variable "elastic_instance_crn" {
+  description = "Elastic ICD instance CRN"
+  type        = string
+  default     = null # Elastic usage is optional
+}
+
+variable "elastic_credentials_name" {
+  description = "Name of service credentials used to access Elastic instance"
+  type        = string
+  default     = "wxasst_db_user"
+}
+
+variable "elastic_index_name" {
+  description = "Name of index in Elastic instance"
+  type        = string
+  default     = "sample-rag-app-content"
+}
+
+variable "elastic_upload_sample_data" {
+  description = "Upload sample artifacts to elastic index"
+  type        = bool
+  default     = true
 }
 
 variable "signing_key" {
