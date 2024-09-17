@@ -53,6 +53,7 @@ resource "restapi_object" "configure_project" {
                     "description": "${var.watson_ml_project_description}",
                     "public": true,
                     "tags": ${jsonencode(var.watson_ml_project_tags)},
+                    ${var.watson_ml_project_sensitive ? "\"settings\": {\"access_restrictions\":  {\"data\": true} }," : ""}
                     "compute": [
                       {
                         "name": "${var.watson_ml_instance_resource_name}",
