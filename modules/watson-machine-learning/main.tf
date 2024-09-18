@@ -39,7 +39,7 @@ resource "restapi_object" "configure_project" {
   id_attribute   = "location"
   destroy_method = "DELETE"
   destroy_path   = "${local.dataplatform_api}/transactional{id}"
-  data           = <<-EOT
+  data = <<-EOT
                   {
                     "name": "${var.watson_ml_project_name}",
                     "generator": "watsonx-saas-da",
@@ -52,7 +52,8 @@ resource "restapi_object" "configure_project" {
                     },
                     "description": "${var.watson_ml_project_description}",
                     "public": true,
-                    "tags": ${jsonencode(var.watson_ml_project_tags)},
+                    "tags": ${jsonencode(var.watson_ml_project_tags)},${
+var.watson_ml_project_sensitive ? "\"settings\": {\"access_restrictions\":  {\"data\": true} }," : ""}
                     "compute": [
                       {
                         "name": "${var.watson_ml_instance_resource_name}",
@@ -63,9 +64,9 @@ resource "restapi_object" "configure_project" {
                     ]
                   }
                   EOT
-  update_method  = "PATCH"
-  update_path    = "${local.dataplatform_api}{id}"
-  update_data    = <<-EOT
+update_method = "PATCH"
+update_path   = "${local.dataplatform_api}{id}"
+update_data   = <<-EOT
                   {
                     "name": "${var.watson_ml_project_name}",
                     "type": "wx",

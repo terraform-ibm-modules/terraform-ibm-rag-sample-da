@@ -100,6 +100,18 @@ variable "watson_machine_learning_instance_resource_name" {
   default     = null # WML usage is optional, elastic can be used instead
 }
 
+variable "watson_project_name" {
+  description = "Watson project name"
+  type        = string
+  default     = "RAG-sample-project"
+}
+
+variable "watson_project_sensitive" {
+  description = "Mark Watson project as sensitive"
+  type        = bool
+  default     = false
+}
+
 variable "cos_kms_crn" {
   description = "Key Protect service instance CRN used to encrypt the COS buckets used by the watsonx projects."
   type        = string

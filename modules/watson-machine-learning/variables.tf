@@ -71,6 +71,12 @@ variable "watson_ml_project_tags" {
   default     = ["watsonx-ai-SaaS", "RAG-sample-project"]
 }
 
+variable "watson_ml_project_sensitive" {
+  description = "Mark Watson project as sensitive"
+  type        = bool
+  default     = false
+}
+
 variable "location" {
   description = "The location that's used with the IBM Cloud Terraform IBM provider. It's also used during resource creation."
   type        = string

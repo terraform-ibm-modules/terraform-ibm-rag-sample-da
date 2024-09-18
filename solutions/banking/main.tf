@@ -1,6 +1,6 @@
 locals {
   use_watson_discovery        = (var.watson_discovery_instance_id != null) ? true : false
-  use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null) ? true : false
+  use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null && var.watson_project_name != null) ? true : false
   use_elastic_index           = (var.elastic_instance_crn != null) ? true : false
 
   cos_instance_name                = var.prefix != null ? "${var.prefix}-rag-sample-app-cos" : "gen-ai-rag-sample-app-cos"
@@ -9,7 +9,7 @@ locals {
   watson_discovery_url             = local.use_watson_discovery ? "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}" : null
   watson_discovery_project_name    = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-project" : "gen-ai-rag-sample-app-project"
   watson_discovery_collection_name = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-data" : "gen-ai-rag-sample-app-data"
-  watson_ml_project_name           = var.prefix != null ? "${var.prefix}-RAG-sample-project" : "RAG-sample-project"
+  watson_ml_project_name           = var.prefix != null ? "${var.prefix}-${var.watson_project_name}" : var.watson_project_name
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
   elastic_index_name       = var.prefix != null ? "${var.prefix}-${var.elastic_index_name}" : var.elastic_index_name
@@ -119,6 +119,7 @@ module "configure_wml_project" {
   watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
   watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
   watson_ml_project_name           = local.watson_ml_project_name
+  watson_ml_project_sensitive      = var.watson_project_sensitive
   resource_group_id                = module.resource_group.resource_group_id
   cos_instance_name                = local.cos_instance_name
   cos_kms_crn                      = var.cos_kms_crn
