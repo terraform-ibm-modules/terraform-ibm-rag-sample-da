@@ -12,7 +12,8 @@ locals {
   watson_ml_project_name           = var.prefix != null ? "${var.prefix}-${var.watson_project_name}" : var.watson_project_name
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
-  elastic_index_name       = var.prefix != null ? "${var.prefix}-${var.elastic_index_name}" : var.elastic_index_name
+  # Translate index name to lowercase to avoid Elastic errors
+  elastic_index_name       = lower(var.prefix != null ? "${var.prefix}-${var.elastic_index_name}" : var.elastic_index_name)
   elastic_credentials_data = local.use_elastic_index ? jsondecode(data.ibm_resource_key.elastic_credentials[0].credentials_json).connection.https : null
   # Compose the URL without credentials to keep the latter sensitive
   elastic_service_binding = local.use_elastic_index ? {
@@ -206,6 +207,21 @@ moved {
   from = shell_script.watson_assistant
   to   = module.configure_watson_assistant.shell_script.watson_assistant
 }
+
+### Optionally add access policies for Watson Assistant sub-resources to an existing access group
+module "watson_assistant_access_policies" {
+  count  = var.existing_wa_access_group_name != null ? 1 : 0
+  source = "../../modules/access-groups"
+  providers = {
+    ibm = ibm.ibm_resources
+  }
+  existing_access_group_name = var.existing_wa_access_group_name
+  watsonx_assistant_id       = module.configure_watson_assistant.watsonx_assistant_id
+  assistant_environment_id   = module.configure_watson_assistant.watsonx_assistant_environment.environment_id
+  assistant_action_skill_id  = one([for skill in module.configure_watson_assistant.watsonx_assistant_environment.skill_references : skill.skill_id if skill.type == "action"])
+  assistant_search_skill_id  = one([for skill in module.configure_watson_assistant.watsonx_assistant_environment.skill_references : skill.skill_id if skill.type == "search"])
+}
+
 
 ### Make all pipeline properties dependent on CD instance
 ### to avoid errors when the toolchains are out of grace period
