@@ -1,7 +1,7 @@
 variable "watsonx_assistant_id" {
   description = "Watson Assistant instance ID"
   type        = string
-  default = null
+  default     = null
 }
 
 variable "assistant_environment_id" {
