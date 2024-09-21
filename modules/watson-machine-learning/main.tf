@@ -4,7 +4,7 @@ module "cos" {
     ibm = ibm.ibm_resources
   }
   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-  version           = "8.11.10"
+  version           = "8.11.11"
   resource_group_id = var.resource_group_id
   cos_instance_name = var.cos_instance_name
   cos_plan          = "standard"
@@ -16,7 +16,7 @@ module "storage_delegation" {
     ibm.deployer                  = ibm
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//storage_delegation?ref=v1.6.2"
+  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//storage_delegation?ref=v1.6.3"
   count                = var.watsonx_project_delegated ? 1 : 0
   cos_kms_crn          = var.cos_kms_crn
   cos_kms_key_crn      = var.cos_kms_key_crn
