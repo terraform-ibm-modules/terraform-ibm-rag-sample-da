@@ -287,7 +287,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pip
 
 # Update CI pipeline with public ingress subdomain
 resource "ibm_cd_tekton_pipeline_property" "cluster_public_ingress_subdomain_pipeline_property_ci" {
-  count       = var.provision_public_ingress ? 1 : 0
+  count       = var.cluster_name != null && var.provision_public_ingress ? 1 : 0
   provider    = ibm.ibm_resources
   depends_on  = [local.cd_instance]
   name        = "cluster_public_ingress_subdomain"
@@ -298,7 +298,7 @@ resource "ibm_cd_tekton_pipeline_property" "cluster_public_ingress_subdomain_pip
 
 # Update CD pipeline with public ingress subdomain
 resource "ibm_cd_tekton_pipeline_property" "cluster_public_ingress_subdomain_pipeline_property_cd" {
-  count       = var.provision_public_ingress ? 1 : 0
+  count       = var.cluster_name != null && var.provision_public_ingress ? 1 : 0
   provider    = ibm.ibm_resources
   depends_on  = [local.cd_instance]
   name        = "cluster_public_ingress_subdomain"
