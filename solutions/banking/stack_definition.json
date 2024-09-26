@@ -1,5 +1,33 @@
 {
   "inputs": [
+    {
+      "name": "prefix",
+      "required": true,
+      "type": "string",
+      "hidden": false,
+      "default": "rag"
+    },
+    {
+      "name": "existing_resource_group_name",
+      "required": false,
+      "type": "string",
+      "hidden": false,
+      "default": null
+    },
+    {
+      "name": "region",
+      "required": false,
+      "type": "string",
+      "hidden": false,
+      "default": "us-south"
+    },
+    {
+      "name": "signing_key",
+      "required": false,
+      "type": "password",
+      "hidden": false,
+      "default": "replace"
+    }
   ],
   "members": [
     {
@@ -87,16 +115,20 @@
   ],
   "outputs": [
     {
-      "name": "watsonx_project_url"
+      "name": "watsonx_project_url",
+      "value": "ref:./members/Testing - Sample RAG App Configuration/outputs/watsonx_project_url"
     },
     {
-      "name": "watsonx_project_id"
+      "name": "watsonx_project_id",
+      "value": "ref:./members/Testing - Sample RAG App Configuration/outputs/watsonx_project_id"
     },
     {
-      "name": "watson_discovery_api_url"
+      "name": "watson_discovery_api_url",
+      "value": "ref:./members/Testing - Sample RAG App Configuration/outputs/watson_discovery_api_url"
     },
     {
-      "name": "watson_discovery_project_id"
+      "name": "watson_discovery_project_id",
+      "value": "ref:./members/Testing - Sample RAG App Configuration/outputs/watson_discovery_project_id"
     }
   ]
 }

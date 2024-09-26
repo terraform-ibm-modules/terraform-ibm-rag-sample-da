@@ -80,6 +80,58 @@
             }
           ],
           "dependency_version_2": true,
+          "configuration": [
+            {
+              "key": "prefix",
+              "type": "string",
+              "description": "A prefix added to the name of all resources created by this solution. Used to avoid name clashes in the target account when existing this solution multiple times.",
+              "default_value": "rag",
+              "required": true
+            },
+            {
+              "key": "ibmcloud_api_key",
+              "type": "password",
+              "description": "The API Key used to provision all resources created in this solution.",
+              "required": true
+            },
+            {
+              "key": "signing_key",
+              "type": "password",
+              "description": "The key used to sign the application image built by the CI pipeline deployed in this solution; please refer to the documentation at https://github.com/terraform-ibm-modules/stack-retrieval-augmented-generation/blob/main/README.md for generating the key; if not set, all resources will deploy successfully, but the initial CI pipeline execution will fail at the signing step.",
+              "display_name": "Multiline secure value",
+              "default_value": "replace",
+              "required": false,
+              "custom_config": {
+                "type": "multiline_secure_value",
+                "grouping": "deployment",
+                "original_grouping": "deployment"
+              }
+            },
+            {
+              "key": "region",
+              "type": "string",
+              "default_value": "us-south",
+              "description": "The region in which all resources are deployed.",
+              "required": false,
+              "options": [
+                {
+                  "displayname": "us-south",
+                  "value": "us-south"
+                },
+                {
+                  "displayname": "eu-de",
+                  "value": "eu-de"
+                }
+              ]
+            },
+            {
+              "key": "existing_resource_group_name",
+              "type": "string",
+              "default_value": "__NULL__",
+              "description": "The name of an existing resource group that is used by this solution, takes precedence over resource_group_name. Prefix is NOT used for existing resource group. All resources created by this solution are deployed in this resource group.",
+              "required": false
+            }
+          ],
           "release_notes_url": "RELEASE NOTES URL",
           "outputs": [
           ],
