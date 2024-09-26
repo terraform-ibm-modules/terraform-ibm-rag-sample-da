@@ -1,8 +1,8 @@
 {
   "products": [
     {
-      "label": "Sample Retrieval Augmented Generation App Config",
-      "name": "customer-care-gen-ai-app-config-da",
+      "label": "Testing - Sample Retrieval Augmented Generation App Config",
+      "name": "testing-customer-care-gen-ai-app-config-da",
       "product_kind": "solution",
       "tags": [],
       "keywords": [],
