@@ -47,3 +47,13 @@ output "elastic_collection_count" {
   description = "Count of sample data items uplaoded to elastic index"
   value       = local.use_elastic_index ? module.configure_elastic_index[0].elastic_upload_count : 0
 }
+
+output "cluster_workload_ingress_subdomain" {
+  description = "Subdomain of the cluster's public ingress"
+  value       = var.cluster_name != null && var.provision_public_ingress ? module.cluster_ingress[0].cluster_workload_ingress_subdomain : null
+}
+
+output "sample_app_public_url" {
+  description = "URL of the public route of the sample app deployed on ROKS cluster"
+  value       = var.cluster_name != null && var.provision_public_ingress ? "https://gen-ai-rag-sample-app-tls-dev.${module.cluster_ingress[0].cluster_workload_ingress_subdomain}" : null
+}

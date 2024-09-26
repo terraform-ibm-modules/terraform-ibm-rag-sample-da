@@ -106,6 +106,21 @@ resource "ibm_resource_instance" "cd_instance" {
   resource_group_id = data.ibm_resource_group.toolchain_resource_group_id.id
 }
 
+# ----------------------- Cluster deployment options
+module "cluster_ingress" {
+  providers = {
+    restapi = restapi.oc_api
+    ibm     = ibm.ibm_resources
+  }
+  count              = var.cluster_name != null && var.provision_public_ingress ? 1 : 0
+  source             = "../../modules/roks-ingress"
+  prefix             = var.prefix
+  cluster_name       = var.cluster_name
+  cluster_zone_count = var.cluster_zone_count
+}
+
+
+# ----------------------- Watson services configuration
 module "configure_wml_project" {
   providers = {
     ibm                           = ibm.ibm_resources
@@ -268,6 +283,28 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pip
   pipeline_id = var.cd_pipeline_id
   type        = "text"
   value       = module.configure_watson_assistant.watsonx_assistant_integration_id
+}
+
+# Update CI pipeline with public ingress subdomain
+resource "ibm_cd_tekton_pipeline_property" "cluster_public_ingress_subdomain_pipeline_property_ci" {
+  count       = var.provision_public_ingress ? 1 : 0
+  provider    = ibm.ibm_resources
+  depends_on  = [local.cd_instance]
+  name        = "cluster_public_ingress_subdomain"
+  pipeline_id = var.ci_pipeline_id
+  type        = "text"
+  value       = module.cluster_ingress[0].cluster_workload_ingress_subdomain
+}
+
+# Update CD pipeline with public ingress subdomain
+resource "ibm_cd_tekton_pipeline_property" "cluster_public_ingress_subdomain_pipeline_property_cd" {
+  count       = var.provision_public_ingress ? 1 : 0
+  provider    = ibm.ibm_resources
+  depends_on  = [local.cd_instance]
+  name        = "cluster_public_ingress_subdomain"
+  pipeline_id = var.cd_pipeline_id
+  type        = "text"
+  value       = module.cluster_ingress[0].cluster_workload_ingress_subdomain
 }
 
 # Random string for webhook token

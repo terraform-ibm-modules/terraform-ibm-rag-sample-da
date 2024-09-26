@@ -201,3 +201,22 @@ variable "trigger_ci_pipeline_run" {
   type        = bool
   default     = true
 }
+
+variable "cluster_name" {
+  description = "Cluster name"
+  type        = string
+  default     = null
+}
+
+# Need to have the count of zones to determine how many rules to add to the ACL for public ingress
+variable "cluster_zone_count" {
+  description = "Number of zones the cluster nodes are deployed in"
+  type        = number
+  default     = 2
+}
+
+variable "provision_public_ingress" {
+  description = "Provision a public ingress controller with an Application Load Balancer for the sample app"
+  type        = bool
+  default     = true
+}
