@@ -24,6 +24,10 @@ terraform {
       source  = "elastic/elasticstack"
       version = ">= 0.11.7"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = ">= 2.32.0"
+    }
   }
   required_version = ">= 1.3.0"
 }
