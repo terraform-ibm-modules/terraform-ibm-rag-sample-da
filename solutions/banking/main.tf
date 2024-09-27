@@ -12,7 +12,8 @@ locals {
   watson_ml_project_name           = var.prefix != null ? "${var.prefix}-${var.watson_project_name}" : var.watson_project_name
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
-  elastic_index_name       = var.prefix != null ? "${var.prefix}-${var.elastic_index_name}" : var.elastic_index_name
+  # Translate index name to lowercase to avoid Elastic errors
+  elastic_index_name       = lower(var.prefix != null ? "${var.prefix}-${var.elastic_index_name}" : var.elastic_index_name)
   elastic_credentials_data = local.use_elastic_index ? jsondecode(data.ibm_resource_key.elastic_credentials[0].credentials_json).connection.https : null
   # Compose the URL without credentials to keep the latter sensitive
   elastic_service_binding = local.use_elastic_index ? {

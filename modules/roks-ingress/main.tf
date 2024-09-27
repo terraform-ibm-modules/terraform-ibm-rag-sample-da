@@ -106,6 +106,19 @@ resource "kubernetes_manifest" "workload_ingress" {
       status = "True"
     }
   }
+  timeouts {
+    create = "20m"
+    update = "20m"
+    delete = "20m"
+  }
+}
+
+# Give some more time for ALB private IPs to become available in case only the ingress is being re-created
+resource "time_sleep" "wait_for_ingress_provisioning" {
+  depends_on = [restapi_object.workload_nlb_dns, kubernetes_manifest.workload_ingress]
+
+  destroy_duration = "5s"
+  create_duration  = "5m"
 }
 
 data "kubernetes_service" "ingress_router_service" {
@@ -169,7 +182,7 @@ resource "restapi_object" "workload_nlb_dns_cleanup" {
 # Need to get private IPs (private_ips) of the ALB to include in ACL
 data "ibm_is_lb" "ingress_vpc_alb" {
   name       = "kube-${local.cluster_id}-${replace(data.kubernetes_service.ingress_router_service.metadata[0].uid, "-", "")}"
-  depends_on = [time_sleep.wait_for_alb_provisioning]
+  depends_on = [time_sleep.wait_for_alb_provisioning, time_sleep.wait_for_ingress_provisioning]
 }
 
 # Assuming all SLZ zones for the ALB subnet will have the same ACL
