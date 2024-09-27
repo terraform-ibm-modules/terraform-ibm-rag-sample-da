@@ -249,7 +249,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
 resource "ibm_cd_tekton_pipeline_property" "resource_group_name_pipeline_property_cd" {
   depends_on  = [local.cd_instance]
   provider    = ibm.ibm_resources
-  name        = "RESOURCE_GROUP_NAME"
+  name        = "dev-resource-group"
   pipeline_id = var.cd_pipeline_id
   type        = "text"
   value       = var.resource_group_name
