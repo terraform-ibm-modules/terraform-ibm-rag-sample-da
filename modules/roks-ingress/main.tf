@@ -120,12 +120,12 @@ resource "time_sleep" "wait_for_ingress_provisioning" {
   destroy_duration = "5s"
   create_duration  = "7m"
   triggers = {
-     ingress_uid = kubernetes_manifest.workload_ingress.object.metadata.uid 
+    ingress_uid = kubernetes_manifest.workload_ingress.object.metadata.uid
   }
 }
 
 data "kubernetes_service" "ingress_router_service" {
-  depends_on = [ time_sleep.wait_for_ingress_provisioning ]
+  depends_on = [time_sleep.wait_for_ingress_provisioning]
   metadata {
     name      = "router-${kubernetes_manifest.workload_ingress.object.metadata.name}"
     namespace = "openshift-ingress"
