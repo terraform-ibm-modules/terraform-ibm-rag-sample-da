@@ -245,6 +245,16 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
   value       = var.watson_assistant_instance_id
 }
 
+# Update CD pipeline with Resource Group
+resource "ibm_cd_tekton_pipeline_property" "resource_group_name_pipeline_property_cd" {
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  name        = "RESOURCE_GROUP_NAME"
+  pipeline_id = var.cd_pipeline_id
+  type        = "text"
+  value       = var.resource_group_name
+}
+
 # Update CI pipeline with app flavor
 resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property_ci" {
   depends_on  = [local.cd_instance]
