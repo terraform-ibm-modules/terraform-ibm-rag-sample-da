@@ -251,7 +251,7 @@ resource "ibm_cd_tekton_pipeline_property" "resource_group_name_pipeline_propert
   count       = var.resource_group_name != null ? 1 : 0
   provider    = ibm.ibm_resources
   name        = "dev-resource-group"
-  pipeline_id = var.cd_pipeline_id
+  pipeline_id = var.ci_pipeline_id
   type        = "text"
   value       = var.resource_group_name
 }
