@@ -98,11 +98,11 @@ resource "kubernetes_manifest" "workload_ingress" {
     }
   }
   wait {
-    # Wait until the ingress controller is fully available
-    # This requires a TLS secret to be created
-    # and will give time for the ALB to finish provisioning (private IPs are available)
+    # Wait until the load balancer is provisioned
+    # The subsequent wait will give time for the ALB to finish provisioning (private IPs are available)
+    # The ingress controller will become fully available when the TLS secret is created, but that may take much longer
     condition {
-      type   = "Available"
+      type   = "LoadBalancerReady"
       status = "True"
     }
   }
@@ -118,10 +118,14 @@ resource "time_sleep" "wait_for_ingress_provisioning" {
   depends_on = [restapi_object.workload_nlb_dns, kubernetes_manifest.workload_ingress]
 
   destroy_duration = "5s"
-  create_duration  = "5m"
+  create_duration  = "7m"
+  triggers = {
+     ingress_uid = kubernetes_manifest.workload_ingress.object.metadata.uid 
+  }
 }
 
 data "kubernetes_service" "ingress_router_service" {
+  depends_on = [ time_sleep.wait_for_ingress_provisioning ]
   metadata {
     name      = "router-${kubernetes_manifest.workload_ingress.object.metadata.name}"
     namespace = "openshift-ingress"
