@@ -98,17 +98,34 @@ resource "kubernetes_manifest" "workload_ingress" {
     }
   }
   wait {
-    # Wait until the ingress controller is fully available
-    # This requires a TLS secret to be created
-    # and will give time for the ALB to finish provisioning (private IPs are available)
+    # Wait until the load balancer is provisioned
+    # The subsequent wait will give time for the ALB to finish provisioning (private IPs are available)
+    # The ingress controller will become fully available when the TLS secret is created, but that may take much longer
     condition {
-      type   = "Available"
+      type   = "LoadBalancerReady"
       status = "True"
     }
+  }
+  timeouts {
+    create = "20m"
+    update = "20m"
+    delete = "20m"
+  }
+}
+
+# Give some more time for ALB private IPs to become available in case only the ingress is being re-created
+resource "time_sleep" "wait_for_ingress_provisioning" {
+  depends_on = [restapi_object.workload_nlb_dns, kubernetes_manifest.workload_ingress]
+
+  destroy_duration = "5s"
+  create_duration  = "7m"
+  triggers = {
+    ingress_uid = kubernetes_manifest.workload_ingress.object.metadata.uid
   }
 }
 
 data "kubernetes_service" "ingress_router_service" {
+  depends_on = [time_sleep.wait_for_ingress_provisioning]
   metadata {
     name      = "router-${kubernetes_manifest.workload_ingress.object.metadata.name}"
     namespace = "openshift-ingress"
@@ -169,7 +186,7 @@ resource "restapi_object" "workload_nlb_dns_cleanup" {
 # Need to get private IPs (private_ips) of the ALB to include in ACL
 data "ibm_is_lb" "ingress_vpc_alb" {
   name       = "kube-${local.cluster_id}-${replace(data.kubernetes_service.ingress_router_service.metadata[0].uid, "-", "")}"
-  depends_on = [time_sleep.wait_for_alb_provisioning]
+  depends_on = [time_sleep.wait_for_alb_provisioning, time_sleep.wait_for_ingress_provisioning]
 }
 
 # Assuming all SLZ zones for the ALB subnet will have the same ACL
