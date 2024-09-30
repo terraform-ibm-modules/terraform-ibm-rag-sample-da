@@ -246,6 +246,26 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
   value       = var.watson_assistant_instance_id
 }
 
+# Update CI pipeline with Assistant instance region
+resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_region_pipeline_property_ci" {
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  name        = "watson_assistant_region"
+  pipeline_id = var.ci_pipeline_id
+  type        = "text"
+  value       = var.watson_assistant_region
+}
+
+# Update CD pipeline with Assistant instance region
+resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_region_pipeline_property_cd" {
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  name        = "watson_assistant_region"
+  pipeline_id = var.cd_pipeline_id
+  type        = "text"
+  value       = var.watson_assistant_region
+}
+
 # Update CD pipeline with Resource Group
 resource "ibm_cd_tekton_pipeline_property" "resource_group_name_pipeline_property_cd" {
   depends_on  = [local.cd_instance]
