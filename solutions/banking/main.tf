@@ -250,7 +250,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_region_pipeline_property_ci" {
   depends_on  = [local.cd_instance]
   provider    = ibm.ibm_resources
-  name        = "watson_assistant_region"
+  name        = "watsonx_assistant_region"
   pipeline_id = var.ci_pipeline_id
   type        = "text"
   value       = var.watson_assistant_region
@@ -260,7 +260,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_region_pipeline_pr
 resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_region_pipeline_property_cd" {
   depends_on  = [local.cd_instance]
   provider    = ibm.ibm_resources
-  name        = "watson_assistant_region"
+  name        = "watsonx_assistant_region"
   pipeline_id = var.cd_pipeline_id
   type        = "text"
   value       = var.watson_assistant_region
