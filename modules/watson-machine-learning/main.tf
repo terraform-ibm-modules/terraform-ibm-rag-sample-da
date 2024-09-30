@@ -4,7 +4,7 @@ module "cos" {
     ibm = ibm.ibm_resources
   }
   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-  version           = "8.11.10"
+  version           = "8.11.14"
   resource_group_id = var.resource_group_id
   cos_instance_name = var.cos_instance_name
   cos_plan          = "standard"
@@ -16,7 +16,7 @@ module "storage_delegation" {
     ibm.deployer                  = ibm
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//storage_delegation?ref=v1.6.2"
+  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//storage_delegation?ref=v1.6.6"
   count                = var.watsonx_project_delegated ? 1 : 0
   cos_kms_crn          = var.cos_kms_crn
   cos_kms_key_crn      = var.cos_kms_key_crn
@@ -39,7 +39,7 @@ resource "restapi_object" "configure_project" {
   id_attribute   = "location"
   destroy_method = "DELETE"
   destroy_path   = "${local.dataplatform_api}/transactional{id}"
-  data           = <<-EOT
+  data = <<-EOT
                   {
                     "name": "${var.watson_ml_project_name}",
                     "generator": "watsonx-saas-da",
@@ -52,7 +52,8 @@ resource "restapi_object" "configure_project" {
                     },
                     "description": "${var.watson_ml_project_description}",
                     "public": true,
-                    "tags": ${jsonencode(var.watson_ml_project_tags)},
+                    "tags": ${jsonencode(var.watson_ml_project_tags)},${
+var.watson_ml_project_sensitive ? "\"settings\": {\"access_restrictions\":  {\"data\": true} }," : ""}
                     "compute": [
                       {
                         "name": "${var.watson_ml_instance_resource_name}",
@@ -63,9 +64,9 @@ resource "restapi_object" "configure_project" {
                     ]
                   }
                   EOT
-  update_method  = "PATCH"
-  update_path    = "${local.dataplatform_api}{id}"
-  update_data    = <<-EOT
+update_method = "PATCH"
+update_path   = "${local.dataplatform_api}{id}"
+update_data   = <<-EOT
                   {
                     "name": "${var.watson_ml_project_name}",
                     "type": "wx",

@@ -100,6 +100,18 @@ variable "watson_machine_learning_instance_resource_name" {
   default     = null # WML usage is optional, elastic can be used instead
 }
 
+variable "watson_project_name" {
+  description = "Watson project name"
+  type        = string
+  default     = "RAG-sample-project"
+}
+
+variable "watson_project_sensitive" {
+  description = "Mark Watson project as sensitive"
+  type        = bool
+  default     = false
+}
+
 variable "cos_kms_crn" {
   description = "Key Protect service instance CRN used to encrypt the COS buckets used by the watsonx projects."
   type        = string
@@ -198,6 +210,25 @@ variable "secrets_manager_region" {
 
 variable "trigger_ci_pipeline_run" {
   description = "Whether to trigger the CI pipeline to build and deploy the application when deploying this solution"
+  type        = bool
+  default     = true
+}
+
+variable "cluster_name" {
+  description = "Cluster name"
+  type        = string
+  default     = null
+}
+
+# Need to have the count of zones to determine how many rules to add to the ACL for public ingress
+variable "cluster_zone_count" {
+  description = "Number of zones the cluster nodes are deployed in"
+  type        = number
+  default     = 2
+}
+
+variable "provision_public_ingress" {
+  description = "Provision a public ingress controller with an Application Load Balancer for the sample app"
   type        = bool
   default     = true
 }

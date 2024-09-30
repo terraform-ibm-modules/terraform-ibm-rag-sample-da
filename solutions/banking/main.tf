@@ -1,6 +1,6 @@
 locals {
   use_watson_discovery        = (var.watson_discovery_instance_id != null) ? true : false
-  use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null) ? true : false
+  use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null && var.watson_project_name != null) ? true : false
   use_elastic_index           = (var.elastic_instance_crn != null) ? true : false
 
   cos_instance_name                = var.prefix != null ? "${var.prefix}-rag-sample-app-cos" : "gen-ai-rag-sample-app-cos"
@@ -9,10 +9,11 @@ locals {
   watson_discovery_url             = local.use_watson_discovery ? "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}" : null
   watson_discovery_project_name    = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-project" : "gen-ai-rag-sample-app-project"
   watson_discovery_collection_name = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-data" : "gen-ai-rag-sample-app-data"
-  watson_ml_project_name           = var.prefix != null ? "${var.prefix}-RAG-sample-project" : "RAG-sample-project"
+  watson_ml_project_name           = var.prefix != null ? "${var.prefix}-${var.watson_project_name}" : var.watson_project_name
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
-  elastic_index_name       = var.prefix != null ? "${var.prefix}-${var.elastic_index_name}" : var.elastic_index_name
+  # Translate index name to lowercase to avoid Elastic errors
+  elastic_index_name       = lower(var.prefix != null ? "${var.prefix}-${var.elastic_index_name}" : var.elastic_index_name)
   elastic_credentials_data = local.use_elastic_index ? jsondecode(data.ibm_resource_key.elastic_credentials[0].credentials_json).connection.https : null
   # Compose the URL without credentials to keep the latter sensitive
   elastic_service_binding = local.use_elastic_index ? {
@@ -115,6 +116,21 @@ resource "ibm_resource_instance" "cd_instance" {
   resource_group_id = data.ibm_resource_group.toolchain_resource_group_id.id
 }
 
+# ----------------------- Cluster deployment options
+module "cluster_ingress" {
+  providers = {
+    restapi = restapi.oc_api
+    ibm     = ibm.ibm_resources
+  }
+  count              = var.cluster_name != null && var.provision_public_ingress ? 1 : 0
+  source             = "../../modules/roks-ingress"
+  prefix             = var.prefix
+  cluster_name       = var.cluster_name
+  cluster_zone_count = var.cluster_zone_count
+}
+
+
+# ----------------------- Watson services configuration
 module "configure_wml_project" {
   providers = {
     ibm                           = ibm.ibm_resources
@@ -128,6 +144,7 @@ module "configure_wml_project" {
   watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
   watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
   watson_ml_project_name           = local.watson_ml_project_name
+  watson_ml_project_sensitive      = var.watson_project_sensitive
   resource_group_id                = module.resource_group.resource_group_id
   cos_instance_name                = local.cos_instance_name
   cos_kms_crn                      = var.cos_kms_crn
@@ -238,6 +255,37 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
   value       = var.watson_assistant_instance_id
 }
 
+# Update CI pipeline with Assistant instance region
+resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_region_pipeline_property_ci" {
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  name        = "watsonx_assistant_region"
+  pipeline_id = var.ci_pipeline_id
+  type        = "text"
+  value       = var.watson_assistant_region
+}
+
+# Update CD pipeline with Assistant instance region
+resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_region_pipeline_property_cd" {
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  name        = "watsonx_assistant_region"
+  pipeline_id = var.cd_pipeline_id
+  type        = "text"
+  value       = var.watson_assistant_region
+}
+
+# Update CD pipeline with Resource Group
+resource "ibm_cd_tekton_pipeline_property" "resource_group_name_pipeline_property_cd" {
+  depends_on  = [local.cd_instance]
+  count       = var.resource_group_name != null ? 1 : 0
+  provider    = ibm.ibm_resources
+  name        = "dev-resource-group"
+  pipeline_id = var.ci_pipeline_id
+  type        = "text"
+  value       = var.resource_group_name
+}
+
 # Update CI pipeline with app flavor
 resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property_ci" {
   depends_on  = [local.cd_instance]
@@ -276,6 +324,28 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pip
   pipeline_id = var.cd_pipeline_id
   type        = "text"
   value       = module.configure_watson_assistant.watsonx_assistant_integration_id
+}
+
+# Update CI pipeline with public ingress subdomain
+resource "ibm_cd_tekton_pipeline_property" "cluster_public_ingress_subdomain_pipeline_property_ci" {
+  count       = var.cluster_name != null && var.provision_public_ingress ? 1 : 0
+  provider    = ibm.ibm_resources
+  depends_on  = [local.cd_instance]
+  name        = "cluster_public_ingress_subdomain"
+  pipeline_id = var.ci_pipeline_id
+  type        = "text"
+  value       = module.cluster_ingress[0].cluster_workload_ingress_subdomain
+}
+
+# Update CD pipeline with public ingress subdomain
+resource "ibm_cd_tekton_pipeline_property" "cluster_public_ingress_subdomain_pipeline_property_cd" {
+  count       = var.cluster_name != null && var.provision_public_ingress ? 1 : 0
+  provider    = ibm.ibm_resources
+  depends_on  = [local.cd_instance]
+  name        = "cluster_public_ingress_subdomain"
+  pipeline_id = var.cd_pipeline_id
+  type        = "text"
+  value       = module.cluster_ingress[0].cluster_workload_ingress_subdomain
 }
 
 # Random string for webhook token
