@@ -23,7 +23,7 @@ terraform {
     }
     elasticstack = {
       source  = "elastic/elasticstack"
-      version = "0.11.7"
+      version = "0.11.8"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
