@@ -106,12 +106,6 @@ variable "watson_project_name" {
   default     = "RAG-sample-project"
 }
 
-variable "watson_project_sensitive" {
-  description = "Mark Watson project as sensitive"
-  type        = bool
-  default     = false
-}
-
 variable "cos_kms_crn" {
   description = "Key Protect service instance CRN used to encrypt the COS buckets used by the watsonx projects."
   type        = string
