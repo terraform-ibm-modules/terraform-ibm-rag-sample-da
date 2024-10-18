@@ -135,7 +135,6 @@ module "configure_wml_project" {
   watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
   watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
   watson_ml_project_name           = local.watson_ml_project_name
-  watson_ml_project_sensitive      = var.watson_project_sensitive
   resource_group_id                = module.resource_group.resource_group_id
   cos_instance_name                = local.cos_instance_name
   cos_kms_crn                      = var.cos_kms_crn
