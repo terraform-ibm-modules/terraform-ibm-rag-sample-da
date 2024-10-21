@@ -19,7 +19,7 @@
             "profiles": [
               {
                 "profile_name": "IBM Cloud Framework for Financial Services",
-                "profile_version": "1.6.0"
+                "profile_version": "1.7.0"
               }
             ]
           },
@@ -44,8 +44,7 @@
             ]
           },
           "release_notes_url": "RELEASE NOTES URL",
-          "outputs": [
-          ],
+          "outputs": [],
           "install_type": "fullstack"
         }
       ]
