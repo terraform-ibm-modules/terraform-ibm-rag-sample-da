@@ -275,8 +275,8 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_region_pipeline_pr
   value       = var.watson_assistant_region
 }
 
-# Update CD pipeline with Resource Group
-resource "ibm_cd_tekton_pipeline_property" "resource_group_name_pipeline_property_cd" {
+# Update CI pipeline with Resource Group
+resource "ibm_cd_tekton_pipeline_property" "resource_group_name_pipeline_property_ci" {
   depends_on  = [local.cd_instance]
   count       = var.resource_group_name != null ? 1 : 0
   provider    = ibm.ibm_resources
@@ -284,6 +284,10 @@ resource "ibm_cd_tekton_pipeline_property" "resource_group_name_pipeline_propert
   pipeline_id = var.ci_pipeline_id
   type        = "text"
   value       = var.resource_group_name
+}
+moved {
+  from = ibm_cd_tekton_pipeline_property.resource_group_name_pipeline_property_cd
+  to   = ibm_cd_tekton_pipeline_property.resource_group_name_pipeline_property_ci
 }
 
 # Update CI pipeline with app flavor
@@ -409,6 +413,10 @@ resource "null_resource" "ci_pipeline_run" {
     ibm_cd_tekton_pipeline_trigger_property.ci_pipeline_webhook_branch_property,
     ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci,
     ibm_cd_tekton_pipeline_property.watsonx_assistant_id_pipeline_property_ci,
+    ibm_cd_tekton_pipeline_property.watsonx_assistant_region_pipeline_property_ci,
+    ibm_cd_tekton_pipeline_property.resource_group_name_pipeline_property_ci,
+    ibm_cd_tekton_pipeline_property.application_flavor_pipeline_property_ci,
+    ibm_cd_tekton_pipeline_property.cluster_public_ingress_subdomain_pipeline_property_ci,
     ibm_resource_instance.cd_instance
   ]
   triggers = {
