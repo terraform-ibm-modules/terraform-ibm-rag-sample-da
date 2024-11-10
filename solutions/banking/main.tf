@@ -46,7 +46,7 @@ module "secrets_manager_secret_ibm_iam" {
   }
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.3.2"
+  version                 = "1.3.3"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "ibmcloud-api-key"
@@ -63,7 +63,7 @@ module "secrets_manager_secret_signing_key" {
   }
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.3.2"
+  version                 = "1.3.3"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "signing-key"
@@ -80,7 +80,7 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   }
   count                   = (var.create_secrets && var.watsonx_admin_api_key != null) ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.3.2"
+  version                 = "1.3.3"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "watsonx-admin-api-key"
