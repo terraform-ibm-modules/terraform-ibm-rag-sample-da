@@ -71,6 +71,7 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"signing_key":                                    terraform.Output(t, existingTerraformOptions, "signing_key"),
 			"trigger_ci_pipeline_run":                        false,
 			"secrets_manager_endpoint_type":                  "public",
+			"provider_visibility":                            "public",
 			"create_secrets":                                 false,
 		},
 	})

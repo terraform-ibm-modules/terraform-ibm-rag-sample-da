@@ -43,6 +43,25 @@
               }
             ]
           },
+          "configuration":[
+            {
+            "key": "provider_visibility",
+            "options": [
+              {
+                "displayname": "private",
+                "value": "private"
+              },
+              {
+                "displayname": "public",
+                "value": "public"
+              },
+              {
+                "displayname": "public-and-private",
+                "value": "public-and-private"
+              }
+            ]
+          }
+        ],
           "release_notes_url": "RELEASE NOTES URL",
           "outputs": [],
           "install_type": "fullstack"
