@@ -12,8 +12,8 @@
       "flavors": [
         {
 					"label": "Basic (Deploy on Code Engine)",
-					"name": "basic",
-					"working_directory": "solutions/basic",
+					"name": "banking",
+					"working_directory": "solutions/banking",
 					"compliance": {
 						"authority": "scc-v3",
 						"profiles": [
