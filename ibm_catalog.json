@@ -11,7 +11,7 @@
       "provider_name": "IBM",
       "flavors": [
         {
-					"label": "Basic (Deploy on Code Engine)",
+					"label": "Banking Application - Basic (Deploy on Code Engine)",
 					"name": "banking",
 					"working_directory": "solutions/banking",
 					"compliance": {
@@ -179,7 +179,36 @@
 								"Basic-dda0"
 							],
 							"id": "4460375e-8a34-46fc-9f06-0eb60e7d4f8c",
-							"input_mapping": [],
+							"input_mapping": [
+								{
+									"dependency_input": "region",
+									"version_input": "watson_discovery_region"
+								},
+								{
+									"dependency_input": "region",
+									"version_input": "watson_assistant_region"
+								},
+								{
+									"dependency_output": "watsonx_assistant_guid",
+									"version_input": "watson_assistant_instance_id"
+								},
+								{
+									"dependency_output": "watson_machine_learning_guid",
+									"version_input": "watson_machine_learning_instance_guid"
+								},
+								{
+									"dependency_output": "watson_machine_learning_name",
+									"version_input": "watson_machine_learning_instance_resource_name"
+								},
+								{
+									"dependency_output": "watson_machine_learning_crn",
+									"version_input": "watson_machine_learning_instance_crn"
+								},
+								{
+									"dependency_output": "elastic_instance_crn",
+									"version_input": "elastic_instance_crn"
+								}
+							],
 							"optional": false,
 							"version": "^1.0.9"
 						},
@@ -191,7 +220,20 @@
 								"standard"
 							],
 							"id": "8e851423-4cfc-40e7-a008-fb449d953cb9",
-							"input_mapping": [],
+							"input_mapping": [
+								{
+									"dependency_input": "region",
+									"version_input": "toolchain_region"
+								},
+								{
+									"dependency_output": "cd_pipeline_id",
+									"version_input": "cd_pipeline_id"
+								},
+								{
+									"dependency_output": "ci_pipeline_id",
+									"version_input": "ci_pipeline_id"
+								}
+							],
 							"optional": false,
 							"version": "^1.0.3"
 						},
@@ -206,6 +248,81 @@
 							"on_by_default": true,
 							"optional": true,
 							"version": "^1.0.1"
+						},
+						{
+							"name": "deploy-arch-ibm-account-infra-base",
+							"catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
+							"flavors": [
+								"standard"
+							],
+							"id": "63641cec-6093-4b4f-b7b0-98d2f4185cd6-global",
+							"input_mapping": [
+								{
+									"dependency_output": "devops_resource_group_name",
+									"version_input": "resource_group_name"
+								},
+								{
+									"version_input": "use_existing_resource_group",
+									"value": true
+								}
+							],
+							"optional": true,
+							"on_by_default": true,
+							"version": ">=1.11.6"
+						},
+						{
+							"name": "testing-deploy-arch-ibm-kms",
+							"id": "85fdbd7a-8c77-4abd-b716-653a31f3aba9",
+							"version": ">=1.0.1",
+							"flavors": [
+								"standard"
+							],
+							"catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
+							"optional": true,
+							"on_by_default": true,
+							"input_mapping": [
+								{
+									"dependency_output": "kms_instance_crn",
+									"version_input": "cos_kms_crn"
+								}
+							]
+						},
+						{
+							"name": "testing-deploy-arch-ibm-kms",
+							"id": "85fdbd7a-8c77-4abd-b716-653a31f3aba9",
+							"version": ">=1.0.1",
+							"flavors": [
+								"standard"
+							],
+							"catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
+							"optional": true,
+							"on_by_default": true,
+							"input_mapping": [
+								{
+									"dependency_output": "kms_instance_crn",
+									"version_input": "cos_kms_crn"
+								}
+							]
+						},
+						{
+							"name": "testing-deploy-arch-ibm-secrets-manager",
+							"id": "5f149ae6-d781-460a-977d-c8c4171ad0fa",
+							"version": ">=1.2.0",
+							"flavors": [
+								"standard"
+							],
+							"catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
+							"optional": false,
+							"input_mapping": [
+								{
+									"dependency_output": "secrets_manager_guid",
+									"version_input": "secrets_manager_guid"
+								},
+								{
+									"dependency_output": "secrets_manager_region",
+									"version_input": "secrets_manager_region"
+								}
+							]
 						}
 					],
 					"dependency_version_2": true,
