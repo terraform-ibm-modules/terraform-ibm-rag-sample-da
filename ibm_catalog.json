@@ -272,6 +272,10 @@
 								{
 									"version_input": "use_existing_resource_group",
 									"value": true
+								},
+								{
+									"dependency_output": "devops_resource_group_name",
+									"version_input": "toolchain_resource_group"
 								}
 							],
 							"optional": true,
