@@ -205,7 +205,11 @@
 									"version_input": "watson_machine_learning_instance_crn"
 								},
 								{
-									"dependency_output": "elastic_instance_crn",
+									"dependency_output": "watson_discovery_instance_id",
+									"version_input": "watson_discovery_instance_id"
+								},
+								{
+									"dependency_output": "elasticsearch_crn",
 									"version_input": "elastic_instance_crn"
 								}
 							],
@@ -232,6 +236,10 @@
 								{
 									"dependency_output": "ci_pipeline_id",
 									"version_input": "ci_pipeline_id"
+								},
+								{
+									"dependency_output": "workload_cluster_name",
+									"version_input": "cluster_name"
 								}
 							],
 							"optional": false,
