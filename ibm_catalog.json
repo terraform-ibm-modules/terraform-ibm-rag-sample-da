@@ -214,14 +214,13 @@
                 }
               ],
               "optional": false,
-              "version": "^1.0.9"
+              "version": ">=1.0.13"
             },
             {
               "name": "Testing_Retrieval_Augmented_Generation_Pattern_dev",
               "catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
               "flavors": [
-                "basic",
-                "standard"
+                "basic"
               ],
               "id": "8e851423-4cfc-40e7-a008-fb449d953cb9",
               "input_mapping": [
@@ -243,7 +242,7 @@
                 }
               ],
               "optional": false,
-              "version": "^1.0.3"
+              "version": ">=1.2.5"
             },
             {
               "name": "testing-deploy-arch-ibm-scc",
@@ -255,7 +254,7 @@
               "input_mapping": [],
               "on_by_default": true,
               "optional": true,
-              "version": "^1.0.1"
+              "version": ">=1.0.6"
             },
             {
               "name": "deploy-arch-ibm-account-infra-base",
@@ -280,12 +279,462 @@
               ],
               "optional": true,
               "on_by_default": true,
-              "version": ">=1.11.6"
+              "version": ">=v1.16.2"
             },
             {
               "name": "testing-deploy-arch-ibm-kms",
               "id": "85fdbd7a-8c77-4abd-b716-653a31f3aba9",
-              "version": ">=1.0.1",
+              "version": ">=1.0.5",
+              "flavors": [
+                "standard"
+              ],
+              "catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
+              "optional": true,
+              "on_by_default": true,
+              "input_mapping": [
+                {
+                  "dependency_output": "kms_instance_crn",
+                  "version_input": "cos_kms_crn"
+                }
+              ]
+            },
+            {
+              "name": "testing-deploy-arch-ibm-secrets-manager",
+              "id": "5f149ae6-d781-460a-977d-c8c4171ad0fa",
+              "version": ">=1.2.0",
+              "flavors": [
+                "standard"
+              ],
+              "catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
+              "optional": false,
+              "input_mapping": [
+                {
+                  "dependency_output": "secrets_manager_guid",
+                  "version_input": "secrets_manager_guid"
+                },
+                {
+                  "dependency_output": "secrets_manager_region",
+                  "version_input": "secrets_manager_region"
+                }
+              ]
+            }
+          ],
+          "dependency_version_2": true,
+          "configuration": [
+            {
+              "key": "prefix",
+              "required": true
+            },
+            {
+              "key": "ibmcloud_api_key",
+              "required": true
+            },
+            {
+              "key": "signing_key",
+              "display_name": "Multiline secure value",
+              "required": false,
+              "custom_config": {
+                "type": "multiline_secure_value",
+                "grouping": "deployment",
+                "original_grouping": "deployment"
+              }
+            },
+            {
+              "key": "region",
+              "required": false,
+              "options": [
+                {
+                  "displayname": "us-south",
+                  "value": "us-south"
+                },
+                {
+                  "displayname": "eu-de",
+                  "value": "eu-de"
+                }
+              ]
+            },
+            {
+              "key": "resource_group_name",
+              "required": false
+            },
+            {
+              "key": "existing_resource_group_name",
+              "required": false
+            },
+            {
+              "key": "watsonx_admin_api_key",
+              "required": false
+            },
+            {
+              "key": "secret_manager_service_plan",
+              "required": false,
+              "options": [
+                {
+                  "displayname": "Trial",
+                  "value": "trial"
+                },
+                {
+                  "displayname": "Standard",
+                  "value": "standard"
+                }
+              ]
+            },
+            {
+              "key": "existing_secrets_manager_crn",
+              "required": false
+            },
+            {
+              "key": "enable_platform_logs_metrics",
+              "required": false
+            },
+            {
+              "key": "sample_app_git_url",
+              "required": false
+            },
+            {
+              "key": "existing_kms_instance_crn",
+              "required": false
+            },
+            {
+              "key": "existing_event_notification_instance_crn",
+              "required": false
+            },
+            {
+              "key": "existing_discovery_instance",
+              "required": false
+            },
+            {
+              "key": "existing_assistant_instance_crn",
+              "required": false
+            },
+            {
+              "key": "existing_governance_instance",
+              "required": false
+            },
+            {
+              "key": "existing_studio_instance",
+              "required": false
+            },
+            {
+              "key": "existing_machine_learning_instance",
+              "required": false
+            },
+            {
+              "key": "existing_elasticsearch_instance_crn",
+              "required": false
+            }
+          ],
+          "outputs": [
+            {
+              "key": "elasticsearch_hostname",
+              "description": "The hostname of the Elasticsearch instance."
+            },
+            {
+              "key": "elasticsearch_port",
+              "description": "The port of the Elasticsearch instance."
+            },
+            {
+              "key": "elasticsearch_service_credentials_json",
+              "description": "The service credentials of the Elasticsearch instance."
+            },
+            {
+              "key": "elasticsearch_crn",
+              "description": "The CRN of the Elasticsearch instance."
+            },
+            {
+              "key": "watsonx_project_url",
+              "description": "The URL to the WatsonX project for the sample RAG application."
+            },
+            {
+              "key": "watsonx_project_id",
+              "description": "The ID for the WatsonX project for the sample RAG application."
+            },
+            {
+              "key": "watson_discovery_api_url",
+              "description": "The URL to the Watson Discovery API endpoint."
+            },
+            {
+              "key": "watson_discovery_project_id",
+              "description": "The ID for the Watson Discovery project for the sample RAG application."
+            }
+          ],
+          "install_type": "fullstack"
+        },
+        {
+          "label": "Banking Application - Basic (Deploy on Red Hat OpenShift)",
+          "name": "banking",
+          "working_directory": "solutions/banking",
+          "compliance": {
+            "authority": "scc-v3",
+            "profiles": [
+              {
+                "profile_name": "AI Security Guardrails 2.0",
+                "profile_version": "1.1.0"
+              }
+            ]
+          },
+          "iam_permissions": [
+            {
+              "service_name": "iam-groups",
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Administrator"
+              ]
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::serviceRole:Manager",
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ],
+              "service_name": "cloud-object-storage"
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Administrator"
+              ],
+              "service_name": "iam-identity"
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::serviceRole:Writer",
+                "crn:v1:bluemix:public:iam::::role:Administrator"
+              ],
+              "service_name": "atracker"
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::serviceRole:Manager",
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ],
+              "service_name": "kms"
+            },
+            {
+              "service_name": "compliance",
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::serviceRole:Manager",
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ]
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ],
+              "service_name": "pm-20"
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ],
+              "service_name": "data-science-experience"
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ],
+              "service_name": "aiopenscale"
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ],
+              "service_name": "conversation"
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ],
+              "service_name": "discovery"
+            },
+            {
+              "service_name": "databases-for-elasticsearch",
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ]
+            },
+            {
+              "service_name": "event-notifications",
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::serviceRole:Manager",
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ]
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::serviceRole:Writer",
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ],
+              "service_name": "codeengine"
+            }
+          ],
+          "architecture": {
+            "features": [
+              {
+                "title": " ",
+                "description": "Enables:"
+              },
+              {
+                "title": "1. Code Engine for containerized and serverless workloads",
+                "description": " "
+              },
+              {
+                "title": "2. Elasticsearch Enterprise for building and storing dense vector indexes or keyword search indexes",
+                "description": " "
+              },
+              {
+                "title": "3. watsonx.ai in-memory vector store for RAG trial and exploration",
+                "description": " "
+              },
+              {
+                "title": "4. watsonx.ai UI to upload documents",
+                "description": " "
+              },
+              {
+                "title": "5. watsonx.ai Prompt Lab for inferencing and Prompt Templates",
+                "description": " "
+              },
+              {
+                "title": "6. watsonx Assistant Conversational Search with embedded LLM",
+                "description": " "
+              },
+              {
+                "title": "7. Build your own data processing, ingestion pipeline and indexes",
+                "description": " "
+              }
+            ],
+            "diagrams": [
+              {
+                "diagram": {
+                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/stack-retrieval-augmented-generation/main/reference-architecture/rag-pattern.svg",
+                  "caption": "Reference architecture",
+                  "type": "image/svg+xml",
+                  "thumbnail_url": "https://raw.githubusercontent.com/terraform-ibm-modules/stack-retrieval-augmented-generation/main/reference-architecture/rag-pattern.svg"
+                },
+                "description": "Reference architecture"
+              },
+              {
+                "diagram": {
+                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/stack-retrieval-augmented-generation/main/reference-architecture/rag-stack.svg",
+                  "caption": "Solution components",
+                  "type": "image/svg+xml",
+                  "thumbnail_url": "https://raw.githubusercontent.com/terraform-ibm-modules/stack-retrieval-augmented-generation/main/reference-architecture/rag-stack.svg"
+                },
+                "description": "Solution components"
+              }
+            ]
+          },
+          "dependencies": [
+            {
+              "name": "Testing_Gen_AI",
+              "catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
+              "flavors": [
+                "Basic-dda0"
+              ],
+              "id": "4460375e-8a34-46fc-9f06-0eb60e7d4f8c",
+              "input_mapping": [
+                {
+                  "dependency_input": "region",
+                  "version_input": "watson_discovery_region"
+                },
+                {
+                  "dependency_input": "region",
+                  "version_input": "watson_assistant_region"
+                },
+                {
+                  "dependency_output": "watsonx_assistant_guid",
+                  "version_input": "watson_assistant_instance_id"
+                },
+                {
+                  "dependency_output": "watson_machine_learning_guid",
+                  "version_input": "watson_machine_learning_instance_guid"
+                },
+                {
+                  "dependency_output": "watson_machine_learning_name",
+                  "version_input": "watson_machine_learning_instance_resource_name"
+                },
+                {
+                  "dependency_output": "watson_machine_learning_crn",
+                  "version_input": "watson_machine_learning_instance_crn"
+                },
+                {
+                  "dependency_output": "watson_discovery_instance_id",
+                  "version_input": "watson_discovery_instance_id"
+                },
+                {
+                  "dependency_output": "elasticsearch_crn",
+                  "version_input": "elastic_instance_crn"
+                }
+              ],
+              "optional": false,
+              "version": ">=1.0.13"
+            },
+            {
+              "name": "Testing_Retrieval_Augmented_Generation_Pattern_dev",
+              "catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
+              "flavors": [
+                "standard"
+              ],
+              "id": "8e851423-4cfc-40e7-a008-fb449d953cb9",
+              "input_mapping": [
+                {
+                  "dependency_input": "region",
+                  "version_input": "toolchain_region"
+                },
+                {
+                  "dependency_output": "cd_pipeline_id",
+                  "version_input": "cd_pipeline_id"
+                },
+                {
+                  "dependency_output": "ci_pipeline_id",
+                  "version_input": "ci_pipeline_id"
+                },
+                {
+                  "dependency_output": "workload_cluster_name",
+                  "version_input": "cluster_name"
+                }
+              ],
+              "optional": false,
+              "version": ">=1.2.5"
+            },
+            {
+              "name": "testing-deploy-arch-ibm-scc",
+              "catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
+              "flavors": [
+                "instances"
+              ],
+              "id": "b773b1d4-69bb-48db-a657-2307015eb9c1",
+              "input_mapping": [],
+              "on_by_default": true,
+              "optional": true,
+              "version": ">=1.0.6"
+            },
+            {
+              "name": "deploy-arch-ibm-account-infra-base",
+              "catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
+              "flavors": [
+                "standard"
+              ],
+              "id": "63641cec-6093-4b4f-b7b0-98d2f4185cd6-global",
+              "input_mapping": [
+                {
+                  "dependency_output": "devops_resource_group_name",
+                  "version_input": "resource_group_name"
+                },
+                {
+                  "version_input": "use_existing_resource_group",
+                  "value": true
+                },
+                {
+                  "dependency_output": "devops_resource_group_name",
+                  "version_input": "toolchain_resource_group"
+                }
+              ],
+              "optional": true,
+              "on_by_default": true,
+              "version": ">=v1.16.2"
+            },
+            {
+              "name": "testing-deploy-arch-ibm-kms",
+              "id": "85fdbd7a-8c77-4abd-b716-653a31f3aba9",
+              "version": ">=1.0.5",
               "flavors": [
                 "standard"
               ],
