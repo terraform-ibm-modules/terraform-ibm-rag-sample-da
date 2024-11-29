@@ -12,7 +12,7 @@
       "flavors": [
         {
           "label": "Banking Application - Basic (Deploy on Code Engine)",
-          "name": "banking",
+          "name": "banking-ce",
           "working_directory": "solutions/banking",
           "compliance": {
             "authority": "scc-v3",
@@ -458,11 +458,11 @@
               "description": "The ID for the Watson Discovery project for the sample RAG application."
             }
           ],
-          "install_type": "fullstack"
+          "install_type": "extension"
         },
         {
           "label": "Banking Application - Basic (Deploy on Red Hat OpenShift)",
-          "name": "banking",
+          "name": "banking-roks",
           "working_directory": "solutions/banking",
           "compliance": {
             "authority": "scc-v3",
@@ -908,7 +908,7 @@
               "description": "The ID for the Watson Discovery project for the sample RAG application."
             }
           ],
-          "install_type": "fullstack"
+          "install_type": "extension"
         }
       ]
     }
