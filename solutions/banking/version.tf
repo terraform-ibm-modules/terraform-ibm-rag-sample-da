@@ -3,7 +3,7 @@ terraform {
   required_providers {
     ibm = {
       source  = "IBM-Cloud/ibm"
-      version = "1.71.2"
+      version = "1.71.3"
     }
     null = {
       source  = "hashicorp/null"
@@ -27,7 +27,7 @@ terraform {
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.33.0"
+      version = "2.34.0"
     }
   }
   required_version = ">= 1.3.0"
