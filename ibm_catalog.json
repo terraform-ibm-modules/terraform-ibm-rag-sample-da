@@ -568,39 +568,47 @@
           ],
           "architecture": {
             "features": [
-              {
-                "title": " ",
-                "description": "Enables:"
-              },
-              {
-                "title": "1. Code Engine for containerized and serverless workloads",
-                "description": " "
-              },
-              {
-                "title": "2. Elasticsearch Enterprise for building and storing dense vector indexes or keyword search indexes",
-                "description": " "
-              },
-              {
-                "title": "3. watsonx.ai in-memory vector store for RAG trial and exploration",
-                "description": " "
-              },
-              {
-                "title": "4. watsonx.ai UI to upload documents",
-                "description": " "
-              },
-              {
-                "title": "5. watsonx.ai Prompt Lab for inferencing and Prompt Templates",
-                "description": " "
-              },
-              {
-                "title": "6. watsonx Assistant Conversational Search with embedded LLM",
-                "description": " "
-              },
-              {
-                "title": "7. Build your own data processing, ingestion pipeline and indexes",
-                "description": " "
-              }
-            ],
+							{
+								"title": " ",
+								"description": "Enables:"
+							},
+							{
+								"title": "1. Red Hat OpenShift cluster for microservices workloads",
+								"description": " "
+							},
+							{
+								"title": "2. Elasticsearch Platinum for building and storing sparse vectors, dense vector indexes or keyword search indexes",
+								"description": " "
+							},
+							{
+								"title": "i. watsonx.ai use of Elasticsearch ELSER2 vector index for RAG",
+								"description": " "
+							},
+							{
+								"title": "ii. watsonx Assistant Conversational Search with UI feature for uploading documents to create or use Elasticsearch ELSER2 vector index for RAG",
+								"description": " "
+							},
+							{
+								"title": "3. watsonx.ai in-memory vector store for RAG trial and exploration",
+								"description": " "
+							},
+							{
+								"title": "4. watsonx.ai UI to upload documents",
+								"description": " "
+							},
+							{
+								"title": "5. watsonx.ai Prompt Lab for inferencing and Prompt Templates",
+								"description": " "
+							},
+							{
+								"title": "6. watsonx Assistant Conversational Search with embedded LLM",
+								"description": " "
+							},
+							{
+								"title": "7. Build your own data processing, ingestion pipeline and indexes",
+								"description": " "
+							}
+						],
             "diagrams": [
               {
                 "diagram": {
