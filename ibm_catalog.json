@@ -220,7 +220,8 @@
               "name": "Testing_Retrieval_Augmented_Generation_Pattern_dev",
               "catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
               "flavors": [
-                "basic"
+                "basic",
+                "standard"
               ],
               "id": "8e851423-4cfc-40e7-a008-fb449d953cb9",
               "input_mapping": [
@@ -670,7 +671,8 @@
               "name": "Testing_Retrieval_Augmented_Generation_Pattern_dev",
               "catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
               "flavors": [
-                "standard"
+                "standard",
+                "basic"
               ],
               "id": "8e851423-4cfc-40e7-a008-fb449d953cb9",
               "input_mapping": [
