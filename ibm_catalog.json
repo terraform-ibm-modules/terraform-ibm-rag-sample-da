@@ -461,7 +461,7 @@
           "install_type": "extension"
         },
         {
-          "label": "Banking Application - Basic (Deploy on Red Hat OpenShift)",
+          "label": "Banking Application - Standard (Deploy on Red Hat OpenShift)",
           "name": "banking-roks",
           "working_directory": "solutions/banking",
           "compliance": {
