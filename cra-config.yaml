@@ -22,3 +22,4 @@ CRA_TARGETS:
       TF_VAR_signing_key: "dummy value"
       TF_VAR_secrets_manager_guid: "dummy guid"
       TF_VAR_secrets_manager_region: "us-south"
+      TF_VAR_provider_visibility: "public"
