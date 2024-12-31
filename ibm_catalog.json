@@ -249,7 +249,17 @@
               "key": "create_secrets"
             },
             {
-              "key": "secrets_manager_endpoint_type"
+              "key": "secrets_manager_endpoint_type",
+              "options": [
+                {
+                  "displayname": "private",
+                  "value": "private"
+                },
+                {
+                  "displayname": "public",
+                  "value": "public"
+                }
+              ]
             },
             {
               "key": "secrets_manager_guid"
