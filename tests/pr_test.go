@@ -23,10 +23,7 @@ import (
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
 )
 
-const bankingSolutionsDir = "../solutions/banking"
-
-// const artifactsDir = "solutions/banking/artifacts"
-// const watsonScriptsDir = "solutions/banking/watson-scripts"
+const bankingSolutionsDir = "solutions/banking"
 
 const region = "us-south" // Binding all the resources to the us-south location.
 
@@ -196,7 +193,7 @@ func TestRunBankingSolutions(t *testing.T) {
 		}
 
 		err := options.RunSchematicTest()
-		assert.Nil(t, err, "This should not have errored")
+		assert.Nil(t, err, "Schematic Test had unexpected error")
 	}
 
 	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
