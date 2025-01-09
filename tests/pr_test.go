@@ -23,7 +23,7 @@ import (
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
 )
 
-const bankingSolutionsDir = "solutions/banking"
+const bankingSolutionsDir = "../solutions/banking"
 
 // const artifactsDir = "solutions/banking/artifacts"
 // const watsonScriptsDir = "solutions/banking/watson-scripts"
@@ -112,6 +112,8 @@ func setupOptionsSchematics(t *testing.T, prefix string, dir string) *testschema
 		".md",
 		".json",
 		".pdf",
+		".csv",
+		".sh",
 	}
 
 	tarIncludePatterns, recurseErr := getTarIncludePatternsRecursively("..", excludeDirs, includeFiletypes)
