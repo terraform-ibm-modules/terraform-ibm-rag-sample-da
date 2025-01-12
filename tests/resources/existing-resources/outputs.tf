@@ -53,3 +53,8 @@ output "signing_key" {
   sensitive   = true
   description = "Signing key payload."
 }
+
+output "cluster_name" {
+  value       = var.create_ocp_cluster ? module.ocp_base[0].cluster_name : null
+  description = "The name of the provisioned cluster."
+}
