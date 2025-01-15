@@ -84,18 +84,22 @@ func TestRunBankingSolutions(t *testing.T) {
 		options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
 			Testing: t,
 			TarIncludePatterns: []string{
-				// "*/*",
-				// fmt.Sprintf("%s/*", bankingSolutionsDir),
-				// fmt.Sprintf("%s/*", "modules"),
 				bankingSolutionsDir + "/*",
-				"modules" + "/*",
+				bankingSolutionsDir + "/artifacts/WatsonDiscovery/*",
+				bankingSolutionsDir + "/artifacts/watsonx.ai/*",
+				bankingSolutionsDir + "/artifacts/watsonx.Assistant/*",
+				bankingSolutionsDir + "/watson-scripts/*",
+				"modules/elastic-index/*.tf",
+				"modules/roks-ingress/*.tf",
+				"modules/watson-assistant/*.tf",
+				"modules/watson-discovery/*.tf",
+				"modules/watson-machine-learning/*.tf",
 			},
 			TemplateFolder:         bankingSolutionsDir,
 			Prefix:                 "rag-da",
 			DeleteWorkspaceOnFail:  false,
 			WaitJobCompleteMinutes: 60,
 		})
-
 		fmt.Println(options.TarIncludePatterns)
 
 		options.TerraformVars = []testschematic.TestSchematicTerraformVar{
