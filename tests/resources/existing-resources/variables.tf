@@ -19,5 +19,4 @@ variable "resource_group" {
 variable "region" {
   description = "Region where resources are deployed"
   type        = string
-  default = "us-south"
 }

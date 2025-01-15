@@ -50,11 +50,6 @@ output "resource_group_name" {
 
 output "signing_key" {
   value       = local.signing_key_payload
-  # sensitive   = true
+  sensitive   = true
   description = "Signing key payload."
 }
-
-# output "elasticsearch_instance_crn" {
-#   value = module.elasticsearch.crn
-#   description = "CRN of elasticsearch instance"
-# }
