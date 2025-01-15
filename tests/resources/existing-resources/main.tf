@@ -102,3 +102,15 @@ resource "ibm_cd_toolchain_tool_pipeline" "cd_toolchain_tool_pipeline_instance" 
 resource "ibm_cd_tekton_pipeline" "cd_tekton_pipeline_instance" {
   pipeline_id = ibm_cd_toolchain_tool_pipeline.cd_toolchain_tool_pipeline_instance.tool_id
 }
+
+########################################################################################################################
+# Elastic Search instance
+########################################################################################################################
+
+# module "elasticsearch" {
+#   source                = "terraform-ibm-modules/icd-elasticsearch/ibm"
+#   version = "1.25.11"
+#   resource_group_id     = module.resource_group.resource_group_id
+#   name                  = "${var.prefix}-elasticsearch"
+#   region                = var.region
+# }
