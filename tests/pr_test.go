@@ -105,8 +105,6 @@ func TestRunBankingSolutions(t *testing.T) {
 		// This is the same as setting the -upgrade=true flag with terraform.
 		Upgrade: true,
 	})
-
-	fmt.Println("debugging statement 1")
 	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
 	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
 	if existErr != nil {
