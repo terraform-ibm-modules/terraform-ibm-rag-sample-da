@@ -417,6 +417,6 @@ resource "null_resource" "ci_pipeline_run" {
   provisioner "local-exec" {
     command     = "${path.module}/watson-scripts/webhook-trigger.sh \"${ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook.webhook_url}\" \"${random_string.webhook_secret.result}\""
     interpreter = ["/bin/bash", "-c"]
-    quiet       = true
+    # quiet       = true
   }
 }

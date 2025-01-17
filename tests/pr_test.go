@@ -92,7 +92,7 @@ func TestRunBankingSolutions(t *testing.T) {
 
 		options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 			{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
-			{Name: "elastic_instance_crn", Value: permanentResources["elasticsearch_instance_crn"], DataType: "string"},
+			{Name: "elastic_instance_crn", Value: permanentResources["elasticsearchCrn"], DataType: "string"},
 			{Name: "toolchain_region", Value: options.Region, DataType: "string"},
 			{Name: "prefix", Value: options.Prefix, DataType: "string"},
 			{Name: "ci_pipeline_id", Value: terraform.Output(t, existingTerraformOptions, "ci_pipeline_id"), DataType: "string"},
@@ -108,7 +108,7 @@ func TestRunBankingSolutions(t *testing.T) {
 			{Name: "watson_machine_learning_instance_crn", Value: terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"), DataType: "string"},
 			{Name: "watson_machine_learning_instance_guid", Value: terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_guid"), DataType: "string"},
 			{Name: "watson_machine_learning_instance_resource_name", Value: terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"), DataType: "string"},
-			{Name: "secrets_manager_guid", Value: permanentResources["secrets_manager_guid"], DataType: "string"},
+			{Name: "secrets_manager_guid", Value: permanentResources["secretsManagerGuid"], DataType: "string"},
 			{Name: "secrets_manager_region", Value: options.Region, DataType: "string"},
 			{Name: "signing_key", Value: terraform.Output(t, existingTerraformOptions, "signing_key"), DataType: "string"},
 			{Name: "trigger_ci_pipeline_run", Value: false, DataType: "bool"},
