@@ -82,19 +82,7 @@ func TestRunBankingSolutions(t *testing.T) {
 		// Deploy RAG DA passing in existing watson assistance ID and watson discovery ID.
 		// ------------------------------------------------------------------------------------
 		options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
-			Testing: t,
-			TarIncludePatterns: []string{
-				bankingSolutionsDir + "/*",
-				bankingSolutionsDir + "/artifacts/WatsonDiscovery/*",
-				bankingSolutionsDir + "/artifacts/watsonx.ai/*",
-				bankingSolutionsDir + "/artifacts/watsonx.Assistant/*",
-				bankingSolutionsDir + "/watson-scripts/*",
-				"modules/elastic-index/*.tf",
-				"modules/roks-ingress/*.tf",
-				"modules/watson-assistant/*.tf",
-				"modules/watson-discovery/*.tf",
-				"modules/watson-machine-learning/*.tf",
-			},
+			Testing:                t,
 			TemplateFolder:         bankingSolutionsDir,
 			Prefix:                 "rag-da",
 			DeleteWorkspaceOnFail:  false,
