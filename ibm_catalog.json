@@ -173,48 +173,88 @@
           },
           "dependencies": [
             {
-              "name": "Testing_Gen_AI",
-              "catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
+              "name": "deploy-arch-ibm-watsonx-assistant",
+              "id": "f0eab251-febe-4ae4-99ba-04d698fb6d20",
+              "version": ">=v1.1.2",
               "flavors": [
-                "Basic-dda0"
+                "standard"
               ],
-              "id": "4460375e-8a34-46fc-9f06-0eb60e7d4f8c",
+              "catalog_id": "7df1e4ca-d54c-4fd0-82ce-3d13247308cd",
+              "optional": true,
+              "on_by_default": true,
+              "input_mapping": [
+                {
+                  "dependency_input": "region",
+                  "version_input": "watson_assistant_region"
+                },
+                {
+                  "dependency_output": "guid",
+                  "version_input": "watson_assistant_instance_id"
+                }
+              ]
+            },
+            {
+              "name": "deploy-arch-ibm-watson-discovery",
+              "id": "0f616276-a8a4-4399-bcbf-d3129f30295e",
+              "version": ">=v1.1.1",
+              "flavors": [
+                "standard"
+              ],
+              "catalog_id": "7df1e4ca-d54c-4fd0-82ce-3d13247308cd",
+              "optional": true,
+              "on_by_default": true,
               "input_mapping": [
                 {
                   "dependency_input": "region",
                   "version_input": "watson_discovery_region"
                 },
                 {
-                  "dependency_input": "region",
-                  "version_input": "watson_assistant_region"
-                },
+                  "dependency_output": "id",
+                  "version_input": "watson_discovery_instance_id"
+                }
+              ]
+            },
+            {
+              "name": "deploy-arch-ibm-watsonx-ai",
+              "id": "85b7c3d8-c947-408c-896c-52b375ceb1c0",
+              "version": ">=0.0.0",
+              "flavors": [
+                "standard"
+              ],
+              "catalog_id": "7df1e4ca-d54c-4fd0-82ce-3d13247308cd",
+              "optional": true,
+              "on_by_default": true,
+              "input_mapping": [
                 {
-                  "dependency_output": "watsonx_assistant_guid",
-                  "version_input": "watson_assistant_instance_id"
-                },
-                {
-                  "dependency_output": "watson_machine_learning_guid",
+                  "dependency_output": "watsonx_ai_runtime_guid",
                   "version_input": "watson_machine_learning_instance_guid"
                 },
                 {
-                  "dependency_output": "watson_machine_learning_name",
+                  "dependency_output": "watsonx_ai_runtime_name",
                   "version_input": "watson_machine_learning_instance_resource_name"
                 },
                 {
-                  "dependency_output": "watson_machine_learning_crn",
+                  "dependency_output": "watsonx_ai_runtime_crn",
                   "version_input": "watson_machine_learning_instance_crn"
-                },
+                }
+              ]
+            },
+            {
+              "name": "deploy-arch-ibm-icd-elasticsearch",
+              "id": "7ee5876d-6e30-49d1-be25-259a442085e8",
+              "version": ">=1.25.16",
+              "flavors": [
+                "standard"
+              ],
+              "catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
+              "optional": true,
+              "on_by_default": true,
+              "input_mapping": [
                 {
-                  "dependency_output": "watson_discovery_instance_id",
-                  "version_input": "watson_discovery_instance_id"
-                },
-                {
-                  "dependency_output": "elasticsearch_crn",
+                  "dependency_output": "crn",
                   "version_input": "elastic_instance_crn"
                 }
-              ],
-              "optional": false,
-              "version": ">=1.0.13"
+              ]
             },
             {
               "name": "Testing_Retrieval_Augmented_Generation_Pattern_dev",
