@@ -194,27 +194,6 @@
               ]
             },
             {
-              "name": "deploy-arch-ibm-watson-discovery",
-              "id": "0f616276-a8a4-4399-bcbf-d3129f30295e",
-              "version": ">=v1.1.1",
-              "flavors": [
-                "standard"
-              ],
-              "catalog_id": "7df1e4ca-d54c-4fd0-82ce-3d13247308cd",
-              "optional": true,
-              "on_by_default": true,
-              "input_mapping": [
-                {
-                  "dependency_input": "region",
-                  "version_input": "watson_discovery_region"
-                },
-                {
-                  "dependency_output": "id",
-                  "version_input": "watson_discovery_instance_id"
-                }
-              ]
-            },
-            {
               "name": "deploy-arch-ibm-watsonx-ai",
               "id": "85b7c3d8-c947-408c-896c-52b375ceb1c0",
               "version": ">=0.0.0",
@@ -236,23 +215,6 @@
                 {
                   "dependency_output": "watsonx_ai_runtime_crn",
                   "version_input": "watson_machine_learning_instance_crn"
-                }
-              ]
-            },
-            {
-              "name": "deploy-arch-ibm-icd-elasticsearch",
-              "id": "7ee5876d-6e30-49d1-be25-259a442085e8",
-              "version": ">=1.25.16",
-              "flavors": [
-                "standard"
-              ],
-              "catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
-              "optional": true,
-              "on_by_default": true,
-              "input_mapping": [
-                {
-                  "dependency_output": "crn",
-                  "version_input": "elastic_instance_crn"
                 }
               ]
             },
@@ -361,6 +323,49 @@
             }
           ],
           "dependency_version_2": true,
+          "swappable_dependencies": [
+            {
+              "name": "Database",
+              "default_dependency": "deploy-arch-ibm-watson-discovery",
+              "optional": false,
+              "dependencies": [
+                {
+                  "name": "Testing_Gen_AI",
+                  "id": "4460375e-8a34-46fc-9f06-0eb60e7d4f8c",
+                  "version": ">=1.2.0",
+                  "flavors": [
+                    "Basic-dda0"
+                  ],
+                  "catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
+                  "optional": false,
+                  "on_by_default": false,
+                  "input_mapping": [
+                    {
+                      "dependency_output": "elasticsearch_crn",
+                      "version_input": "existing_elasticsearch_instance_crn"
+                    }
+                  ]
+                },
+                {
+                  "name": "deploy-arch-ibm-watson-discovery",
+                  "id": "0f616276-a8a4-4399-bcbf-d3129f30295e",
+                  "version": ">=v1.1.1",
+                  "flavors": [
+                    "standard"
+                  ],
+                  "catalog_id": "7df1e4ca-d54c-4fd0-82ce-3d13247308cd",
+                  "optional": false,
+                  "on_by_default": false,
+                  "input_mapping": [
+                    {
+                      "dependency_output": "id",
+                      "version_input": "existing_discovery_instance"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
           "configuration": [
             {
               "key": "prefix",
@@ -608,47 +613,47 @@
           ],
           "architecture": {
             "features": [
-							{
-								"title": " ",
-								"description": "Enables:"
-							},
-							{
-								"title": "1. Red Hat OpenShift cluster for microservices workloads",
-								"description": " "
-							},
-							{
-								"title": "2. Elasticsearch Platinum for building and storing sparse vectors, dense vector indexes or keyword search indexes",
-								"description": " "
-							},
-							{
-								"title": "i. watsonx.ai use of Elasticsearch ELSER2 vector index for RAG",
-								"description": " "
-							},
-							{
-								"title": "ii. watsonx Assistant Conversational Search with UI feature for uploading documents to create or use Elasticsearch ELSER2 vector index for RAG",
-								"description": " "
-							},
-							{
-								"title": "3. watsonx.ai in-memory vector store for RAG trial and exploration",
-								"description": " "
-							},
-							{
-								"title": "4. watsonx.ai UI to upload documents",
-								"description": " "
-							},
-							{
-								"title": "5. watsonx.ai Prompt Lab for inferencing and Prompt Templates",
-								"description": " "
-							},
-							{
-								"title": "6. watsonx Assistant Conversational Search with embedded LLM",
-								"description": " "
-							},
-							{
-								"title": "7. Build your own data processing, ingestion pipeline and indexes",
-								"description": " "
-							}
-						],
+              {
+                "title": " ",
+                "description": "Enables:"
+              },
+              {
+                "title": "1. Red Hat OpenShift cluster for microservices workloads",
+                "description": " "
+              },
+              {
+                "title": "2. Elasticsearch Platinum for building and storing sparse vectors, dense vector indexes or keyword search indexes",
+                "description": " "
+              },
+              {
+                "title": "i. watsonx.ai use of Elasticsearch ELSER2 vector index for RAG",
+                "description": " "
+              },
+              {
+                "title": "ii. watsonx Assistant Conversational Search with UI feature for uploading documents to create or use Elasticsearch ELSER2 vector index for RAG",
+                "description": " "
+              },
+              {
+                "title": "3. watsonx.ai in-memory vector store for RAG trial and exploration",
+                "description": " "
+              },
+              {
+                "title": "4. watsonx.ai UI to upload documents",
+                "description": " "
+              },
+              {
+                "title": "5. watsonx.ai Prompt Lab for inferencing and Prompt Templates",
+                "description": " "
+              },
+              {
+                "title": "6. watsonx Assistant Conversational Search with embedded LLM",
+                "description": " "
+              },
+              {
+                "title": "7. Build your own data processing, ingestion pipeline and indexes",
+                "description": " "
+              }
+            ],
             "diagrams": [
               {
                 "diagram": {
@@ -679,7 +684,7 @@
                 "standard"
               ],
               "catalog_id": "7df1e4ca-d54c-4fd0-82ce-3d13247308cd",
-              "optional": true,
+              "optional": false,
               "on_by_default": true,
               "input_mapping": [
                 {
@@ -689,27 +694,6 @@
                 {
                   "dependency_output": "guid",
                   "version_input": "watson_assistant_instance_id"
-                }
-              ]
-            },
-            {
-              "name": "deploy-arch-ibm-watson-discovery",
-              "id": "0f616276-a8a4-4399-bcbf-d3129f30295e",
-              "version": ">=v1.1.1",
-              "flavors": [
-                "standard"
-              ],
-              "catalog_id": "7df1e4ca-d54c-4fd0-82ce-3d13247308cd",
-              "optional": true,
-              "on_by_default": true,
-              "input_mapping": [
-                {
-                  "dependency_input": "region",
-                  "version_input": "watson_discovery_region"
-                },
-                {
-                  "dependency_output": "id",
-                  "version_input": "watson_discovery_instance_id"
                 }
               ]
             },
@@ -735,23 +719,6 @@
                 {
                   "dependency_output": "watsonx_ai_runtime_crn",
                   "version_input": "watson_machine_learning_instance_crn"
-                }
-              ]
-            },
-            {
-              "name": "deploy-arch-ibm-icd-elasticsearch",
-              "id": "7ee5876d-6e30-49d1-be25-259a442085e8",
-              "version": ">=1.25.16",
-              "flavors": [
-                "standard"
-              ],
-              "catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
-              "optional": true,
-              "on_by_default": true,
-              "input_mapping": [
-                {
-                  "dependency_output": "crn",
-                  "version_input": "elastic_instance_crn"
                 }
               ]
             },
@@ -998,7 +965,49 @@
               "description": "The ID for the Watson Discovery project for the sample RAG application."
             }
           ],
-          "install_type": "extension"
+          "swappable_dependencies": [
+            {
+              "name": "Database",
+              "default_dependency": "deploy-arch-ibm-watson-discovery",
+              "optional": false,
+              "dependencies": [
+                {
+                  "name": "Testing_Gen_AI",
+                  "id": "4460375e-8a34-46fc-9f06-0eb60e7d4f8c",
+                  "version": ">=1.2.0",
+                  "flavors": [
+                    "Basic-dda0"
+                  ],
+                  "catalog_id": "f64499c8-eb50-4985-bf91-29f9e605a433",
+                  "optional": false,
+                  "on_by_default": false,
+                  "input_mapping": [
+                    {
+                      "dependency_output": "elasticsearch_crn",
+                      "version_input": "existing_elasticsearch_instance_crn"
+                    }
+                  ]
+                },
+                {
+                  "name": "deploy-arch-ibm-watson-discovery",
+                  "id": "0f616276-a8a4-4399-bcbf-d3129f30295e",
+                  "version": ">=v1.1.1",
+                  "flavors": [
+                    "standard"
+                  ],
+                  "catalog_id": "7df1e4ca-d54c-4fd0-82ce-3d13247308cd",
+                  "optional": false,
+                  "on_by_default": false,
+                  "input_mapping": [
+                    {
+                      "dependency_output": "id",
+                      "version_input": "existing_discovery_instance"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     }
