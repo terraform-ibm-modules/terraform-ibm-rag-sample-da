@@ -388,7 +388,7 @@
             },
             {
               "key": "region",
-              "required": true,
+              "required": false,
               "options": [
                 {
                   "displayname": "us-south",
@@ -513,6 +513,7 @@
           "working_directory": "solutions/banking",
           "compliance": {
             "authority": "scc-v3",
+            "controls": [],
             "profiles": [
               {
                 "profile_name": "AI Security Guardrails 2.0",
