@@ -331,7 +331,7 @@
               "dependencies": [
                 {
                   "name": "deploy-arch-ibm-icd-elasticsearch",
-                  "id": "7ee5876d-6e30-49d1-be25-259a442085e8",
+                  "id": "7ee5876d-6e30-49d1-be25-259a442085e8-global",
                   "version": ">=1.25.10",
                   "flavors": [
                     "standard"
