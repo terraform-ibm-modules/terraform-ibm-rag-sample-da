@@ -323,6 +323,49 @@
               ]
             }
           ],
+          "swappable_dependencies": [
+            {
+              "name": "Database",
+              "default_dependency": "deploy-arch-ibm-watson-discovery",
+              "optional": false,
+              "dependencies": [
+                {
+                  "name": "deploy-arch-ibm-icd-elasticsearch",
+                  "id": "7ee5876d-6e30-49d1-be25-259a442085e8",
+                  "version": ">=1.25.10",
+                  "flavors": [
+                    "standard"
+                  ],
+                  "catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
+                  "optional": true,
+                  "on_by_default": false,
+                  "input_mapping": [
+                    {
+                      "dependency_output": "crn",
+                      "version_input": "existing_elasticsearch_instance_crn"
+                    }
+                  ]
+                },
+                {
+                  "name": "deploy-arch-ibm-watson-discovery",
+                  "id": "0f616276-a8a4-4399-bcbf-d3129f30295e",
+                  "version": ">=v1.1.1",
+                  "flavors": [
+                    "standard"
+                  ],
+                  "catalog_id": "7df1e4ca-d54c-4fd0-82ce-3d13247308cd",
+                  "optional": true,
+                  "on_by_default": false,
+                  "input_mapping": [
+                    {
+                      "dependency_output": "id",
+                      "version_input": "existing_discovery_instance"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
           "dependency_version_2": true,
           "configuration": [
             {
