@@ -349,7 +349,7 @@
                       "version_input": "existing_elasticsearch_instance_crn"
                     },
                     {
-                      "dependency_input": "kms_instance_crn",
+                      "dependency_input": "existing_kms_instance_crn",
                       "version_input": "cos_kms_crn"
                     }
                   ]
