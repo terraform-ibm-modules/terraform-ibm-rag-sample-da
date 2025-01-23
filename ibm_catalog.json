@@ -206,6 +206,10 @@
               "on_by_default": true,
               "input_mapping": [
                 {
+                  "dependency_input": "existing_kms_instance_crn",
+                  "version_input": "cos_kms_crn"
+                },
+                {
                   "dependency_output": "watsonx_ai_runtime_guid",
                   "version_input": "watson_machine_learning_instance_guid"
                 },
@@ -343,6 +347,10 @@
                     {
                       "dependency_output": "crn",
                       "version_input": "existing_elasticsearch_instance_crn"
+                    },
+                    {
+                      "dependency_input": "kms_instance_crn",
+                      "version_input": "cos_kms_crn"
                     }
                   ]
                 },
