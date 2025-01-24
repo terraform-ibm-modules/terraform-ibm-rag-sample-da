@@ -447,7 +447,7 @@
               "required": false
             },
             {
-              "key": "existing_kms_instance_crn",
+              "key": "cos_kms_crn",
               "required": false
             },
             {
@@ -908,7 +908,7 @@
               "required": false
             },
             {
-              "key": "existing_kms_instance_crn",
+              "key": "cos_kms_crn",
               "required": false
             },
             {
