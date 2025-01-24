@@ -186,7 +186,8 @@
               "input_mapping": [
                 {
                   "dependency_input": "region",
-                  "version_input": "watson_assistant_region"
+                  "version_input": "watson_assistant_region",
+                  "reference_version": true
                 },
                 {
                   "dependency_output": "guid",
@@ -207,7 +208,8 @@
               "input_mapping": [
                 {
                   "dependency_input": "existing_kms_instance_crn",
-                  "version_input": "cos_kms_crn"
+                  "version_input": "cos_kms_crn",
+                  "reference_version": true
                 },
                 {
                   "dependency_output": "watsonx_ai_runtime_guid",
@@ -234,7 +236,8 @@
               "input_mapping": [
                 {
                   "dependency_input": "region",
-                  "version_input": "toolchain_region"
+                  "version_input": "toolchain_region",
+                  "reference_version": true
                 },
                 {
                   "dependency_output": "cd_pipeline_id",
@@ -350,7 +353,8 @@
                     },
                     {
                       "dependency_input": "existing_kms_instance_crn",
-                      "version_input": "cos_kms_crn"
+                      "version_input": "cos_kms_crn",
+                      "reference_version": true
                     }
                   ]
                 },
@@ -698,7 +702,8 @@
               "input_mapping": [
                 {
                   "dependency_input": "region",
-                  "version_input": "watson_assistant_region"
+                  "version_input": "watson_assistant_region",
+                  "reference_version": true
                 },
                 {
                   "dependency_output": "guid",
@@ -742,7 +747,8 @@
               "input_mapping": [
                 {
                   "dependency_input": "region",
-                  "version_input": "toolchain_region"
+                  "version_input": "toolchain_region",
+                  "reference_version": true
                 },
                 {
                   "dependency_output": "cd_pipeline_id",
