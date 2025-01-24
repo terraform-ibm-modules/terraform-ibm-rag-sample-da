@@ -186,8 +186,7 @@
               "input_mapping": [
                 {
                   "dependency_input": "region",
-                  "version_input": "watson_assistant_region",
-                  "reference_version": true
+                  "version_input": "watson_assistant_region"
                 },
                 {
                   "dependency_output": "guid",
@@ -236,8 +235,7 @@
               "input_mapping": [
                 {
                   "dependency_input": "region",
-                  "version_input": "toolchain_region",
-                  "reference_version": true
+                  "version_input": "toolchain_region"
                 },
                 {
                   "dependency_output": "cd_pipeline_id",
@@ -702,8 +700,7 @@
               "input_mapping": [
                 {
                   "dependency_input": "region",
-                  "version_input": "watson_assistant_region",
-                  "reference_version": true
+                  "version_input": "watson_assistant_region"
                 },
                 {
                   "dependency_output": "guid",
@@ -747,8 +744,7 @@
               "input_mapping": [
                 {
                   "dependency_input": "region",
-                  "version_input": "toolchain_region",
-                  "reference_version": true
+                  "version_input": "toolchain_region"
                 },
                 {
                   "dependency_output": "cd_pipeline_id",
