@@ -216,8 +216,9 @@
                   "reference_version": true
                 },
                 {
-                  "version_input": "use_existing_resource_group",
-                  "value": true
+                  "dependency_input": "use_existing_resource_group",
+                  "value": true,
+                  "reference_version": true
                 },
                 {
                   "dependency_output": "watsonx_ai_runtime_guid",
