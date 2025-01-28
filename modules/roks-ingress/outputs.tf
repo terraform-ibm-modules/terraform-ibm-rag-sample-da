@@ -1,7 +1,7 @@
 output "cluster_workload_ingress_subdomain" {
   description = "Public ingress subdomain"
   value       = local.ingress_subdomain
-  sensitive   = true
+
 }
 
 output "cluster_workload_ingress_controller" {

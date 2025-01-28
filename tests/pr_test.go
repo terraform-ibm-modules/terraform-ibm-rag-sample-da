@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/IBM/go-sdk-core/core"
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -45,8 +46,9 @@ func TestMain(m *testing.M) {
 
 func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terraform.Options) *testhelper.TestOptions {
 	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
-		Testing:      t,
-		TerraformDir: bankingSolutionsDir,
+		Testing:            t,
+		TerraformDir:       bankingSolutionsDir,
+		ApiDataIsSensitive: core.BoolPtr(false),
 		// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
 		ImplicitRequired: false,
 		Region:           region,
@@ -75,6 +77,7 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"create_secrets":                                 false,
 		},
 	})
+
 	return options
 }
 
@@ -208,8 +211,9 @@ func TestRunUpgradeExample(t *testing.T) {
 	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
-			"prefix": prefix,
-			"region": region,
+			"prefix":             prefix,
+			"region":             region,
+			"create_ocp_cluster": true,
 		},
 		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
 		// This is the same as setting the -upgrade=true flag with terraform.
@@ -225,6 +229,8 @@ func TestRunUpgradeExample(t *testing.T) {
 		// Deploy RAG DA passing in existing watson assistance ID and watson discovery ID.
 		// ------------------------------------------------------------------------------------
 		options := setupOptions(t, prefix, existingTerraformOptions)
+
+		options.TerraformVars["cluster_name"] = terraform.Output(t, existingTerraformOptions, "cluster_name")
 
 		options.IgnoreDestroys = testhelper.Exemptions{
 			List: []string{

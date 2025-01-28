@@ -207,7 +207,7 @@ data "ibm_is_network_acl_rules" "alb_acl_rules" {
 resource "ibm_is_network_acl_rule" "alb_https_req" {
   count       = var.cluster_zone_count
   network_acl = data.ibm_is_network_acl.alb_acl.id
-  before      = local.cluster_acl_deny_rule != null ? local.cluster_acl_deny_rule : ""
+  before      = local.cluster_acl_deny_rule
   name        = "${local.prefix_used}public-ingress-lba-zone${count.index + 1}-https-req"
   action      = "allow"
   source      = "0.0.0.0/0"
@@ -227,7 +227,7 @@ resource "ibm_is_network_acl_rule" "alb_https_req" {
 resource "ibm_is_network_acl_rule" "alb_https_resp" {
   count       = var.cluster_zone_count
   network_acl = data.ibm_is_network_acl.alb_acl.id
-  before      = local.cluster_acl_deny_rule != null ? local.cluster_acl_deny_rule : ""
+  before      = local.cluster_acl_deny_rule
   name        = "${local.prefix_used}public-ingress-lba-zone${count.index + 1}-https-resp"
   action      = "allow"
   source      = "${data.ibm_is_lb.ingress_vpc_alb.private_ips[count.index]}/32"
