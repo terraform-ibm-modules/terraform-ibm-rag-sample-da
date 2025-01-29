@@ -386,8 +386,8 @@
                   "optional": true,
                   "on_by_default": false,
                   "ignore_auto_referencing": [
-                "*"
-              ],
+                    "*"
+                  ],
                   "input_mapping": [
                     {
                       "dependency_output": "crn",
@@ -411,8 +411,8 @@
                   "optional": true,
                   "on_by_default": false,
                   "ignore_auto_referencing": [
-                "*"
-              ],
+                    "*"
+                  ],
                   "input_mapping": [
                     {
                       "dependency_output": "id",
@@ -425,6 +425,90 @@
           ],
           "dependency_version_2": true,
           "configuration": [
+            {
+              "key": "cd_pipeline_id"
+            },
+            {
+              "key": "ci_pipeline_id"
+            },
+            {
+              "key": "cos_kms_key_crn"
+            },
+            {
+              "key": "cos_kms_new_key_name"
+            },
+            {
+              "key": "cos_kms_ring_id"
+            },
+            {
+              "key": "create_continuous_delivery_service_instance"
+            },
+            {
+              "key": "create_secrets"
+            },
+            {
+              "key": "elastic_credentials_name"
+            },
+            {
+              "key": "elastic_index_name"
+            },
+            {
+              "key": "elastic_instance_crn"
+            },
+            {
+              "key": "elastic_upload_sample_data"
+            },
+            {
+              "key": "inventory_repo_url"
+            },
+            {
+              "key": "secrets_manager_endpoint_type"
+            },
+            {
+              "key": "secrets_manager_guid"
+            },
+            {
+              "key": "secrets_manager_region"
+            },
+            {
+              "key": "toolchain_region"
+            },
+            {
+              "key": "toolchain_resource_group"
+            },
+            {
+              "key": "trigger_ci_pipeline_run"
+            },
+            {
+              "key": "use_existing_resource_group"
+            },
+            {
+              "key": "watson_assistant_instance_id"
+            },
+            {
+              "key": "watson_assistant_region"
+            },
+            {
+              "key": "watson_discovery_instance_id"
+            },
+            {
+              "key": "watson_discovery_region"
+            },
+            {
+              "key": "watson_machine_learning_instance_crn"
+            },
+            {
+              "key": "watson_machine_learning_instance_guid"
+            },
+            {
+              "key": "watson_machine_learning_instance_resource_name"
+            },
+            {
+              "key": "watson_project_name"
+            },
+            {
+              "key": "watson_project_sensitive"
+            },
             {
               "key": "prefix",
               "required": true
@@ -444,25 +528,7 @@
               }
             },
             {
-              "key": "region",
-              "required": false,
-              "options": [
-                {
-                  "displayname": "us-south",
-                  "value": "us-south"
-                },
-                {
-                  "displayname": "eu-de",
-                  "value": "eu-de"
-                }
-              ]
-            },
-            {
               "key": "resource_group_name",
-              "required": false
-            },
-            {
-              "key": "existing_resource_group_name",
               "required": false
             },
             {
@@ -470,61 +536,7 @@
               "required": false
             },
             {
-              "key": "secret_manager_service_plan",
-              "required": false,
-              "options": [
-                {
-                  "displayname": "Trial",
-                  "value": "trial"
-                },
-                {
-                  "displayname": "Standard",
-                  "value": "standard"
-                }
-              ]
-            },
-            {
-              "key": "existing_secrets_manager_crn",
-              "required": false
-            },
-            {
-              "key": "enable_platform_logs_metrics",
-              "required": false
-            },
-            {
-              "key": "sample_app_git_url",
-              "required": false
-            },
-            {
               "key": "cos_kms_crn",
-              "required": false
-            },
-            {
-              "key": "existing_event_notification_instance_crn",
-              "required": false
-            },
-            {
-              "key": "existing_discovery_instance",
-              "required": false
-            },
-            {
-              "key": "existing_assistant_instance_crn",
-              "required": false
-            },
-            {
-              "key": "existing_governance_instance",
-              "required": false
-            },
-            {
-              "key": "existing_studio_instance",
-              "required": false
-            },
-            {
-              "key": "existing_machine_learning_instance",
-              "required": false
-            },
-            {
-              "key": "existing_elasticsearch_instance_crn",
               "required": false
             }
           ],
@@ -908,6 +920,90 @@
           "dependency_version_2": true,
           "configuration": [
             {
+              "key": "cd_pipeline_id"
+            },
+            {
+              "key": "ci_pipeline_id"
+            },
+            {
+              "key": "cos_kms_key_crn"
+            },
+            {
+              "key": "cos_kms_new_key_name"
+            },
+            {
+              "key": "cos_kms_ring_id"
+            },
+            {
+              "key": "create_continuous_delivery_service_instance"
+            },
+            {
+              "key": "create_secrets"
+            },
+            {
+              "key": "elastic_credentials_name"
+            },
+            {
+              "key": "elastic_index_name"
+            },
+            {
+              "key": "elastic_instance_crn"
+            },
+            {
+              "key": "elastic_upload_sample_data"
+            },
+            {
+              "key": "inventory_repo_url"
+            },
+            {
+              "key": "secrets_manager_endpoint_type"
+            },
+            {
+              "key": "secrets_manager_guid"
+            },
+            {
+              "key": "secrets_manager_region"
+            },
+            {
+              "key": "toolchain_region"
+            },
+            {
+              "key": "toolchain_resource_group"
+            },
+            {
+              "key": "trigger_ci_pipeline_run"
+            },
+            {
+              "key": "use_existing_resource_group"
+            },
+            {
+              "key": "watson_assistant_instance_id"
+            },
+            {
+              "key": "watson_assistant_region"
+            },
+            {
+              "key": "watson_discovery_instance_id"
+            },
+            {
+              "key": "watson_discovery_region"
+            },
+            {
+              "key": "watson_machine_learning_instance_crn"
+            },
+            {
+              "key": "watson_machine_learning_instance_guid"
+            },
+            {
+              "key": "watson_machine_learning_instance_resource_name"
+            },
+            {
+              "key": "watson_project_name"
+            },
+            {
+              "key": "watson_project_sensitive"
+            },
+            {
               "key": "prefix",
               "required": true
             },
@@ -926,25 +1022,7 @@
               }
             },
             {
-              "key": "region",
-              "required": false,
-              "options": [
-                {
-                  "displayname": "us-south",
-                  "value": "us-south"
-                },
-                {
-                  "displayname": "eu-de",
-                  "value": "eu-de"
-                }
-              ]
-            },
-            {
               "key": "resource_group_name",
-              "required": false
-            },
-            {
-              "key": "existing_resource_group_name",
               "required": false
             },
             {
@@ -952,61 +1030,7 @@
               "required": false
             },
             {
-              "key": "secret_manager_service_plan",
-              "required": false,
-              "options": [
-                {
-                  "displayname": "Trial",
-                  "value": "trial"
-                },
-                {
-                  "displayname": "Standard",
-                  "value": "standard"
-                }
-              ]
-            },
-            {
-              "key": "existing_secrets_manager_crn",
-              "required": false
-            },
-            {
-              "key": "enable_platform_logs_metrics",
-              "required": false
-            },
-            {
-              "key": "sample_app_git_url",
-              "required": false
-            },
-            {
               "key": "cos_kms_crn",
-              "required": false
-            },
-            {
-              "key": "existing_event_notification_instance_crn",
-              "required": false
-            },
-            {
-              "key": "existing_discovery_instance",
-              "required": false
-            },
-            {
-              "key": "existing_assistant_instance_crn",
-              "required": false
-            },
-            {
-              "key": "existing_governance_instance",
-              "required": false
-            },
-            {
-              "key": "existing_studio_instance",
-              "required": false
-            },
-            {
-              "key": "existing_machine_learning_instance",
-              "required": false
-            },
-            {
-              "key": "existing_elasticsearch_instance_crn",
               "required": false
             }
           ],
