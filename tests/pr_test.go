@@ -121,7 +121,7 @@ func TestRunBankingSolutions(t *testing.T) {
 
 		options.TerraformVars["cluster_name"] = terraform.Output(t, existingTerraformOptions, "cluster_name")
 
-		output, err := options.RunTestConsistency()
+		output, err := options.RunTest()
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
 	}
