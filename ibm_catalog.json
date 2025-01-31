@@ -208,7 +208,7 @@
                 {
                   "dependency_input": "region",
                   "version_input": "watson_assistant_region",
-                  "reference_version": false
+                  "reference_version": true
                 }
               ]
             },
@@ -256,7 +256,7 @@
                 {
                   "dependency_input": "prefix",
                   "version_input": "prefix",
-                  "reference_version": false
+                  "reference_version": true
                 }
               ]
             },
@@ -325,7 +325,7 @@
                 {
                   "value": true,
                   "dependency_input": "use_existing_resource_group",
-                  "reference_version": false
+                  "reference_version": true
                 },
                 {
                   "dependency_output": "devops_resource_group_name",
@@ -385,12 +385,12 @@
                 {
                   "dependency_input": "resource_group_name",
                   "version_input": "resource_group_name",
-                  "reference_version": false
+                  "reference_version": true
                 },
                 {
                   "dependency_input": "use_existing_resource_group",
                   "version_input": "prefix",
-                  "reference_version": false
+                  "reference_version": true
                 }
               ]
             }
@@ -795,19 +795,19 @@
                   "version_input": "watson_assistant_instance_id"
                 },
                 {
-                  "dependency_input": "region",
+                  "dependency_input": "prefix",
                   "version_input": "prefix",
-                  "reference_version": false
+                  "reference_version": true
                 },
                 {
                   "dependency_input": "resource_group_name",
                   "version_input": "resource_group_name",
-                  "reference_version": false
+                  "reference_version": true
                 },
                 {
                   "value": true,
                   "dependency_input": "use_existing_resource_group",
-                  "reference_version": false
+                  "reference_version": true
                 }
               ]
             },
@@ -870,7 +870,7 @@
                 {
                   "dependency_input": "prefix",
                   "version_input": "prefix",
-                  "reference_version": false
+                  "reference_version": true
                 }
               ],
               "optional": false,
@@ -890,22 +890,22 @@
                 {
                   "dependency_input": "prefix",
                   "version_input": "prefix",
-                  "reference_version": false
+                  "reference_version": true
                 },
                 {
                   "dependency_input": "scc_region",
                   "version_input": "secrets_manager_region",
-                  "reference_version": false
+                  "reference_version": true
                 },
                 {
                   "dependency_input": "resource_group_name",
                   "version_input": "resource_group_name",
-                  "reference_version": false
+                  "reference_version": true
                 },
                 {
                   "value": true,
                   "dependency_input": "use_existing_resource_group",
-                  "reference_version": false
+                  "reference_version": true
                 }
               ],
               "on_by_default": true,
@@ -938,7 +938,7 @@
                 {
                   "dependency_input": "prefix",
                   "version_input": "prefix",
-                  "reference_version": false
+                  "reference_version": true
                 }
               ],
               "optional": true,
@@ -966,12 +966,12 @@
                 {
                   "dependency_input": "prefix",
                   "version_input": "prefix",
-                  "reference_version": false
+                  "reference_version": true
                 },
                 {
                   "dependency_input": "region",
                   "version_input": "secrets_manager_region",
-                  "reference_version": false
+                  "reference_version": true
                 }
               ]
             },
@@ -999,17 +999,17 @@
                 {
                   "dependency_input": "prefix",
                   "version_input": "prefix",
-                  "reference_version": false
+                  "reference_version": true
                 },
                 {
                   "dependency_input": "resource_group_name",
                   "version_input": "resource_group_name",
-                  "reference_version": false
+                  "reference_version": true
                 },
                 {
                   "value": true,
                   "dependency_input": "use_existing_resource_group",
-                  "reference_version": false
+                  "reference_version": true
                 }
               ]
             }
