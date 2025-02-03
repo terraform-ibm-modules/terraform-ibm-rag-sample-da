@@ -198,10 +198,6 @@
                   "reference_version": true
                 },
                 {
-                  "dependency_input": "region",
-                  "version_input": "watson_assistant_region"
-                },
-                {
                   "dependency_output": "guid",
                   "version_input": "watson_assistant_instance_id"
                 },
