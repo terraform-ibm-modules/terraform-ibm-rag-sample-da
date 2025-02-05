@@ -400,7 +400,7 @@
                 {
                   "name": "deploy-arch-ibm-icd-elasticsearch",
                   "id": "7ee5876d-6e30-49d1-be25-259a442085e8-global",
-                  "version": ">=1.25.16",
+                  "version": "^v1.28.1",
                   "flavors": [
                     "standard"
                   ],
@@ -419,6 +419,15 @@
                       "dependency_input": "existing_kms_instance_crn",
                       "version_input": "cos_kms_crn",
                       "reference_version": true
+                    },
+                    {
+                      "dependency_input": "resource_group_name",
+                      "version_input": "resource_group_name",
+                      "reference_version": true
+                    },
+                    {
+                      "value": true,
+                      "dependency_input": "use_existing_resource_group"
                     }
                   ]
                 },
