@@ -78,14 +78,48 @@
           },
           {
             "key": "toolchain_region",
-            "custom_config": {
-                "type": "vpc_region",
-                "grouping": "deployment",
-                "original_grouping": "deployment",
-                "config_constraints": {
-                    "generationType": "2"
+            "options": [
+                {
+                  "displayname": "Sydney(au-syd)",
+                  "value": "au-syd"
+                },
+                {
+                  "displayname": "Sao Paolo(br-sao)",
+                  "value": "br-sao"
+                },
+                {
+                  "displayname": "Canada(ca-tor)",
+                  "value": "ca-tor"
+                },
+                {
+                  "displayname": "Frankfurt(eu-de)",
+                  "value": "eu-de"
+                },
+                {
+                  "displayname": "Madrid(eu-es)",
+                  "value": "eu-es"
+                },
+                {
+                  "displayname": "London(eu-gb)",
+                  "value": "eu-gb"
+                },
+                {
+                  "displayname": "Dallas(us-south)",
+                  "value": "us-south"
+                },
+                {
+                  "displayname": "Washington DC(us-east)",
+                  "value": "us-east"
+                },
+                {
+                  "displayname": "Tokyo(jp-tok)",
+                  "value": "jp-tok"
+                },
+                {
+                  "displayname": "Osaka(jp-osa)",
+                  "value": "jp-osa"
                 }
-            }
+              ]
           },
           {
             "key": "toolchain_resource_group"
@@ -107,14 +141,64 @@
           },
           {
             "key": "watson_assistant_region",
-            "custom_config": {
-                "type": "vpc_region",
-                "grouping": "deployment",
-                "original_grouping": "deployment",
-                "config_constraints": {
-                    "generationType": "2"
+            "options": [
+                {
+                  "displayname": "Sydney(au-syd)",
+                  "value": "au-syd"
+                },
+                {
+                  "displayname": "Tokyo(jp-tok)",
+                  "value": "jp-tok"
+                },
+                {
+                  "displayname": "Frankfurt(eu-de)",
+                  "value": "eu-de"
+                },
+                {
+                  "displayname": "London(eu-gb)",
+                  "value": "eu-gb"
+                },
+                {
+                  "displayname": "Dallas(us-south)",
+                  "value": "us-south"
+                },
+                {
+                  "displayname": "Washington DC(us-east)",
+                  "value": "us-east"
                 }
-            }
+              ]
+          },
+          {
+            "key": "watson_discovery_instance_id"
+          },
+          {
+            "key": "watson_discovery_region",
+            "options": [
+                {
+                  "displayname": "Sydney(au-syd)",
+                  "value": "au-syd"
+                },
+                {
+                  "displayname": "Tokyo(jp-tok)",
+                  "value": "jp-tok"
+                },
+                {
+                  "displayname": "Frankfurt(eu-de)",
+                  "value": "eu-de"
+                },
+                {
+                  "displayname": "London(eu-gb)",
+                  "value": "eu-gb"
+                },
+                {
+                  "displayname": "Dallas(us-south)",
+                  "value": "us-south"
+                },
+                {
+                  "displayname": "Washington DC(us-east)",
+                  "value": "us-east"
+                }
+              ]
           },
           {
             "key": "watson_machine_learning_instance_crn"
@@ -179,14 +263,48 @@
           },
           {
             "key": "secrets_manager_region",
-            "custom_config": {
-                "type": "vpc_region",
-                "grouping": "deployment",
-                "original_grouping": "deployment",
-                "config_constraints": {
-                    "generationType": "2"
+            "options": [
+                {
+                  "displayname": "Osaka(jp-osa)",
+                  "value": "jp-osa"
+                },
+                {
+                  "displayname": "Sydney(au-syd)",
+                  "value": "au-syd"
+                },
+                {
+                  "displayname": "Tokyo(jp-tok)",
+                  "value": "jp-tok"
+                },
+                {
+                  "displayname": "Frankfurt(eu-de)",
+                  "value": "eu-de"
+                },
+                {
+                  "displayname": "London(eu-gb)",
+                  "value": "eu-gb"
+                },
+                {
+                  "displayname": "Madrid(eu-es)",
+                  "value": "eu-es"
+                },
+                {
+                  "displayname": "Dallas(us-south)",
+                  "value": "us-south"
+                },
+                {
+                  "displayname": "Toronto(ca-tor)",
+                  "value": "ca-tor"
+                },
+                {
+                  "displayname": "Washington DC(us-east)",
+                  "value": "us-east"
+                },
+                {
+                  "displayname": "Sao Paolo(br-sao)",
+                  "value": "br-sao"
                 }
-            }
+              ]
           },
           {
             "key": "trigger_ci_pipeline_run"
