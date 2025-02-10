@@ -54,7 +54,8 @@
               "key": "prefix"
             },
             {
-              "key": "use_existing_resource_group"
+              "key": "use_existing_resource_group",
+              "required": true
             },
             {
               "key": "resource_group_name"
@@ -80,49 +81,59 @@
             "key": "toolchain_region",
             "options": [
                 {
-                  "displayname": "Sydney(au-syd)",
+                  "displayname": "Osaka (jp-osa)",
+                  "value": "jp-osa"
+                },
+                {
+                  "displayname": "Sydney (au-syd)",
                   "value": "au-syd"
                 },
                 {
-                  "displayname": "Sao Paolo(br-sao)",
-                  "value": "br-sao"
-                },
-                {
-                  "displayname": "Toronto(ca-tor)",
-                  "value": "ca-tor"
-                },
-                {
-                  "displayname": "Frankfurt(eu-de)",
-                  "value": "eu-de"
-                },
-                {
-                  "displayname": "Madrid(eu-es)",
-                  "value": "eu-es"
-                },
-                {
-                  "displayname": "London(eu-gb)",
-                  "value": "eu-gb"
-                },
-                {
-                  "displayname": "Dallas(us-south)",
-                  "value": "us-south"
-                },
-                {
-                  "displayname": "Washington DC(us-east)",
-                  "value": "us-east"
-                },
-                {
-                  "displayname": "Tokyo(jp-tok)",
+                  "displayname": "Tokyo (jp-tok)",
                   "value": "jp-tok"
                 },
                 {
-                  "displayname": "Osaka(jp-osa)",
-                  "value": "jp-osa"
+                  "displayname": "Frankfurt (eu-de)",
+                  "value": "eu-de"
+                },
+                {
+                  "displayname": "London (eu-gb)",
+                  "value": "eu-gb"
+                },
+                {
+                  "displayname": "Madrid (eu-es)",
+                  "value": "eu-es"
+                },
+                {
+                  "displayname": "Dallas (us-south)",
+                  "value": "us-south"
+                },
+                {
+                  "displayname": "Toronto (ca-tor)",
+                  "value": "ca-tor"
+                },
+                {
+                  "displayname": "Washington DC (us-east)",
+                  "value": "us-east"
+                },
+                {
+                  "displayname": "Sao Paolo (br-sao)",
+                  "value": "br-sao"
                 }
+
               ]
           },
           {
-            "key": "toolchain_resource_group"
+            "key": "toolchain_resource_group",
+            "required": true,
+            "custom_config": {
+                "type": "resource_group",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                    "identifier": "rg_name"
+                }
+            }
           },
           {
             "key": "create_continuous_delivery_service_instance"
@@ -143,27 +154,27 @@
             "key": "watson_assistant_region",
             "options": [
                 {
-                  "displayname": "Sydney(au-syd)",
+                  "displayname": "Sydney (au-syd)",
                   "value": "au-syd"
                 },
                 {
-                  "displayname": "Tokyo(jp-tok)",
+                  "displayname": "Tokyo (jp-tok)",
                   "value": "jp-tok"
                 },
                 {
-                  "displayname": "Frankfurt(eu-de)",
+                  "displayname": "Frankfurt (eu-de)",
                   "value": "eu-de"
                 },
                 {
-                  "displayname": "London(eu-gb)",
+                  "displayname": "London (eu-gb)",
                   "value": "eu-gb"
                 },
                 {
-                  "displayname": "Dallas(us-south)",
+                  "displayname": "Dallas (us-south)",
                   "value": "us-south"
                 },
                 {
-                  "displayname": "Washington DC(us-east)",
+                  "displayname": "Washington DC (us-east)",
                   "value": "us-east"
                 }
               ]
@@ -175,27 +186,27 @@
             "key": "watson_discovery_region",
             "options": [
                 {
-                  "displayname": "Sydney(au-syd)",
+                  "displayname": "Sydney (au-syd)",
                   "value": "au-syd"
                 },
                 {
-                  "displayname": "Tokyo(jp-tok)",
+                  "displayname": "Tokyo (jp-tok)",
                   "value": "jp-tok"
                 },
                 {
-                  "displayname": "Frankfurt(eu-de)",
+                  "displayname": "Frankfurt (eu-de)",
                   "value": "eu-de"
                 },
                 {
-                  "displayname": "London(eu-gb)",
+                  "displayname": "London (eu-gb)",
                   "value": "eu-gb"
                 },
                 {
-                  "displayname": "Dallas(us-south)",
+                  "displayname": "Dallas (us-south)",
                   "value": "us-south"
                 },
                 {
-                  "displayname": "Washington DC(us-east)",
+                  "displayname": "Washington DC (us-east)",
                   "value": "us-east"
                 }
               ]
@@ -265,43 +276,43 @@
             "key": "secrets_manager_region",
             "options": [
                 {
-                  "displayname": "Osaka(jp-osa)",
+                  "displayname": "Osaka (jp-osa)",
                   "value": "jp-osa"
                 },
                 {
-                  "displayname": "Sydney(au-syd)",
+                  "displayname": "Sydney (au-syd)",
                   "value": "au-syd"
                 },
                 {
-                  "displayname": "Tokyo(jp-tok)",
+                  "displayname": "Tokyo (jp-tok)",
                   "value": "jp-tok"
                 },
                 {
-                  "displayname": "Frankfurt(eu-de)",
+                  "displayname": "Frankfurt (eu-de)",
                   "value": "eu-de"
                 },
                 {
-                  "displayname": "London(eu-gb)",
+                  "displayname": "London (eu-gb)",
                   "value": "eu-gb"
                 },
                 {
-                  "displayname": "Madrid(eu-es)",
+                  "displayname": "Madrid (eu-es)",
                   "value": "eu-es"
                 },
                 {
-                  "displayname": "Dallas(us-south)",
+                  "displayname": "Dallas (us-south)",
                   "value": "us-south"
                 },
                 {
-                  "displayname": "Toronto(ca-tor)",
+                  "displayname": "Toronto (ca-tor)",
                   "value": "ca-tor"
                 },
                 {
-                  "displayname": "Washington DC(us-east)",
+                  "displayname": "Washington DC (us-east)",
                   "value": "us-east"
                 },
                 {
-                  "displayname": "Sao Paolo(br-sao)",
+                  "displayname": "Sao Paolo (br-sao)",
                   "value": "br-sao"
                 }
               ]
