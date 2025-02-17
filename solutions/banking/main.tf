@@ -223,6 +223,21 @@ moved {
   to   = module.configure_watson_assistant.shell_script.watson_assistant
 }
 
+### Optionally add access policies for Watson Assistant sub-resources to an existing access group
+module "watson_assistant_access_policies" {
+  count  = var.existing_wa_access_group_name != null ? 1 : 0
+  source = "../../modules/access-groups"
+  providers = {
+    ibm = ibm.ibm_resources
+  }
+  existing_access_group_name = var.existing_wa_access_group_name
+  watsonx_assistant_id       = module.configure_watson_assistant.watsonx_assistant_id
+  assistant_environment_id   = module.configure_watson_assistant.watsonx_assistant_environment.environment_id
+  assistant_action_skill_id  = one([for skill in module.configure_watson_assistant.watsonx_assistant_environment.skill_references : skill.skill_id if skill.type == "action"])
+  assistant_search_skill_id  = one([for skill in module.configure_watson_assistant.watsonx_assistant_environment.skill_references : skill.skill_id if skill.type == "search"])
+}
+
+
 ### Make all pipeline properties dependent on CD instance
 ### to avoid errors when the toolchains are out of grace period
 

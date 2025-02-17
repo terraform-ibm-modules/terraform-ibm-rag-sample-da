@@ -80,6 +80,12 @@ variable "watson_assistant_region" {
   type        = string
 }
 
+variable "existing_wa_access_group_name" {
+  description = "Access group to add policies for new Watson Assistant resources"
+  type        = string
+  default     = null
+}
+
 variable "watson_discovery_instance_id" {
   description = "ID of the WatsonX Discovery instance"
   type        = string
