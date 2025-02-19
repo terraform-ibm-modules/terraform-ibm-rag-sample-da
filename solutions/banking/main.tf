@@ -102,7 +102,7 @@ data "ibm_resource_group" "toolchain_resource_group_id" {
 resource "ibm_resource_instance" "cd_instance" {
   provider          = ibm.ibm_resources
   count             = var.create_continuous_delivery_service_instance ? 1 : 0
-  name              = "${var.prefix}-cd-instance"
+  name              = try("${local.prefix}-cd-instance", "cd-instance")
   service           = "continuous-delivery"
   plan              = "professional"
   location          = var.toolchain_region
