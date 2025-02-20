@@ -3,17 +3,17 @@ locals {
   use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null && var.watson_project_name != null) ? true : false
   use_elastic_index           = (var.elastic_instance_crn != null) ? true : false
 
-  cos_instance_name                = var.prefix != null ? "${var.prefix}-rag-sample-app-cos" : "gen-ai-rag-sample-app-cos"
-  cos_kms_new_key_name             = var.prefix != null ? "${var.prefix}-${var.cos_kms_new_key_name}" : var.cos_kms_new_key_name
+  cos_instance_name                = try("${local.prefix}-rag-sample-app-cos", "gen-ai-rag-sample-app-cos")
+  cos_kms_new_key_name             = try("${local.prefix}-${var.cos_kms_new_key_name}", var.cos_kms_new_key_name)
   watsonx_assistant_url            = "//api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
   watson_discovery_url             = local.use_watson_discovery ? "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}" : null
-  watson_discovery_project_name    = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-project" : "gen-ai-rag-sample-app-project"
-  watson_discovery_collection_name = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-data" : "gen-ai-rag-sample-app-data"
-  watson_ml_project_name           = var.prefix != null ? "${var.prefix}-${var.watson_project_name}" : var.watson_project_name
+  watson_discovery_project_name    = try("${local.prefix}-gen-ai-rag-sample-app-project", "gen-ai-rag-sample-app-project")
+  watson_discovery_collection_name = try("${local.prefix}-gen-ai-rag-sample-app-data", "gen-ai-rag-sample-app-data")
+  watson_ml_project_name           = try("${local.prefix}-${var.watson_project_name}", var.watson_project_name)
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
   # Translate index name to lowercase to avoid Elastic errors
-  elastic_index_name       = lower(var.prefix != null ? "${var.prefix}-${var.elastic_index_name}" : var.elastic_index_name)
+  elastic_index_name       = lower(try("${local.prefix}-${var.elastic_index_name}", var.elastic_index_name))
   elastic_credentials_data = local.use_elastic_index ? jsondecode(data.ibm_resource_key.elastic_credentials[0].credentials_json).connection.https : null
   # Compose the URL without credentials to keep the latter sensitive
   elastic_service_binding = local.use_elastic_index ? {
@@ -24,6 +24,8 @@ locals {
   } : null
 
   cd_instance = var.create_continuous_delivery_service_instance ? ibm_resource_instance.cd_instance : null
+
+  prefix = var.prefix != null ? (var.prefix != "" ? var.prefix : null) : null
 }
 
 data "ibm_iam_auth_token" "tokendata" {}
@@ -100,7 +102,7 @@ data "ibm_resource_group" "toolchain_resource_group_id" {
 resource "ibm_resource_instance" "cd_instance" {
   provider          = ibm.ibm_resources
   count             = var.create_continuous_delivery_service_instance ? 1 : 0
-  name              = "${var.prefix}-cd-instance"
+  name              = try("${local.prefix}-cd-instance", "cd-instance")
   service           = "continuous-delivery"
   plan              = "professional"
   location          = var.toolchain_region
