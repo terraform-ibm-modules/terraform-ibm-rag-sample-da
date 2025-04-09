@@ -22,8 +22,9 @@ variable "watsonx_admin_api_key" {
 }
 
 variable "prefix" {
-  description = "Prefix for resources to be created"
+  description = "The prefix to add to all resources that this solution creates. To not use any prefix value, you can set this value to `null` or an empty string."
   type        = string
+  default     = "dev"
 }
 
 variable "use_existing_resource_group" {
@@ -188,6 +189,10 @@ variable "secrets_manager_endpoint_type" {
   type        = string
   description = "The endpoint type to communicate with the provided secrets manager instance. Possible values are `public` or `private`"
   default     = "private"
+  validation {
+    condition     = contains(["private", "public"], var.secrets_manager_endpoint_type)
+    error_message = "The specified service endpoint is not valid. Supported options are public, or private."
+  }
 }
 
 variable "secrets_manager_guid" {

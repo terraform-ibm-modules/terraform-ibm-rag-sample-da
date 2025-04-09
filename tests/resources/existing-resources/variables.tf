@@ -20,3 +20,10 @@ variable "region" {
   description = "Region where resources are deployed"
   type        = string
 }
+
+variable "create_ocp_cluster" {
+
+  description = "Openshift cluster for deployment of sample rag app"
+  type        = bool
+  default     = false
+}
