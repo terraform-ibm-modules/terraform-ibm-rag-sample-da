@@ -7,11 +7,11 @@ terraform {
     }
     null = {
       source  = "hashicorp/null"
-      version = "3.2.3"
+      version = "3.2.4"
     }
     random = {
       source  = "hashicorp/random"
-      version = "3.7.1"
+      version = "3.7.2"
     }
     restapi = {
       source  = "Mastercard/restapi"
@@ -23,7 +23,7 @@ terraform {
     }
     elasticstack = {
       source  = "elastic/elasticstack"
-      version = "0.11.14"
+      version = "0.11.15"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
