@@ -43,7 +43,7 @@
               }
             ]
           },
-          "configuration":[
+          "configuration": [
             {
               "key": "ibmcloud_api_key"
             },
@@ -62,25 +62,25 @@
               "key": "resource_group_name"
             },
             {
-            "key": "provider_visibility",
-            "options": [
-              {
-                "displayname": "private",
-                "value": "private"
-              },
-              {
-                "displayname": "public",
-                "value": "public"
-              },
-              {
-                "displayname": "public-and-private",
-                "value": "public-and-private"
-              }
-            ]
-          },
-          {
-            "key": "toolchain_region",
-            "options": [
+              "key": "provider_visibility",
+              "options": [
+                {
+                  "displayname": "private",
+                  "value": "private"
+                },
+                {
+                  "displayname": "public",
+                  "value": "public"
+                },
+                {
+                  "displayname": "public-and-private",
+                  "value": "public-and-private"
+                }
+              ]
+            },
+            {
+              "key": "toolchain_region",
+              "options": [
                 {
                   "displayname": "Osaka (jp-osa)",
                   "value": "jp-osa"
@@ -122,159 +122,159 @@
                   "value": "br-sao"
                 }
               ]
-          },
-          {
-            "key": "toolchain_resource_group",
-            "required": true,
-            "custom_config": {
+            },
+            {
+              "key": "toolchain_resource_group",
+              "required": true,
+              "custom_config": {
                 "type": "resource_group",
                 "grouping": "deployment",
                 "original_grouping": "deployment",
                 "config_constraints": {
-                    "identifier": "rg_name"
+                  "identifier": "rg_name"
                 }
-            }
-          },
-          {
-            "key": "create_continuous_delivery_service_instance"
-          },
-          {
-            "key": "ci_pipeline_id"
-          },
-          {
-            "key": "cd_pipeline_id"
-          },
-          {
-            "key": "inventory_repo_url"
-          },
-          {
-            "key": "watson_assistant_instance_id"
-          },
-          {
-            "key": "watson_assistant_region",
-            "options": [
-                {
-                  "displayname": "Sydney (au-syd)",
-                  "value": "au-syd"
-                },
-                {
-                  "displayname": "Tokyo (jp-tok)",
-                  "value": "jp-tok"
-                },
-                {
-                  "displayname": "Frankfurt (eu-de)",
-                  "value": "eu-de"
-                },
-                {
-                  "displayname": "London (eu-gb)",
-                  "value": "eu-gb"
-                },
-                {
-                  "displayname": "Dallas (us-south)",
-                  "value": "us-south"
-                },
-                {
-                  "displayname": "Washington DC (us-east)",
-                  "value": "us-east"
-                }
-              ]
-          },
-          {
-            "key": "watson_discovery_instance_id"
-          },
-          {
-            "key": "watson_discovery_region",
-            "options": [
-                {
-                  "displayname": "Sydney (au-syd)",
-                  "value": "au-syd"
-                },
-                {
-                  "displayname": "Tokyo (jp-tok)",
-                  "value": "jp-tok"
-                },
-                {
-                  "displayname": "Frankfurt (eu-de)",
-                  "value": "eu-de"
-                },
-                {
-                  "displayname": "London (eu-gb)",
-                  "value": "eu-gb"
-                },
-                {
-                  "displayname": "Dallas (us-south)",
-                  "value": "us-south"
-                },
-                {
-                  "displayname": "Washington DC (us-east)",
-                  "value": "us-east"
-                }
-              ]
-          },
-          {
-            "key": "watson_machine_learning_instance_crn"
-          },
-          {
-            "key": "watson_machine_learning_instance_guid"
-          },
-          {
-            "key": "watson_machine_learning_instance_resource_name"
-          },
-          {
-            "key": "watson_project_name"
-          },
-          {
-            "key": "watson_project_sensitive"
-          },
-          {
-            "key": "cos_kms_crn"
-          },
-          {
-            "key": "cos_kms_key_crn"
-          },
-          {
-            "key": "cos_kms_new_key_name"
-          },
-          {
-            "key": "cos_kms_ring_id"
-          },
-          {
-            "key": "elastic_instance_crn"
-          },
-          {
-            "key": "elastic_credentials_name"
-          },
-          {
-            "key": "elastic_index_name"
-          },
-          {
-            "key": "elastic_upload_sample_data"
-          },
-          {
-            "key": "signing_key"
-          },
-          {
-            "key": "create_secrets"
-          },
-          {
-            "key": "secrets_manager_endpoint_type",
-            "options": [
-              {
-                "displayname": "private",
-                "value": "private"
-              },
-              {
-                "displayname": "public",
-                "value": "public"
               }
-            ]
-          },
-          {
-            "key": "secrets_manager_guid"
-          },
-          {
-            "key": "secrets_manager_region",
-            "options": [
+            },
+            {
+              "key": "create_continuous_delivery_service_instance"
+            },
+            {
+              "key": "ci_pipeline_id"
+            },
+            {
+              "key": "cd_pipeline_id"
+            },
+            {
+              "key": "inventory_repo_url"
+            },
+            {
+              "key": "watson_assistant_instance_id"
+            },
+            {
+              "key": "watson_assistant_region",
+              "options": [
+                {
+                  "displayname": "Sydney (au-syd)",
+                  "value": "au-syd"
+                },
+                {
+                  "displayname": "Tokyo (jp-tok)",
+                  "value": "jp-tok"
+                },
+                {
+                  "displayname": "Frankfurt (eu-de)",
+                  "value": "eu-de"
+                },
+                {
+                  "displayname": "London (eu-gb)",
+                  "value": "eu-gb"
+                },
+                {
+                  "displayname": "Dallas (us-south)",
+                  "value": "us-south"
+                },
+                {
+                  "displayname": "Washington DC (us-east)",
+                  "value": "us-east"
+                }
+              ]
+            },
+            {
+              "key": "watson_discovery_instance_id"
+            },
+            {
+              "key": "watson_discovery_region",
+              "options": [
+                {
+                  "displayname": "Sydney (au-syd)",
+                  "value": "au-syd"
+                },
+                {
+                  "displayname": "Tokyo (jp-tok)",
+                  "value": "jp-tok"
+                },
+                {
+                  "displayname": "Frankfurt (eu-de)",
+                  "value": "eu-de"
+                },
+                {
+                  "displayname": "London (eu-gb)",
+                  "value": "eu-gb"
+                },
+                {
+                  "displayname": "Dallas (us-south)",
+                  "value": "us-south"
+                },
+                {
+                  "displayname": "Washington DC (us-east)",
+                  "value": "us-east"
+                }
+              ]
+            },
+            {
+              "key": "watson_machine_learning_instance_crn"
+            },
+            {
+              "key": "watson_machine_learning_instance_guid"
+            },
+            {
+              "key": "watson_machine_learning_instance_resource_name"
+            },
+            {
+              "key": "watson_project_name"
+            },
+            {
+              "key": "watson_project_sensitive"
+            },
+            {
+              "key": "cos_kms_crn"
+            },
+            {
+              "key": "cos_kms_key_crn"
+            },
+            {
+              "key": "cos_kms_new_key_name"
+            },
+            {
+              "key": "cos_kms_ring_id"
+            },
+            {
+              "key": "elastic_instance_crn"
+            },
+            {
+              "key": "elastic_credentials_name"
+            },
+            {
+              "key": "elastic_index_name"
+            },
+            {
+              "key": "elastic_upload_sample_data"
+            },
+            {
+              "key": "signing_key"
+            },
+            {
+              "key": "create_secrets"
+            },
+            {
+              "key": "secrets_manager_endpoint_type",
+              "options": [
+                {
+                  "displayname": "private",
+                  "value": "private"
+                },
+                {
+                  "displayname": "public",
+                  "value": "public"
+                }
+              ]
+            },
+            {
+              "key": "secrets_manager_guid"
+            },
+            {
+              "key": "secrets_manager_region",
+              "options": [
                 {
                   "displayname": "Osaka (jp-osa)",
                   "value": "jp-osa"
@@ -316,20 +316,20 @@
                   "value": "br-sao"
                 }
               ]
-          },
-          {
-            "key": "trigger_ci_pipeline_run"
-          },
-          {
-            "key": "cluster_name"
-          },
-          {
-            "key": "cluster_zone_count"
-          },
-          {
-            "key": "provision_public_ingress"
-          }
-        ],
+            },
+            {
+              "key": "trigger_ci_pipeline_run"
+            },
+            {
+              "key": "cluster_name"
+            },
+            {
+              "key": "cluster_zone_count"
+            },
+            {
+              "key": "provision_public_ingress"
+            }
+          ],
           "release_notes_url": "RELEASE NOTES URL",
           "outputs": [],
           "install_type": "fullstack"
