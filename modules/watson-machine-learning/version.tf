@@ -11,5 +11,5 @@ terraform {
       configuration_aliases = [restapi.restapi_watsonx_admin]
     }
   }
-  required_version = ">= 1.3.0"
+  required_version = ">= 1.9.0"
 }
