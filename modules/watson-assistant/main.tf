@@ -86,15 +86,15 @@ resource "restapi_object" "assistant_action_skill" {
   update_data    = sensitive(jsonencode(local.assistant_action_skill))
 }
 
-resource "time_sleep" "wait_30_seconds" { # tflint-ignore: terraform_required_providers
+resource "time_sleep" "wait_60_seconds" { # tflint-ignore: terraform_required_providers
   depends_on      = [restapi_object.assistant_search_skill, restapi_object.assistant_action_skill]
-  create_duration = "30s"
+  create_duration = "60s"
 }
 
 # Assistant skill references update - enable search skill
 resource "restapi_object" "assistant_skills_references" {
   count          = var.assistant_search_skill != null ? 1 : 0 # Only need to update it if the search skill was updated
-  depends_on     = [time_sleep.wait_30_seconds]
+  depends_on     = [time_sleep.wait_60_seconds]
   provider       = restapi.restapi_watsonx_admin
   path           = local.assistant_environment_api_path
   query_string   = "version=${local.watson_assistant_api_version}"
