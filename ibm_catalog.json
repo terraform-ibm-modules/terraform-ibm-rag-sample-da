@@ -346,7 +346,8 @@
           ],
           "release_notes_url": "RELEASE NOTES URL",
           "outputs": [],
-          "install_type": "fullstack"
+          "install_type": "fullstack",
+          "terraform_version": "1.10.5"
         }
       ]
     }
