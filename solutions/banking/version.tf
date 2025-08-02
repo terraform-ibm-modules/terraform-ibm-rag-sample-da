@@ -3,7 +3,7 @@ terraform {
   required_providers {
     ibm = {
       source  = "IBM-Cloud/ibm"
-      version = "1.78.2"
+      version = "1.81.0"
     }
     null = {
       source  = "hashicorp/null"
@@ -23,11 +23,11 @@ terraform {
     }
     elasticstack = {
       source  = "elastic/elasticstack"
-      version = "0.11.15"
+      version = "0.11.17"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.36.0"
+      version = "2.38.0"
     }
   }
   required_version = ">= 1.9.0"
