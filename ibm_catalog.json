@@ -9,7 +9,7 @@
         "target_terraform",
         "terraform",
         "solution",
-        "converged_infra"
+        "platform_engineering"
       ],
       "keywords": [],
       "short_description": "Configures provided toolchain infrastructure and uploads PDF files to a Watson project, part of a larger automation workflow.",
