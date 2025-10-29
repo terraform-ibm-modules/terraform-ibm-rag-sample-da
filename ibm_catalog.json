@@ -20,15 +20,6 @@
           "label": "Banking Application",
           "name": "banking",
           "working_directory": "solutions/banking",
-          "compliance": {
-            "authority": "scc-v3",
-            "profiles": [
-              {
-                "profile_name": "IBM Cloud Framework for Financial Services",
-                "profile_version": "1.7.0"
-              }
-            ]
-          },
           "iam_permissions": [
             {
               "service_name": "iam-groups",
