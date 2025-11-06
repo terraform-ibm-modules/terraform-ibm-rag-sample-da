@@ -6,7 +6,7 @@ variable "ibmcloud_api_key" {
 variable "provider_visibility" {
   description = "Set the visibility value for the IBM terraform provider. Supported values are `public`, `private`, `public-and-private`. [Learn more](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/guides/custom-service-endpoints)."
   type        = string
-  # Defaulting this to public to workaround https://github.com/IBM-Cloud/terraform-provider-ibm/issues/5828
+  # Defaulting this test to public to workaround https://github.com/IBM-Cloud/terraform-provider-ibm/issues/5828
   default = "public"
 
   validation {
