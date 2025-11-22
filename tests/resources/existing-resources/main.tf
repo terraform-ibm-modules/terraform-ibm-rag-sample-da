@@ -165,7 +165,7 @@ module "ocp_base" {
 
   count                               = var.create_ocp_cluster ? 1 : 0
   source                              = "terraform-ibm-modules/base-ocp-vpc/ibm"
-  version                             = "3.70.0"
+  version                             = "3.73.2"
   resource_group_id                   = module.resource_group.resource_group_id
   region                              = var.region
   tags                                = []
