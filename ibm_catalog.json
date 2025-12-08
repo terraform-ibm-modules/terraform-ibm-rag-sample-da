@@ -236,6 +236,58 @@
               "key": "cos_kms_ring_id"
             },
             {
+              "key": "cos_evidence_bucket_region",
+              "options": [
+                {
+                  "displayname": "Sydney (au-syd)",
+                  "value": "au-syd"
+                },
+                {
+                  "displayname": "Sao Paolo (br-sao)",
+                  "value": "br-sao"
+                },
+                {
+                  "displayname": "Montreal (ca-mon)",
+                  "value": "ca-mon"
+                },
+                {
+                  "displayname": "Toronto (ca-tor)",
+                  "value": "ca-tor"
+                },
+                {
+                  "displayname": "Osaka (jp-osa)",
+                  "value": "jp-osa"
+                },
+                {
+                  "displayname": "Tokyo (jp-tok)",
+                  "value": "jp-tok"
+                },
+                {
+                  "displayname": "Madrid (eu-es)",
+                  "value": "eu-es"
+                },
+                {
+                  "displayname": "Frankfurt (eu-de)",
+                  "value": "eu-de"
+                },
+                {
+                  "displayname": "London (eu-gb)",
+                  "value": "eu-gb"
+                },
+                {
+                  "displayname": "Dallas (us-south)",
+                  "value": "us-south"
+                },
+                {
+                  "displayname": "Washington DC (us-east)",
+                  "value": "us-east"
+                }
+              ]
+            },
+            {
+              "key": "existing_evidence_cos_instance_crn"
+            },
+            {
               "key": "elastic_instance_crn"
             },
             {

@@ -398,6 +398,46 @@ resource "ibm_cd_tekton_pipeline_trigger" "cd_pipeline_inventory_promotion_trigg
   }
 }
 
+# Update CI pipeline with COS Evidence locker name
+resource "ibm_cd_tekton_pipeline_property" "evidence_locker_cos_bucket_name_ci" {
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  pipeline_id = var.ci_pipeline_id
+  name        = "cos_bucket_name"
+  type        = "text"
+  value       = module.cos_bucket_evidence_locker.bucket_name
+}
+
+# Update CD pipeline with COS Evidence locker name
+resource "ibm_cd_tekton_pipeline_property" "evidence_locker_cos_bucket_name_cd" {
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  pipeline_id = var.cd_pipeline_id
+  name        = "cos_bucket_name"
+  type        = "text"
+  value       = module.cos_bucket_evidence_locker.bucket_name
+}
+
+# Update CI pipeline with COS Evidence locker Endpoint
+resource "ibm_cd_tekton_pipeline_property" "evidence_locker_cos_endpoint_ci" {
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  pipeline_id = var.ci_pipeline_id
+  name        = "cos_endpoint"
+  type        = "text"
+  value       = module.cos_bucket_evidence_locker.s3_endpoint_public
+}
+
+# Update CD pipeline with COS Evidence locker Endpoint
+resource "ibm_cd_tekton_pipeline_property" "evidence_locker_cos_endpoint_cd" {
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  pipeline_id = var.cd_pipeline_id
+  name        = "cos_endpoint"
+  type        = "text"
+  value       = module.cos_bucket_evidence_locker.s3_endpoint_public
+}
+
 # Trigger webhook to start CI pipeline run
 resource "null_resource" "ci_pipeline_run" {
   count = var.trigger_ci_pipeline_run == true ? 1 : 0
@@ -421,4 +461,61 @@ resource "null_resource" "ci_pipeline_run" {
     interpreter = ["/bin/bash", "-c"]
     quiet       = true
   }
+}
+
+#############################################################################
+# COS Bucket for Evidence Locker
+#############################################################################
+
+locals {
+
+  # COS
+  evidence_cos_instance_id = var.existing_evidence_cos_instance_crn != null ? module.existing_cos_crn_parser[0].service_instance : module.cos_evidence_locker[0].cos_instance_id
+  evidence_bucket_region = var.existing_evidence_cos_instance_crn != null ? module.existing_cos_crn_parser[0].region : var.cos_evidence_bucket_region
+
+  # KMS
+  evidence_cos_new_key_crn = var.cos_kms_crn != null ? ibm_kms_key.evidence_locker_root_key[0].crn : null
+  evidence_cos_kms_key_crn = var.cos_kms_key_crn != null ? var.cos_kms_key_crn : local.evidence_cos_new_key_crn
+
+}
+
+# parse COS details from the existing COS instance CRN
+module "existing_cos_crn_parser" {
+  count   = var.existing_evidence_cos_instance_crn != null ? 1 : 0
+  source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
+  version = "1.2.0"
+  crn     = var.existing_evidence_cos_instance_crn
+}
+
+# Create KMS Key
+resource "ibm_kms_key" "evidence_locker_root_key" {
+  count        = var.cos_kms_crn != null && var.cos_kms_key_crn == null ? 1 : 0
+  instance_id  = var.cos_kms_crn
+  key_name     = "${local.prefix}evidence-locker-key"
+  force_delete = true
+}
+
+# Create a Evidence locker cos instance if not already provided.
+module "cos_evidence_locker" {
+  count                  = var.existing_evidence_cos_instance_crn == null ? 1 : 0
+  source                 = "terraform-ibm-modules/cos/ibm"
+  version                = "10.7.0"
+  resource_group_id      = module.resource_group.resource_group_id
+  region                 = var.cos_evidence_bucket_region
+  cos_instance_name      = "${local.prefix}evidence-locker"
+  kms_encryption_enabled = false
+  create_cos_bucket      = false
+}
+
+# Create bucket in the evidence locker (whether existing or new)
+module "cos_bucket_evidence_locker" {
+  source                   = "terraform-ibm-modules/cos/ibm"
+  version                  = "10.7.0"
+  region                   = local.evidence_bucket_region
+  create_cos_instance      = false
+  bucket_name              = "${local.prefix}evidence-bucket"
+  existing_cos_instance_id = local.evidence_cos_instance_id
+  kms_encryption_enabled   = true
+  # existing_kms_instance_guid = module.kms_key_crn_parser. # To be added.
+  kms_key_crn = local.evidence_cos_kms_key_crn
 }

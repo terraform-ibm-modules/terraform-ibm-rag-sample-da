@@ -155,6 +155,18 @@ variable "cos_kms_ring_id" {
   default     = null
 }
 
+variable "existing_evidence_cos_instance_crn" {
+  type        = string
+  description = "CRN of the existing Object storage instance to use for the evidence locker bucket."
+  default     = null
+}
+
+variable "cos_evidence_bucket_region" {
+  type        = string
+  description = "Region of the Object storage instance to use for the evidence locker bucket."
+  default     = "us-south"
+}
+
 variable "elastic_instance_crn" {
   description = "Elastic ICD instance CRN"
   type        = string
