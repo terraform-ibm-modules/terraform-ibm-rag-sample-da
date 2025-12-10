@@ -75,6 +75,27 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"secrets_manager_endpoint_type":                  "public",
 			"provider_visibility":                            "public",
 			"create_secrets":                                 false,
+			"elastic_instance_crn":                           terraform.Output(t, existingTerraformOptions, "elasticsearch_crn"),
+			"cluster_name":                                   terraform.Output(t, existingTerraformOptions, "cluster_name"),
+		},
+		IgnoreUpdates: testhelper.Exemptions{
+			List: []string{
+				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_cd",
+				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci",
+			},
+		},
+		IgnoreDestroys: testhelper.Exemptions{
+			List: []string{
+				// destroy / re-create expected due to always_run trigger
+				"module.configure_discovery_project[0].null_resource.discovery_file_upload",
+				// Remaining need to be checked, see https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/342
+				"module.configure_discovery_project[0].restapi_object.configure_discovery_collection",
+				"module.configure_discovery_project[0].restapi_object.configure_discovery_project",
+				"module.configure_watson_assistant.restapi_object.assistant_action_skill[0]",
+				"module.configure_watson_assistant.restapi_object.assistant_search_skill[0]",
+				"module.configure_watson_assistant.restapi_object.assistant_skills_references[0]",
+				"module.configure_wml_project[0].restapi_object.configure_project",
+			},
 		},
 	})
 
@@ -115,13 +136,10 @@ func TestRunBankingSolutions(t *testing.T) {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
 	} else {
 		// ------------------------------------------------------------------------------------
-		// Deploy RAG DA passing in existing watson assistance ID and watson discovery ID.
+		// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
 		// ------------------------------------------------------------------------------------
 		options := setupOptions(t, prefix, existingTerraformOptions)
-
-		options.TerraformVars["cluster_name"] = terraform.Output(t, existingTerraformOptions, "cluster_name")
-
-		output, err := options.RunTest()
+		output, err := options.RunTestConsistency()
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
 	}
@@ -171,25 +189,9 @@ func TestRunUpgradeExample(t *testing.T) {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
 	} else {
 		// ------------------------------------------------------------------------------------
-		// Deploy RAG DA passing in existing watson assistance ID and watson discovery ID.
+		// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
 		// ------------------------------------------------------------------------------------
 		options := setupOptions(t, prefix, existingTerraformOptions)
-
-		options.TerraformVars["cluster_name"] = terraform.Output(t, existingTerraformOptions, "cluster_name")
-
-		options.IgnoreDestroys = testhelper.Exemptions{
-			List: []string{
-				"module.configure_discovery_project[0].null_resource.discovery_file_upload",
-			},
-		}
-
-		options.IgnoreUpdates = testhelper.Exemptions{
-			List: []string{
-				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_cd",
-				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci",
-			},
-		}
-
 		output, err := options.RunTestUpgrade()
 		if !options.UpgradeTestSkipped {
 			assert.Nil(t, err, "This should not have errored")

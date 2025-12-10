@@ -58,3 +58,8 @@ output "cluster_name" {
   value       = var.create_ocp_cluster ? module.ocp_base[0].cluster_name : null
   description = "The name of the provisioned cluster."
 }
+
+output "elasticsearch_crn" {
+  value       = module.elasticsearch.crn
+  description = "Elasticsearch CRN."
+}

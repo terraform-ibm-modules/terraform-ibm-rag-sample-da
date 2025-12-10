@@ -35,6 +35,25 @@ module "resource_group" {
 }
 
 ########################################################################################################################
+# Elasticsearch
+########################################################################################################################
+
+module "elasticsearch" {
+  source              = "terraform-ibm-modules/icd-elasticsearch/ibm"
+  version             = "2.7.3"
+  resource_group_id   = module.resource_group.resource_group_id
+  name                = "${var.prefix}-es"
+  region              = var.region
+  service_endpoints   = "public-and-private"
+  deletion_protection = false
+  service_credential_names = {
+    "elastic_db_admin" : "Administrator",
+    "wxasst_db_user" : "Editor",
+    "toolchain_db_user" : "Editor"
+  }
+}
+
+########################################################################################################################
 # Watson resources
 ########################################################################################################################
 
