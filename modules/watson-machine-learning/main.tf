@@ -107,6 +107,8 @@ locals {
     "eu-gb"    = "//api.eu-uk.dataplatform.cloud.ibm.com",
     "eu-de"    = "//api.eu-de.dataplatform.cloud.ibm.com",
     "jp-tok"   = "//api.jp-tok.dataplatform.cloud.ibm.com"
+    "au-syd"   = "//api.au-syd.dai.cloud.ibm.com",
+    "ca-tor"   = "//api.ca-tor.dai.cloud.ibm.com"
   }
 
   dataplatform_api          = local.dataplatform_api_mapping[var.location]
