@@ -77,6 +77,7 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"create_secrets":                                 false,
 			"elastic_instance_crn":                           terraform.Output(t, existingTerraformOptions, "elasticsearch_crn"),
 			"cluster_name":                                   terraform.Output(t, existingTerraformOptions, "cluster_name"),
+			"cos_kms_crn":                                    terraform.Output(t, existingTerraformOptions, "kms_instance_crn"),
 		},
 		IgnoreUpdates: testhelper.Exemptions{
 			List: []string{
