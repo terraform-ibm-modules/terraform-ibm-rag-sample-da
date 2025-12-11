@@ -48,7 +48,7 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
 		Testing:            t,
 		TerraformDir:       bankingSolutionsDir,
-		ApiDataIsSensitive: core.BoolPtr(true),
+		ApiDataIsSensitive: core.BoolPtr(false),
 		// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
 		ImplicitRequired:           false,
 		Region:                     region,
