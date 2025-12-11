@@ -3,8 +3,10 @@ package test
 
 import (
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -19,6 +21,7 @@ import (
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/cloudinfo"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
+	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
 )
 
 const bankingSolutionsDir = "solutions/banking"
@@ -30,6 +33,47 @@ const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-res
 var permanentResources map[string]interface{}
 
 var sharedInfoSvc *cloudinfo.CloudInfoService
+
+type tarIncludePatterns struct {
+	excludeDirs []string
+
+	includeFiletypes []string
+
+	includeDirs []string
+}
+
+func getTarIncludePatternsRecursively(dir string, dirsToExclude []string, fileTypesToInclude []string) ([]string, error) {
+	r := tarIncludePatterns{dirsToExclude, fileTypesToInclude, nil}
+	err := filepath.WalkDir(dir, func(path string, entry fs.DirEntry, err error) error {
+		return walk(&r, path, entry, err)
+	})
+	if err != nil {
+		fmt.Println("error")
+		return r.includeDirs, err
+	}
+	return r.includeDirs, nil
+}
+
+func walk(r *tarIncludePatterns, s string, d fs.DirEntry, err error) error {
+	if err != nil {
+		return err
+	}
+	if d.IsDir() {
+		for _, excludeDir := range r.excludeDirs {
+			if strings.Contains(s, excludeDir) {
+				return nil
+			}
+		}
+		if s == ".." {
+			r.includeDirs = append(r.includeDirs, "*.tf")
+			return nil
+		}
+		for _, includeFiletype := range r.includeFiletypes {
+			r.includeDirs = append(r.includeDirs, strings.ReplaceAll(s+"/*"+includeFiletype, "../", ""))
+		}
+	}
+	return nil
+}
 
 // TestMain will be run before any parallel tests, used to read data from yaml for use with tests
 func TestMain(m *testing.M) {
@@ -81,6 +125,108 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 	return options
 }
 
+func setupBankingDAOptions(t *testing.T, prefix string) (*testschematic.TestSchematicOptions, *terraform.Options) {
+
+	excludeDirs := []string{
+		".terraform",
+		".docs",
+		".github",
+		".git",
+		".idea",
+		"common-dev-assets",
+		"examples",
+		"tests",
+		"reference-architectures",
+	}
+	includeFiletypes := []string{
+		".tf",
+		".yaml",
+		".py",
+		".tpl",
+		".sh",
+	}
+
+	tarIncludePatterns, recurseErr := getTarIncludePatternsRecursively("..", excludeDirs, includeFiletypes)
+	// if error producing tar patterns (very unexpected) fail test immediately
+	require.NoError(t, recurseErr, "Schematic Test had unexpected error traversing directory tree")
+
+	realTerraformDir := "./resources/existing-resources"
+	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(
+		realTerraformDir,
+		fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())),
+	)
+
+	// Verify ibmcloud_api_key variable is set
+	checkVariable := "TF_VAR_ibmcloud_api_key"
+	val, present := os.LookupEnv(checkVariable)
+	require.True(t, present, checkVariable+" environment variable not set")
+	require.NotEqual(t, "", val, checkVariable+" environment variable is empty")
+
+	logger.Log(t, "Tempdir: ", tempTerraformDir)
+
+	// Create new terraform options for existing resources (do not overwrite argument)
+	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: tempTerraformDir,
+		Vars: map[string]interface{}{
+			"prefix":             prefix,
+			"region":             region,
+			"create_ocp_cluster": true,
+		},
+		Upgrade: true,
+	})
+
+	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
+
+	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
+	if existErr != nil {
+		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
+		return nil, nil
+	}
+
+	// ------------------------------------------------------------------------------------
+	// Deploy Banking DA using output IDs from existing Terraform run
+	// ------------------------------------------------------------------------------------
+	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
+		Testing:                t,
+		Prefix:                 prefix,
+		Region:                 region,
+		TarIncludePatterns:     tarIncludePatterns,
+		TemplateFolder:         bankingSolutionsDir,
+		Tags:                   []string{"test-schematic"},
+		DeleteWorkspaceOnFail:  false,
+		WaitJobCompleteMinutes: 60,
+	})
+
+	// Terraform Variables mapping
+	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
+		{Name: "toolchain_region", Value: region, DataType: "string"},
+		{Name: "prefix", Value: prefix, DataType: "string"},
+		//{Name: "cluster_name", Value: terraform.Output(t, existingTerraformOptions, "cluster_name"), DataType: "string"},
+		{Name: "ci_pipeline_id", Value: terraform.Output(t, existingTerraformOptions, "ci_pipeline_id"), DataType: "string"},
+		{Name: "cd_pipeline_id", Value: terraform.Output(t, existingTerraformOptions, "cd_pipeline_id"), DataType: "string"},
+		{Name: "watson_assistant_instance_id", Value: terraform.Output(t, existingTerraformOptions, "watson_assistant_instance_id"), DataType: "string"},
+		{Name: "watson_assistant_region", Value: terraform.Output(t, existingTerraformOptions, "watson_assistant_region"), DataType: "string"},
+		{Name: "watson_discovery_instance_id", Value: terraform.Output(t, existingTerraformOptions, "watson_discovery_instance_id"), DataType: "string"},
+		{Name: "watson_discovery_region", Value: terraform.Output(t, existingTerraformOptions, "watson_discovery_region"), DataType: "string"},
+		{Name: "use_existing_resource_group", Value: true, DataType: "bool"},
+		{Name: "create_continuous_delivery_service_instance", Value: false, DataType: "bool"},
+		{Name: "resource_group_name", Value: terraform.Output(t, existingTerraformOptions, "resource_group_name"), DataType: "string"},
+		{Name: "toolchain_resource_group", Value: terraform.Output(t, existingTerraformOptions, "resource_group_name"), DataType: "string"},
+		{Name: "watson_machine_learning_instance_crn", Value: terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"), DataType: "string"},
+		{Name: "watson_machine_learning_instance_guid", Value: terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_guid"), DataType: "string"},
+		{Name: "watson_machine_learning_instance_resource_name", Value: terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"), DataType: "string"},
+		{Name: "secrets_manager_guid", Value: permanentResources["secretsManagerGuid"], DataType: "string"},
+		{Name: "secrets_manager_region", Value: region, DataType: "string"},
+		{Name: "signing_key", Value: terraform.Output(t, existingTerraformOptions, "signing_key"), DataType: "string"},
+		{Name: "trigger_ci_pipeline_run", Value: false, DataType: "bool"},
+		{Name: "secrets_manager_endpoint_type", Value: "public", DataType: "string"},
+		{Name: "provider_visibility", Value: "public", DataType: "string"},
+		{Name: "create_secrets", Value: false, DataType: "bool"},
+	}
+
+	return options, existingTerraformOptions
+}
+
 func TestRunBankingSolutions(t *testing.T) {
 	t.Parallel()
 
@@ -128,6 +274,49 @@ func TestRunBankingSolutions(t *testing.T) {
 
 	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
 	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
+	// Destroy the temporary existing resources if required
+	if t.Failed() && strings.ToLower(envVal) == "true" {
+		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
+	} else {
+		logger.Log(t, "START: Destroy (existing resources)")
+		terraform.Destroy(t, existingTerraformOptions)
+		terraform.WorkspaceDelete(t, existingTerraformOptions, prefix)
+		logger.Log(t, "END: Destroy (existing resources)")
+	}
+}
+
+func TestRunBankingSolutionsDA(t *testing.T) {
+	t.Parallel()
+
+	// ------------------------------------------------------------------------------------
+	// Provision a resource group, watson assistance and watson discovery instances.
+	// ------------------------------------------------------------------------------------
+	prefix := fmt.Sprintf("rag-s-%s", strings.ToLower(random.UniqueId()))
+
+	options, existingTerraformOptions := setupBankingDAOptions(t, prefix)
+	if options == nil || existingTerraformOptions == nil {
+		t.Fatalf("Failed to set up Banking  DA options")
+	}
+
+	// Add dynamic variables if needed (same pattern as your RAG DA test)
+	options.TerraformVars = append(
+		options.TerraformVars,
+		testschematic.TestSchematicTerraformVar{
+			Name:     "cluster_name",
+			Value:    terraform.Output(t, existingTerraformOptions, "cluster_name"),
+			DataType: "string",
+		},
+	)
+
+	// ------------------------------------------------------------------------------------
+	// Run Test Schematics
+	// ------------------------------------------------------------------------------------
+	err := options.RunSchematicTest()
+	assert.Nil(t, err, "This should not have errored")
+
+	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
+	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
+
 	// Destroy the temporary existing resources if required
 	if t.Failed() && strings.ToLower(envVal) == "true" {
 		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
