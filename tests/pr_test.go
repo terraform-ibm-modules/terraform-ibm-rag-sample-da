@@ -162,7 +162,7 @@ func setupBankingDAOptions(t *testing.T, prefix string) (*testschematic.TestSche
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "toolchain_region", Value: region, DataType: "string"},
 		{Name: "prefix", Value: prefix, DataType: "string"},
-		//{Name: "cluster_name", Value: terraform.Output(t, existingTerraformOptions, "cluster_name"), DataType: "string"},
+		{Name: "cluster_name", Value: terraform.Output(t, existingTerraformOptions, "cluster_name"), DataType: "string"},
 		{Name: "ci_pipeline_id", Value: terraform.Output(t, existingTerraformOptions, "ci_pipeline_id"), DataType: "string"},
 		{Name: "cd_pipeline_id", Value: terraform.Output(t, existingTerraformOptions, "cd_pipeline_id"), DataType: "string"},
 		{Name: "watson_assistant_instance_id", Value: terraform.Output(t, existingTerraformOptions, "watson_assistant_instance_id"), DataType: "string"},
@@ -197,19 +197,10 @@ func TestRunBankingSolutionsDA(t *testing.T) {
 	prefix := fmt.Sprintf("rag-s-%s", strings.ToLower(random.UniqueId()))
 
 	options, existingTerraformOptions := setupBankingDAOptions(t, prefix)
-	if options == nil || existingTerraformOptions == nil {
-		t.Fatalf("Failed to set up Banking  DA options")
-	}
 
-	// Add dynamic variables if needed (same pattern as your RAG DA test)
-	options.TerraformVars = append(
-		options.TerraformVars,
-		testschematic.TestSchematicTerraformVar{
-			Name:     "cluster_name",
-			Value:    terraform.Output(t, existingTerraformOptions, "cluster_name"),
-			DataType: "string",
-		},
-	)
+	if options == nil || existingTerraformOptions == nil {
+		t.Fatal("Failed to set up Banking  DA options")
+	}
 
 	// ------------------------------------------------------------------------------------
 	// Run Test Schematics
