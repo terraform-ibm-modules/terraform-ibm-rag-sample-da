@@ -50,8 +50,9 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 		TerraformDir:       bankingSolutionsDir,
 		ApiDataIsSensitive: core.BoolPtr(false),
 		// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
-		ImplicitRequired: false,
-		Region:           region,
+		ImplicitRequired:           false,
+		Region:                     region,
+		CheckApplyResultForUpgrade: true,
 		TerraformVars: map[string]interface{}{
 			"toolchain_region":                               region,
 			"prefix":                                         prefix,
@@ -81,21 +82,23 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 		},
 		IgnoreUpdates: testhelper.Exemptions{
 			List: []string{
-				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_cd",
-				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci",
-			},
-		},
-		IgnoreDestroys: testhelper.Exemptions{
-			List: []string{
-				// destroy / re-create expected due to always_run trigger
-				"module.configure_discovery_project[0].null_resource.discovery_file_upload",
-				// Remaining need to be checked, see https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/342
+				// Need to be checked, see https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/342
 				"module.configure_discovery_project[0].restapi_object.configure_discovery_collection",
 				"module.configure_discovery_project[0].restapi_object.configure_discovery_project",
 				"module.configure_watson_assistant.restapi_object.assistant_action_skill[0]",
 				"module.configure_watson_assistant.restapi_object.assistant_search_skill[0]",
 				"module.configure_watson_assistant.restapi_object.assistant_skills_references[0]",
 				"module.configure_wml_project[0].restapi_object.configure_project",
+				"module.cluster_ingress[0].restapi_object.workload_nlb_dns_cleanup",
+				"module.cluster_ingress[0].restapi_object.workload_nlb_dns",
+				"module.cluster_ingress[0].restapi_object.workload_nlb_dns_patch",
+				"module.configure_wml_project[0].module.storage_delegation[0].restapi_object.storage_delegation",
+			},
+		},
+		IgnoreDestroys: testhelper.Exemptions{
+			List: []string{
+				// destroy / re-create expected due to always_run trigger
+				"module.configure_discovery_project[0].null_resource.discovery_file_upload",
 			},
 		},
 	})
