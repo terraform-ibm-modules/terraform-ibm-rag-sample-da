@@ -19,6 +19,7 @@
         {
           "label": "Banking Application",
           "name": "banking",
+          "short_description": "Deploys the Banking Application flavor for the RAG sample automation.",
           "working_directory": "solutions/banking",
           "iam_permissions": [
             {
