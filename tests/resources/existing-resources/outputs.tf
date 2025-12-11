@@ -61,10 +61,15 @@ output "cluster_name" {
 
 output "elasticsearch_crn" {
   value       = module.elasticsearch.crn
-  description = "Elasticsearch CRN."
+  description = "Elasticsearch instance CRN."
 }
 
 output "kms_instance_crn" {
-  value       = module.key_protect.key_protect_id
+  value       = module.key_protect.kms_instance_crn
   description = "CRN of created KMS instance"
+}
+
+output "region" {
+  value       = var.region
+  description = "Region"
 }

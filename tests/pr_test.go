@@ -22,7 +22,15 @@ import (
 )
 
 const bankingSolutionsDir = "solutions/banking"
-const region = "us-south" // Binding all the resources to the us-south location.
+
+// watsonx.ai supported regions
+var validRegions = []string{
+	"au-syd",
+	"jp-tok",
+	"eu-de",
+	"eu-gb",
+	"us-south",
+}
 
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
@@ -45,6 +53,9 @@ func TestMain(m *testing.M) {
 }
 
 func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terraform.Options) *testhelper.TestOptions {
+
+	region := terraform.Output(t, existingTerraformOptions, "region")
+
 	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
 		Testing:            t,
 		TerraformDir:       bankingSolutionsDir,
@@ -127,7 +138,7 @@ func TestRunBankingSolutions(t *testing.T) {
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
-			"region":             region,
+			"region":             validRegions[common.CryptoIntn(len(validRegions))],
 			"create_ocp_cluster": true,
 		},
 		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
@@ -179,7 +190,7 @@ func TestRunUpgradeExample(t *testing.T) {
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
-			"region":             region,
+			"region":             validRegions[common.CryptoIntn(len(validRegions))],
 			"create_ocp_cluster": true,
 		},
 		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
