@@ -55,7 +55,6 @@ TF_VARS_FILE="terraform.tfvars"
   watson_assistant_instance_id_value=$(terraform output -state=terraform.tfstate -raw watson_assistant_instance_id)
   watson_discovery_instance_id_value=$(terraform output -state=terraform.tfstate -raw watson_discovery_instance_id)
   watson_machine_learning_instance_crn_value=$(terraform output -state=terraform.tfstate -raw watson_machine_learning_instance_crn)
-  watson_machine_learning_instance_guid_value=$(terraform output -state=terraform.tfstate -raw watson_machine_learning_instance_guid)
   watson_machine_learning_instance_resource_name_value=$(terraform output -state=terraform.tfstate -raw watson_machine_learning_instance_resource_name)
   use_existing_resource_group_value=true
   create_continuous_delivery_service_instance_value=false
@@ -114,7 +113,6 @@ TF_VARS_FILE="terraform.tfvars"
           ($watson_discovery_instance_id_var_name): $watson_discovery_instance_id_value,
           ($watson_discovery_region_var_name): $watson_discovery_region_value,
           ($watson_machine_learning_instance_crn_var_name): $watson_machine_learning_instance_crn_value,
-          ($watson_machine_learning_instance_guid_var_name): $watson_machine_learning_instance_guid_value,
           ($use_existing_resource_group_var_name): $use_existing_resource_group_value,
           ($create_continuous_delivery_service_instance_var_name): $create_continuous_delivery_service_instance_value,
           ($watson_machine_learning_instance_resource_name_var_name): $watson_machine_learning_instance_resource_name_value,
