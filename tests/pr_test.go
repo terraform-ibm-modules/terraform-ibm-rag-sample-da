@@ -105,6 +105,7 @@ func setupBankingDAOptions(t *testing.T, prefix string) (*testschematic.TestSche
 		".py",
 		".tpl",
 		".sh",
+		".json",
 	}
 
 	tarIncludePatterns, recurseErr := getTarIncludePatternsRecursively("..", excludeDirs, includeFiletypes)
