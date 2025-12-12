@@ -78,7 +78,6 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"resource_group_name":                            terraform.Output(t, existingTerraformOptions, "resource_group_name"),
 			"toolchain_resource_group":                       terraform.Output(t, existingTerraformOptions, "resource_group_name"),
 			"watson_machine_learning_instance_crn":           terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"),
-			"watson_machine_learning_instance_guid":          terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_guid"),
 			"watson_machine_learning_instance_resource_name": terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
 			"secrets_manager_guid":                           permanentResources["secretsManagerGuid"],
 			"secrets_manager_region":                         region,

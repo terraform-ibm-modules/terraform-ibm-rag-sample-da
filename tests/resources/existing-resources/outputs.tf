@@ -23,11 +23,6 @@ output "watson_machine_learning_instance_crn" {
   description = "Watson Machine Learning instance CRN."
 }
 
-output "watson_machine_learning_instance_guid" {
-  value       = ibm_resource_instance.machine_learning_instance.guid
-  description = "Watson Machine Learning instance GUID."
-}
-
 output "watson_machine_learning_instance_resource_name" {
   value       = ibm_resource_instance.machine_learning_instance.resource_name
   description = "Watson Machine Learning instance resource name."
