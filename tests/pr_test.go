@@ -160,6 +160,7 @@ func setupBankingDAOptions(t *testing.T, prefix string) (*testschematic.TestSche
 
 	// Terraform Variables mapping
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
+		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "toolchain_region", Value: region, DataType: "string"},
 		{Name: "prefix", Value: prefix, DataType: "string"},
 		{Name: "cluster_name", Value: terraform.Output(t, existingTerraformOptions, "cluster_name"), DataType: "string"},
