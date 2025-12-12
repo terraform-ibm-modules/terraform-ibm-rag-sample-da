@@ -65,7 +65,7 @@ output "elasticsearch_crn" {
 }
 
 output "kms_instance_crn" {
-  value       = module.key_protect.kms_instance_crn
+  value       = module.key_protect.key_protect_crn
   description = "CRN of created KMS instance"
 }
 
