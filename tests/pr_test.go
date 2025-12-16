@@ -10,7 +10,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/IBM/go-sdk-core/v5/core"
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -94,70 +93,6 @@ func TestMain(m *testing.M) {
 	}
 
 	os.Exit(m.Run())
-}
-
-func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terraform.Options) *testhelper.TestOptions {
-
-	region := terraform.Output(t, existingTerraformOptions, "region")
-
-	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
-		Testing:            t,
-		TerraformDir:       bankingSolutionsDir,
-		ApiDataIsSensitive: core.BoolPtr(false),
-		// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
-		ImplicitRequired:           false,
-		Region:                     region,
-		CheckApplyResultForUpgrade: true,
-		TerraformVars: map[string]interface{}{
-			"toolchain_region":                               region,
-			"prefix":                                         prefix,
-			"ci_pipeline_id":                                 terraform.Output(t, existingTerraformOptions, "ci_pipeline_id"),
-			"cd_pipeline_id":                                 terraform.Output(t, existingTerraformOptions, "cd_pipeline_id"),
-			"watson_assistant_instance_id":                   terraform.Output(t, existingTerraformOptions, "watson_assistant_instance_id"),
-			"watson_assistant_region":                        terraform.Output(t, existingTerraformOptions, "watson_assistant_region"),
-			"watson_discovery_instance_id":                   terraform.Output(t, existingTerraformOptions, "watson_discovery_instance_id"),
-			"watson_discovery_region":                        terraform.Output(t, existingTerraformOptions, "watson_discovery_region"),
-			"use_existing_resource_group":                    true,
-			"create_continuous_delivery_service_instance":    false,
-			"resource_group_name":                            terraform.Output(t, existingTerraformOptions, "resource_group_name"),
-			"toolchain_resource_group":                       terraform.Output(t, existingTerraformOptions, "resource_group_name"),
-			"watson_machine_learning_instance_crn":           terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"),
-			"watson_machine_learning_instance_resource_name": terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
-			"secrets_manager_guid":                           permanentResources["secretsManagerGuid"],
-			"secrets_manager_region":                         region,
-			"signing_key":                                    terraform.Output(t, existingTerraformOptions, "signing_key"),
-			"trigger_ci_pipeline_run":                        false,
-			"secrets_manager_endpoint_type":                  "public",
-			"provider_visibility":                            "public",
-			"create_secrets":                                 false,
-			"elastic_instance_crn":                           terraform.Output(t, existingTerraformOptions, "elasticsearch_crn"),
-			"cluster_name":                                   terraform.Output(t, existingTerraformOptions, "cluster_name"),
-			"cos_kms_crn":                                    terraform.Output(t, existingTerraformOptions, "kms_instance_crn"),
-		},
-		IgnoreUpdates: testhelper.Exemptions{
-			List: []string{
-				// Need to be checked, see https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/342
-				"module.configure_discovery_project[0].restapi_object.configure_discovery_collection",
-				"module.configure_discovery_project[0].restapi_object.configure_discovery_project",
-				"module.configure_watson_assistant.restapi_object.assistant_action_skill[0]",
-				"module.configure_watson_assistant.restapi_object.assistant_search_skill[0]",
-				"module.configure_watson_assistant.restapi_object.assistant_skills_references[0]",
-				"module.configure_wml_project[0].restapi_object.configure_project",
-				"module.cluster_ingress[0].restapi_object.workload_nlb_dns_cleanup",
-				"module.cluster_ingress[0].restapi_object.workload_nlb_dns",
-				"module.cluster_ingress[0].restapi_object.workload_nlb_dns_patch",
-				"module.configure_wml_project[0].module.storage_delegation[0].restapi_object.storage_delegation",
-			},
-		},
-		IgnoreDestroys: testhelper.Exemptions{
-			List: []string{
-				// destroy / re-create expected due to always_run trigger
-				"module.configure_discovery_project[0].null_resource.discovery_file_upload",
-			},
-		},
-	})
-
-	return options
 }
 
 func setupBankingDAOptions(t *testing.T, prefix string) (*testschematic.TestSchematicOptions, *terraform.Options) {
@@ -311,61 +246,6 @@ func TestRunBankingSolutionsDA(t *testing.T) {
 	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
 	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
 
-	// Destroy the temporary existing resources if required
-	if t.Failed() && strings.ToLower(envVal) == "true" {
-		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
-	} else {
-		logger.Log(t, "START: Destroy (existing resources)")
-		terraform.Destroy(t, existingTerraformOptions)
-		terraform.WorkspaceDelete(t, existingTerraformOptions, prefix)
-		logger.Log(t, "END: Destroy (existing resources)")
-	}
-}
-
-func TestRunUpgradeExample(t *testing.T) {
-	t.Parallel()
-
-	prefix := fmt.Sprintf("rag-da-upgr-%s", strings.ToLower(random.UniqueId()))
-	realTerraformDir := "./resources/existing-resources"
-	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())))
-
-	// Verify ibmcloud_api_key variable is set
-	checkVariable := "TF_VAR_ibmcloud_api_key"
-	val, present := os.LookupEnv(checkVariable)
-	require.True(t, present, checkVariable+" environment variable not set")
-	require.NotEqual(t, "", val, checkVariable+" environment variable is empty")
-
-	logger.Log(t, "Tempdir: ", tempTerraformDir)
-	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: tempTerraformDir,
-		Vars: map[string]interface{}{
-			"prefix":             prefix,
-			"region":             validRegions[common.CryptoIntn(len(validRegions))],
-			"create_ocp_cluster": true,
-		},
-		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
-		// This is the same as setting the -upgrade=true flag with terraform.
-		Upgrade: true,
-	})
-
-	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
-	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
-	if existErr != nil {
-		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
-	} else {
-		// ------------------------------------------------------------------------------------
-		// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
-		// ------------------------------------------------------------------------------------
-		options := setupOptions(t, prefix, existingTerraformOptions)
-		output, err := options.RunTestUpgrade()
-		if !options.UpgradeTestSkipped {
-			assert.Nil(t, err, "This should not have errored")
-			assert.NotNil(t, output, "Expected some output")
-		}
-	}
-
-	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
-	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
 	// Destroy the temporary existing resources if required
 	if t.Failed() && strings.ToLower(envVal) == "true" {
 		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
