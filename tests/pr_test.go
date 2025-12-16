@@ -145,7 +145,6 @@ func setupBankingDAOptions(t *testing.T, prefix string) (*testschematic.TestSche
 		},
 		Upgrade: true,
 	})
-	region := terraform.Output(t, existingTerraformOptions, "region")
 
 	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
 
@@ -155,6 +154,7 @@ func setupBankingDAOptions(t *testing.T, prefix string) (*testschematic.TestSche
 		return nil, nil
 	}
 
+	region := terraform.Output(t, existingTerraformOptions, "region")
 	// ------------------------------------------------------------------------------------
 	// Deploy Banking DA using output IDs from existing Terraform run
 	// ------------------------------------------------------------------------------------
