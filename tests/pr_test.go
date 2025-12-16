@@ -23,7 +23,15 @@ import (
 )
 
 const bankingSolutionsDir = "solutions/banking"
-const region = "us-south" // Binding all the resources to the us-south location.
+
+// watsonx.ai supported regions
+var validRegions = []string{
+	"au-syd",
+	"jp-tok",
+	"eu-de",
+	"eu-gb",
+	"us-south",
+}
 
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
@@ -131,7 +139,7 @@ func setupBankingDAOptions(t *testing.T, prefix string) (*testschematic.TestSche
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
-			"region":             region,
+			"region":             validRegions[common.CryptoIntn(len(validRegions))],
 			"create_ocp_cluster": true,
 		},
 		Upgrade: true,

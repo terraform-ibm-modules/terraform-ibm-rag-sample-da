@@ -19,7 +19,7 @@
         {
           "label": "Banking Application",
           "name": "banking",
-          "short_description": "Deploys the Banking Application flavor for the RAG sample automation.",
+          "short_description": "Sample banking application",
           "working_directory": "solutions/banking",
           "iam_permissions": [
             {
@@ -112,6 +112,10 @@
                   "value": "ca-tor"
                 },
                 {
+                  "displayname": "Montreal (ca-mon)",
+                  "value": "ca-mon"
+                },
+                {
                   "displayname": "Washington DC (us-east)",
                   "value": "us-east"
                 },
@@ -123,7 +127,6 @@
             },
             {
               "key": "toolchain_resource_group",
-              "required": true,
               "custom_config": {
                 "type": "resource_group",
                 "grouping": "deployment",
@@ -150,70 +153,37 @@
             },
             {
               "key": "watson_assistant_region",
-              "options": [
-                {
-                  "displayname": "Sydney (au-syd)",
-                  "value": "au-syd"
-                },
-                {
-                  "displayname": "Tokyo (jp-tok)",
-                  "value": "jp-tok"
-                },
-                {
-                  "displayname": "Frankfurt (eu-de)",
-                  "value": "eu-de"
-                },
-                {
-                  "displayname": "London (eu-gb)",
-                  "value": "eu-gb"
-                },
-                {
-                  "displayname": "Dallas (us-south)",
-                  "value": "us-south"
-                },
-                {
-                  "displayname": "Washington DC (us-east)",
-                  "value": "us-east"
+              "custom_config": {
+                "type": "region",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "filterString": "service:conversation",
+                  "showKinds": [
+                    "region"
+                  ]
                 }
-              ]
+              }
             },
             {
               "key": "watson_discovery_instance_id"
             },
             {
               "key": "watson_discovery_region",
-              "options": [
-                {
-                  "displayname": "Sydney (au-syd)",
-                  "value": "au-syd"
-                },
-                {
-                  "displayname": "Tokyo (jp-tok)",
-                  "value": "jp-tok"
-                },
-                {
-                  "displayname": "Frankfurt (eu-de)",
-                  "value": "eu-de"
-                },
-                {
-                  "displayname": "London (eu-gb)",
-                  "value": "eu-gb"
-                },
-                {
-                  "displayname": "Dallas (us-south)",
-                  "value": "us-south"
-                },
-                {
-                  "displayname": "Washington DC (us-east)",
-                  "value": "us-east"
+              "custom_config": {
+                "type": "region",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "filterString": "service:discovery",
+                  "showKinds": [
+                    "region"
+                  ]
                 }
-              ]
+              }
             },
             {
               "key": "watson_machine_learning_instance_crn"
-            },
-            {
-              "key": "watson_machine_learning_instance_guid"
             },
             {
               "key": "watson_machine_learning_instance_resource_name"
@@ -272,52 +242,17 @@
             },
             {
               "key": "secrets_manager_region",
-              "options": [
-                {
-                  "displayname": "Osaka (jp-osa)",
-                  "value": "jp-osa"
-                },
-                {
-                  "displayname": "Sydney (au-syd)",
-                  "value": "au-syd"
-                },
-                {
-                  "displayname": "Tokyo (jp-tok)",
-                  "value": "jp-tok"
-                },
-                {
-                  "displayname": "Frankfurt (eu-de)",
-                  "value": "eu-de"
-                },
-                {
-                  "displayname": "London (eu-gb)",
-                  "value": "eu-gb"
-                },
-                {
-                  "displayname": "Madrid (eu-es)",
-                  "value": "eu-es"
-                },
-                {
-                  "displayname": "Dallas (us-south)",
-                  "value": "us-south"
-                },
-                {
-                  "displayname": "Montreal (ca-mon)",
-                  "value": "ca-mon"
-                },
-                {
-                  "displayname": "Toronto (ca-tor)",
-                  "value": "ca-tor"
-                },
-                {
-                  "displayname": "Washington DC (us-east)",
-                  "value": "us-east"
-                },
-                {
-                  "displayname": "Sao Paolo (br-sao)",
-                  "value": "br-sao"
+              "custom_config": {
+                "type": "region",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "filterString": "service:secrets-manager",
+                  "showKinds": [
+                    "region"
+                  ]
                 }
-              ]
+              }
             },
             {
               "key": "trigger_ci_pipeline_run"
@@ -332,10 +267,8 @@
               "key": "provision_public_ingress"
             }
           ],
-          "release_notes_url": "RELEASE NOTES URL",
-          "outputs": [],
           "install_type": "fullstack",
-          "terraform_version": "1.10.5",
+          "terraform_version": "1.12.2",
           "ignore_readme": true
         }
       ]

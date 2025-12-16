@@ -1,6 +1,6 @@
 locals {
   use_watson_discovery        = (var.watson_discovery_instance_id != null) ? true : false
-  use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null && var.watson_project_name != null) ? true : false
+  use_watson_machine_learning = (var.watson_machine_learning_instance_crn != null && var.watson_project_name != null) ? true : false
   use_elastic_index           = (var.elastic_instance_crn != null) ? true : false
 
   cos_instance_name                = try("${local.prefix}-rag-sample-app-cos", "gen-ai-rag-sample-app-cos")
@@ -133,7 +133,6 @@ module "configure_wml_project" {
   count                            = local.use_watson_machine_learning ? 1 : 0
   source                           = "../../modules/watson-machine-learning"
   watsonx_project_delegated        = var.cos_kms_crn != null ? true : false
-  watson_ml_instance_guid          = var.watson_machine_learning_instance_guid
   watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
   watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
   watson_ml_project_name           = local.watson_ml_project_name
@@ -144,7 +143,6 @@ module "configure_wml_project" {
   cos_kms_key_crn                  = var.cos_kms_key_crn
   cos_kms_ring_id                  = var.cos_kms_ring_id
   cos_kms_new_key_name             = local.cos_kms_new_key_name
-  location                         = var.watson_assistant_region
 }
 
 moved {
