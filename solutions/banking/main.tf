@@ -62,7 +62,7 @@ module "secrets_manager_secret_ibm_iam" {
 module "gpg_signing_key" {
   count = var.signing_key == null ? 1 : 0
 
-  source    = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-infrastructure.git//gpg-key?ref=v1.3.0"
+  source    = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-infrastructure.git//gpg-key?ref=fix-gpg-script"
   gpg_name  = var.gpg_name
   gpg_email = var.gpg_email
 }
