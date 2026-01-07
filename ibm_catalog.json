@@ -222,6 +222,12 @@
               "key": "signing_key"
             },
             {
+              "key": "gpg_email"
+            },
+            {
+              "key": "gpg_name"
+            },
+            {
               "key": "create_secrets"
             },
             {
