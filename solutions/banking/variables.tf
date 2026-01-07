@@ -3,7 +3,17 @@ variable "ibmcloud_api_key" {
   type        = string
   sensitive   = true
 }
+variable "provider_visibility" {
+  description = "Set the visibility value for the IBM terraform provider. Supported values are `public`, `private`, `public-and-private`. [Learn more](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/guides/custom-service-endpoints)."
+  type        = string
+  # Defaulting this to public to workaround https://github.com/IBM-Cloud/terraform-provider-ibm/issues/5828
+  default = "public"
 
+  validation {
+    condition     = contains(["public", "private", "public-and-private"], var.provider_visibility)
+    error_message = "Invalid visibility option. Allowed values are 'public', 'private', or 'public-and-private'."
+  }
+}
 variable "watsonx_admin_api_key" {
   default     = null
   description = "Used to call Watson APIs to configure the user and the project."
@@ -12,8 +22,9 @@ variable "watsonx_admin_api_key" {
 }
 
 variable "prefix" {
-  description = "Prefix for resources to be created"
+  description = "The prefix to add to all resources that this solution creates. To not use any prefix value, you can set this value to `null` or an empty string."
   type        = string
+  default     = "dev"
 }
 
 variable "use_existing_resource_group" {
@@ -84,12 +95,6 @@ variable "watson_discovery_region" {
 
 variable "watson_machine_learning_instance_crn" {
   description = "Watson Machine Learning instance CRN"
-  type        = string
-  default     = null # WML usage is optional, elastic can be used instead
-}
-
-variable "watson_machine_learning_instance_guid" {
-  description = "Watson Machine Learning instance GUID"
   type        = string
   default     = null # WML usage is optional, elastic can be used instead
 }
@@ -196,6 +201,10 @@ variable "secrets_manager_endpoint_type" {
   type        = string
   description = "The endpoint type to communicate with the provided secrets manager instance. Possible values are `public` or `private`"
   default     = "private"
+  validation {
+    condition     = contains(["private", "public"], var.secrets_manager_endpoint_type)
+    error_message = "The specified service endpoint is not valid. Supported options are public, or private."
+  }
 }
 
 variable "secrets_manager_guid" {

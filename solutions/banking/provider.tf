@@ -2,23 +2,25 @@ provider "ibm" {
   alias            = "ibm_resources"
   ibmcloud_api_key = var.ibmcloud_api_key
   region           = var.toolchain_region
+  visibility       = var.provider_visibility
 }
 
 provider "ibm" {
   alias            = "sm_resources"
   ibmcloud_api_key = var.ibmcloud_api_key
   region           = var.secrets_manager_region
+  visibility       = var.provider_visibility
 }
 
 provider "ibm" {
   ibmcloud_api_key = var.watsonx_admin_api_key != null ? var.watsonx_admin_api_key : var.ibmcloud_api_key
   region           = var.toolchain_region
+  visibility       = var.provider_visibility
 }
 
 provider "restapi" {
   uri                  = "https:"
   write_returns_object = true
-  debug                = true
   headers = {
     Authorization = data.ibm_iam_auth_token.tokendata.iam_access_token
     Content-Type  = "application/json"
@@ -29,7 +31,6 @@ provider "restapi" {
   alias                = "restapi_watsonx_admin"
   uri                  = "https:"
   write_returns_object = true
-  debug                = true
   headers = {
     Authorization = data.ibm_iam_auth_token.tokendata.iam_access_token
     Content-Type  = "application/json"

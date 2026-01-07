@@ -1,19 +1,19 @@
 locals {
   use_watson_discovery        = (var.watson_discovery_instance_id != null) ? true : false
-  use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null && var.watson_project_name != null) ? true : false
+  use_watson_machine_learning = (var.watson_machine_learning_instance_crn != null && var.watson_project_name != null) ? true : false
   use_elastic_index           = (var.elastic_instance_crn != null) ? true : false
 
-  cos_instance_name                = var.prefix != null ? "${var.prefix}-rag-sample-app-cos" : "gen-ai-rag-sample-app-cos"
-  cos_kms_new_key_name             = var.prefix != null ? "${var.prefix}-${var.cos_kms_new_key_name}" : var.cos_kms_new_key_name
+  cos_instance_name                = try("${local.prefix}-rag-sample-app-cos", "gen-ai-rag-sample-app-cos")
+  cos_kms_new_key_name             = try("${local.prefix}-${var.cos_kms_new_key_name}", var.cos_kms_new_key_name)
   watsonx_assistant_url            = "//api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
   watson_discovery_url             = local.use_watson_discovery ? "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}" : null
-  watson_discovery_project_name    = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-project" : "gen-ai-rag-sample-app-project"
-  watson_discovery_collection_name = var.prefix != null ? "${var.prefix}-gen-ai-rag-sample-app-data" : "gen-ai-rag-sample-app-data"
-  watson_ml_project_name           = var.prefix != null ? "${var.prefix}-${var.watson_project_name}" : var.watson_project_name
+  watson_discovery_project_name    = try("${local.prefix}-gen-ai-rag-sample-app-project", "gen-ai-rag-sample-app-project")
+  watson_discovery_collection_name = try("${local.prefix}-gen-ai-rag-sample-app-data", "gen-ai-rag-sample-app-data")
+  watson_ml_project_name           = try("${local.prefix}-${var.watson_project_name}", var.watson_project_name)
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
   # Translate index name to lowercase to avoid Elastic errors
-  elastic_index_name       = lower(var.prefix != null ? "${var.prefix}-${var.elastic_index_name}" : var.elastic_index_name)
+  elastic_index_name       = lower(try("${local.prefix}-${var.elastic_index_name}", var.elastic_index_name))
   elastic_credentials_data = local.use_elastic_index ? jsondecode(data.ibm_resource_key.elastic_credentials[0].credentials_json).connection.https : null
   # Compose the URL without credentials to keep the latter sensitive
   elastic_service_binding = local.use_elastic_index ? {
@@ -24,6 +24,8 @@ locals {
   } : null
 
   cd_instance = var.create_continuous_delivery_service_instance ? ibm_resource_instance.cd_instance : null
+
+  prefix = var.prefix != null ? (var.prefix != "" ? var.prefix : null) : null
 }
 
 data "ibm_iam_auth_token" "tokendata" {}
@@ -34,7 +36,7 @@ module "resource_group" {
     ibm = ibm.ibm_resources
   }
   source                       = "terraform-ibm-modules/resource-group/ibm"
-  version                      = "1.1.6"
+  version                      = "1.4.0"
   resource_group_name          = var.use_existing_resource_group == false ? var.resource_group_name : null
   existing_resource_group_name = var.use_existing_resource_group == true ? var.resource_group_name : null
 }
@@ -46,7 +48,7 @@ module "secrets_manager_secret_ibm_iam" {
   }
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.3.3"
+  version                 = "1.9.1"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "ibmcloud-api-key"
@@ -72,7 +74,7 @@ module "secrets_manager_secret_signing_key" {
   }
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.3.3"
+  version                 = "1.9.1"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "signing-key"
@@ -89,7 +91,7 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   }
   count                   = (var.create_secrets && var.watsonx_admin_api_key != null) ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.3.3"
+  version                 = "1.9.1"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "watsonx-admin-api-key"
@@ -109,7 +111,7 @@ data "ibm_resource_group" "toolchain_resource_group_id" {
 resource "ibm_resource_instance" "cd_instance" {
   provider          = ibm.ibm_resources
   count             = var.create_continuous_delivery_service_instance ? 1 : 0
-  name              = "${var.prefix}-cd-instance"
+  name              = try("${local.prefix}-cd-instance", "cd-instance")
   service           = "continuous-delivery"
   plan              = "professional"
   location          = var.toolchain_region
@@ -140,7 +142,6 @@ module "configure_wml_project" {
   count                            = local.use_watson_machine_learning ? 1 : 0
   source                           = "../../modules/watson-machine-learning"
   watsonx_project_delegated        = var.cos_kms_crn != null ? true : false
-  watson_ml_instance_guid          = var.watson_machine_learning_instance_guid
   watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
   watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
   watson_ml_project_name           = local.watson_ml_project_name
@@ -151,7 +152,6 @@ module "configure_wml_project" {
   cos_kms_key_crn                  = var.cos_kms_key_crn
   cos_kms_ring_id                  = var.cos_kms_ring_id
   cos_kms_new_key_name             = local.cos_kms_new_key_name
-  location                         = var.watson_assistant_region
 }
 
 moved {
