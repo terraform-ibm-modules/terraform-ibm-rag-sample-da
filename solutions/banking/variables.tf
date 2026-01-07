@@ -177,6 +177,7 @@ variable "signing_key" {
   description = "Signing GPG key. If it is not provided by the user, then automation will create one."
   type        = string
   sensitive   = true
+  default     = null
 }
 
 variable "gpg_name" {
