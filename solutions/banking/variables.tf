@@ -174,10 +174,16 @@ variable "elastic_upload_sample_data" {
 }
 
 variable "signing_key" {
-  description = "Signing GPG key. If it is not provided by the user, then automation will create one."
+  description = "Signing GPG key. If it is not provided by the user, then automation will create one. "
   type        = string
   sensitive   = true
   default     = null
+
+  validation {
+    condition     = !var.create_secrets || var.signing_key != null
+    error_message = "When `create_secrets` is true, you must either provide `signing_key` or allow Terraform to generate it."
+  }
+
 }
 
 variable "gpg_name" {

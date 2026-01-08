@@ -58,13 +58,18 @@ module "secrets_manager_secret_ibm_iam" {
   endpoint_type           = var.secrets_manager_endpoint_type
 }
 
+locals {
+  generate_signing_key = var.create_secrets && var.signing_key == null
+}
+
 # generate signing key if it is not provided.
 module "gpg_signing_key" {
-  count = var.signing_key == null ? 1 : 0
-
-  source    = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-infrastructure.git//gpg-key?ref=fix-gpg-script"
-  gpg_name  = var.gpg_name
-  gpg_email = var.gpg_email
+  count              = local.generate_signing_key ? 1 : 0
+  source             = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v2.8.35"
+  ibmcloud_api_key   = var.ibmcloud_api_key
+  create_signing_key = true
+  gpg_name           = var.gpg_name
+  gpg_email          = var.gpg_email
 }
 
 # secrets manager secrets - IBM signing key
