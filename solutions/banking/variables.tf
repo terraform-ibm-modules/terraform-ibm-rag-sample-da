@@ -178,12 +178,6 @@ variable "signing_key" {
   type        = string
   sensitive   = true
   default     = null
-
-  validation {
-    condition     = !var.create_secrets || var.signing_key != null
-    error_message = "When `create_secrets` is true, you must either provide `signing_key` or allow Terraform to generate it."
-  }
-
 }
 
 variable "gpg_name" {
