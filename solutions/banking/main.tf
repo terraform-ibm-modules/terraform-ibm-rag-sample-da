@@ -69,8 +69,8 @@ module "gpg_signing_key" {
   ibmcloud_api_key     = var.ibmcloud_api_key
   gpg_name             = var.gpg_name
   gpg_email            = var.gpg_email
-  sm_secret_group_name = "General"
-  sm_resource_group    = var.toolchain_resource_group
+  sm_secret_group_name = var.secret_group_name
+  sm_resource_group    = var.secrets_manager_resource_group
   sm_location          = var.secrets_manager_region
   sm_instance_id       = var.secrets_manager_guid
   sm_exists            = true

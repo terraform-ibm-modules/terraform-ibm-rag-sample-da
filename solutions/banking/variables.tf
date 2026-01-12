@@ -218,6 +218,17 @@ variable "secrets_manager_region" {
   type        = string
 }
 
+variable "secrets_manager_resource_group" {
+  description = "The resource group of the Secrets Manager instance."
+  type        = string
+}
+
+variable "secret_group_name" {
+  description = "The secret group name."
+  type        = string
+  default     = "General"
+}
+
 variable "trigger_ci_pipeline_run" {
   description = "Whether to trigger the CI pipeline to build and deploy the application when deploying this solution"
   type        = bool

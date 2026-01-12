@@ -228,6 +228,12 @@
               "key": "gpg_name"
             },
             {
+              "key": "secret_group_name"
+            },
+            {
+              "key": "secrets_manager_resource_group"
+            },
+            {
               "key": "create_secrets"
             },
             {
