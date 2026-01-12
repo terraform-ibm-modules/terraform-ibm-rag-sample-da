@@ -64,12 +64,18 @@ locals {
 
 # generate signing key if it is not provided.
 module "gpg_signing_key" {
-  count              = local.generate_signing_key ? 1 : 0
-  source             = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v2.8.35"
-  ibmcloud_api_key   = var.ibmcloud_api_key
-  create_signing_key = true
-  gpg_name           = var.gpg_name
-  gpg_email          = var.gpg_email
+  count                = local.generate_signing_key ? 1 : 0
+  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v2.8.35"
+  ibmcloud_api_key     = var.ibmcloud_api_key
+  gpg_name             = var.gpg_name
+  gpg_email            = var.gpg_email
+  sm_secret_group_name = "General"
+  sm_resource_group    = var.toolchain_resource_group
+  sm_location          = var.secrets_manager_region
+  sm_instance_id       = var.secrets_manager_guid
+  sm_exists            = true
+  create_secret_group  = false
+  create_signing_key   = true
 }
 
 # secrets manager secrets - IBM signing key
