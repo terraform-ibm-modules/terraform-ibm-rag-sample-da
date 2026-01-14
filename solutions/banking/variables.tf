@@ -223,6 +223,12 @@ variable "secrets_manager_resource_group" {
   type        = string
 }
 
+variable "secrets_manager_name" {
+  description = "Name of the Secrets Manager instance."
+  type        = string
+  default     = "secrets-manager"
+}
+
 variable "secret_group_name" {
   description = "The secret group name."
   type        = string

@@ -73,6 +73,7 @@ module "gpg_signing_key" {
   sm_resource_group    = var.secrets_manager_resource_group
   sm_location          = var.secrets_manager_region
   sm_instance_id       = var.secrets_manager_guid
+  sm_name              = var.secrets_manager_name
   sm_exists            = true
   create_secret_group  = false
   create_signing_key   = true

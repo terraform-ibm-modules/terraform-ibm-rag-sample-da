@@ -234,6 +234,9 @@
               "key": "secrets_manager_resource_group"
             },
             {
+              "key": "secrets_manager_name"
+            },
+            {
               "key": "create_secrets"
             },
             {
