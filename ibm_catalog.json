@@ -224,6 +224,21 @@
               "key": "signing_key"
             },
             {
+              "key": "gpg_email"
+            },
+            {
+              "key": "gpg_name"
+            },
+            {
+              "key": "secret_group_name"
+            },
+            {
+              "key": "secrets_manager_resource_group"
+            },
+            {
+              "key": "secrets_manager_name"
+            },
+            {
               "key": "create_secrets"
             },
             {

@@ -174,9 +174,22 @@ variable "elastic_upload_sample_data" {
 }
 
 variable "signing_key" {
-  description = "Signing GPG key."
+  description = "Signing GPG key. If it is not provided by the user, then automation will create one. "
   type        = string
   sensitive   = true
+  default     = null
+}
+
+variable "gpg_name" {
+  type        = string
+  description = "The name to be associated with the GPG key."
+  default     = "IBMer"
+}
+
+variable "gpg_email" {
+  type        = string
+  description = "The email address associated with the GPG key."
+  default     = "ibmer@ibm.com"
 }
 
 variable "create_secrets" {
@@ -203,6 +216,23 @@ variable "secrets_manager_guid" {
 variable "secrets_manager_region" {
   description = "The region where the Secrets Manager instance previously created reside."
   type        = string
+}
+
+variable "secrets_manager_resource_group" {
+  description = "The resource group of the Secrets Manager instance."
+  type        = string
+}
+
+variable "secrets_manager_name" {
+  description = "Name of the Secrets Manager instance."
+  type        = string
+  default     = "secrets-manager"
+}
+
+variable "secret_group_name" {
+  description = "The secret group name."
+  type        = string
+  default     = "General"
 }
 
 variable "trigger_ci_pipeline_run" {

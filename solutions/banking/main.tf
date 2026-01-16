@@ -58,6 +58,28 @@ module "secrets_manager_secret_ibm_iam" {
   endpoint_type           = var.secrets_manager_endpoint_type
 }
 
+locals {
+  generate_signing_key = var.create_secrets && var.signing_key == null
+}
+
+# generate signing key if it is not provided.
+module "gpg_signing_key" {
+  count                = local.generate_signing_key ? 1 : 0
+  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v2.8.35"
+  ibmcloud_api_key     = var.ibmcloud_api_key
+  gpg_name             = var.gpg_name
+  gpg_email            = var.gpg_email
+  sm_secret_group_name = var.secret_group_name
+  sm_resource_group    = var.secrets_manager_resource_group
+  sm_location          = var.secrets_manager_region
+  sm_instance_id       = var.secrets_manager_guid
+  sm_name              = var.secrets_manager_name
+  sm_endpoint_type     = var.secrets_manager_endpoint_type
+  sm_exists            = true
+  create_secret_group  = false
+  create_signing_key   = true
+}
+
 # secrets manager secrets - IBM signing key
 module "secrets_manager_secret_signing_key" {
   providers = {
@@ -71,7 +93,7 @@ module "secrets_manager_secret_signing_key" {
   secret_name             = "signing-key"
   secret_description      = "IBM Signing GPG key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
-  secret_payload_password = var.signing_key
+  secret_payload_password = var.signing_key == null ? module.gpg_signing_key[0].gpg_key : var.signing_key
   endpoint_type           = var.secrets_manager_endpoint_type
 }
 
