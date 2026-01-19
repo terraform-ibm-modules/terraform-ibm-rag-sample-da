@@ -183,13 +183,25 @@ variable "signing_key" {
 variable "gpg_name" {
   type        = string
   description = "The name to be associated with the GPG key. Optional input when `signing_key` is not provided by the user."
-  default     = "IBMer"
+  default     = null
+
+  validation {
+    condition = (
+    var.signing_key != null || (var.signing_key == null && var.gpg_name != null))
+    error_message = "`gpg_name` must be provided when `signing_key` is not set."
+  }
 }
 
 variable "gpg_email" {
   type        = string
   description = "The email address associated with the GPG key. Optional input when `signing_key` is not provided by the user."
-  default     = "ibmer@ibm.com"
+  default     = null
+
+  validation {
+    condition = (
+    var.signing_key != null || (var.signing_key == null && var.gpg_email != null))
+    error_message = "`gpg_email` must be provided when `signing_key` is not set."
+  }
 }
 
 variable "create_secrets" {
