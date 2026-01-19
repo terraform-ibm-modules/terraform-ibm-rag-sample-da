@@ -231,10 +231,7 @@
               "key": "secret_group_name"
             },
             {
-              "key": "secrets_manager_resource_group"
-            },
-            {
-              "key": "secrets_manager_name"
+              "key": "secrets_manager_resource_group_name"
             },
             {
               "key": "create_secrets"

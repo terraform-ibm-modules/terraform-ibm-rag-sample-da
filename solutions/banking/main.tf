@@ -62,6 +62,11 @@ locals {
   generate_signing_key = var.create_secrets && var.signing_key == null
 }
 
+data "ibm_resource_instance" "secrets_manager_name" {
+  count      = local.generate_signing_key ? 1 : 0
+  identifier = var.secrets_manager_guid
+}
+
 # generate signing key if it is not provided.
 module "gpg_signing_key" {
   count                = local.generate_signing_key ? 1 : 0
@@ -70,10 +75,10 @@ module "gpg_signing_key" {
   gpg_name             = var.gpg_name
   gpg_email            = var.gpg_email
   sm_secret_group_name = var.secret_group_name
-  sm_resource_group    = var.secrets_manager_resource_group
+  sm_resource_group    = var.secrets_manager_resource_group_name
   sm_location          = var.secrets_manager_region
   sm_instance_id       = var.secrets_manager_guid
-  sm_name              = var.secrets_manager_name
+  sm_name              = data.ibm_resource_instance.secrets_manager_name[0].name
   sm_endpoint_type     = var.secrets_manager_endpoint_type
   sm_exists            = true
   create_secret_group  = false

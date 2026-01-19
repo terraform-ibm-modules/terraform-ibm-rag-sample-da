@@ -182,13 +182,13 @@ variable "signing_key" {
 
 variable "gpg_name" {
   type        = string
-  description = "The name to be associated with the GPG key."
+  description = "The name to be associated with the GPG key. Optional input when `signing_key` is not provided by the user."
   default     = "IBMer"
 }
 
 variable "gpg_email" {
   type        = string
-  description = "The email address associated with the GPG key."
+  description = "The email address associated with the GPG key. Optional input when `signing_key` is not provided by the user."
   default     = "ibmer@ibm.com"
 }
 
@@ -218,21 +218,28 @@ variable "secrets_manager_region" {
   type        = string
 }
 
-variable "secrets_manager_resource_group" {
-  description = "The resource group of the Secrets Manager instance."
+variable "secrets_manager_resource_group_name" {
+  description = "The resource group name of the Secrets Manager instance. This value is required if the `signing_key` is not provided."
   type        = string
-}
+  default     = null
 
-variable "secrets_manager_name" {
-  description = "Name of the Secrets Manager instance."
-  type        = string
-  default     = "secrets-manager"
+  validation {
+    condition = (
+    var.signing_key != null || (var.signing_key == null && var.secrets_manager_resource_group_name != null))
+    error_message = "`secrets_manager_resource_group_name` must be provided when `signing_key` is not set."
+  }
 }
 
 variable "secret_group_name" {
-  description = "The secret group name."
+  description = "The secret group name. This value is required if the `signing_key` is not provided."
   type        = string
-  default     = "General"
+  default     = null
+
+  validation {
+    condition = (
+    var.signing_key != null || (var.signing_key == null && var.secret_group_name != null))
+    error_message = "`secret_group_name` must be provided when `signing_key` is not set."
+  }
 }
 
 variable "trigger_ci_pipeline_run" {
