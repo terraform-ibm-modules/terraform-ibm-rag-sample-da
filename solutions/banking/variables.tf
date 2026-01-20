@@ -182,8 +182,8 @@ variable "signing_key" {
 
 variable "gpg_name" {
   type        = string
-  description = "The name to be associated with the GPG key. Optional input when `signing_key` is not provided by the user."
-  default     = null
+  description = "The name to be associated with the GPG key. Required when `signing_key` is not provided by the user. Ignored if `signing_key` is set."
+  default     = "IBMer"
 
   validation {
     condition = (
@@ -194,8 +194,8 @@ variable "gpg_name" {
 
 variable "gpg_email" {
   type        = string
-  description = "The email address associated with the GPG key. Optional input when `signing_key` is not provided by the user."
-  default     = null
+  description = "The email address associated with the GPG key. Required when `signing_key` is not provided by the user. Ignored if `signing_key` is set."
+  default     = "ibmer@ibm.com"
 
   validation {
     condition = (
@@ -243,9 +243,9 @@ variable "secrets_manager_resource_group_name" {
 }
 
 variable "secret_group_name" {
-  description = "The secret group name. This value is required if the `signing_key` is not provided."
+  description = "Name of the secret group that will be created to store the generated signing key secret when `signing_key` is not provided. Ignored if `signing_key` is set."
   type        = string
-  default     = null
+  default     = "General"
 
   validation {
     condition = (
