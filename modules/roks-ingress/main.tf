@@ -137,7 +137,7 @@ data "kubernetes_service" "ingress_router_service" {
 # The "patch" resource is needed to update the ALB hostname in the NLB DNS entry
 # to point to the new ALB created by the ingress controller
 # It will update the resource created by restapi_object" "workload_nlb_dns
-# and on destry will delete the TLS secret
+# and on destroy will delete the TLS secret
 resource "restapi_object" "workload_nlb_dns_patch" {
   path         = "/v2/nlb-dns/getNlbDetails"
   query_string = "cluster=${var.cluster_name}&nlbSubdomain=${local.ingress_subdomain}"
