@@ -186,7 +186,7 @@ variable "gpg_name" {
   default     = "IBMer"
 
   validation {
-    condition     = local.generate_signing_key && var.gpg_name != null
+    condition     = local.generate_signing_key && var.gpg_name == null
     error_message = "`gpg_name` must be provided when `signing_key` is not set."
   }
 }
@@ -197,7 +197,7 @@ variable "gpg_email" {
   default     = "ibmer@ibm.com"
 
   validation {
-    condition     = local.generate_signing_key && var.gpg_email != null
+    condition     = local.generate_signing_key && var.gpg_email == null
     error_message = "`gpg_email` must be provided when `signing_key` is not set."
   }
 }
