@@ -15,7 +15,6 @@
       "short_description": "Configures provided toolchain infrastructure and uploads PDF files to a Watson project, part of a larger automation workflow.",
       "long_description": "This automation is a dependent component of a more comprehensive workflow, which can be found in the [Retrieval Augmented Generation Pattern](https://cloud.ibm.com/catalog/7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3/architecture/Retrieval_Augmented_Generation_Pattern-5fdd0045-30fc-4013-a8bc-6db9d5447a52-global) tile.  \n\nLeverage [Terraform IBM Modules](https://github.com/terraform-ibm-modules) to shape and scale your solutions. You can integrate Terraform IBM Modules (TIM) to extend functionality and design a solution tailored to your environment and operations needs. These modules offer reusable, customizable elements that follow IBM Cloud's recommended practices. You can access the [source code and documentation](https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da) and use it to extend your current architecture or create new solutions.\n\nFor a complete understanding of the automation process, please refer to the full workflow located in the [Retrieval Augmented Generation Pattern](https://cloud.ibm.com/catalog/7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3/architecture/Retrieval_Augmented_Generation_Pattern-5fdd0045-30fc-4013-a8bc-6db9d5447a52-global) tile, where you can find detailed information on the entire automation sequence.",
       "offering_docs_url": "https://cloud.ibm.com/docs/ibm-cloud-provider-for-terraform?topic=ibm-cloud-provider-for-terraform-about-tim",
-      "release_notes_url": "https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/releases",
       "provider_name": "IBM",
       "flavors": [
         {
@@ -23,6 +22,7 @@
           "name": "banking",
           "short_description": "Sample banking application",
           "working_directory": "solutions/banking",
+          "release_notes_url": "https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/releases",
           "iam_permissions": [
             {
               "service_name": "iam-groups",
