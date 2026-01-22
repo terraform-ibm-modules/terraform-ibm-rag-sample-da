@@ -126,7 +126,7 @@ resource "time_sleep" "wait_for_ingress_provisioning" {
   }
 }
 
-data "kubernetes_service" "ingress_router_service" {
+data "kubernetes_service_v1" "ingress_router_service" {
   depends_on = [time_sleep.wait_for_ingress_provisioning]
   metadata {
     name      = "router-${kubernetes_manifest.workload_ingress.object.metadata.name}"
