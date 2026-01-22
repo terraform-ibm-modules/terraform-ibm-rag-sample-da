@@ -12,6 +12,8 @@ locals {
   watson_ml_project_name           = try("${local.prefix}-${var.watson_project_name}", var.watson_project_name)
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
+  secret_group_name = var.secret_group_name != null ? try("${local.prefix}-${var.secret_group_name}", var.secret_group_name) : data.ibm_sm_secret_group.secret_group_name[0].name
+
   # Translate index name to lowercase to avoid Elastic errors
   elastic_index_name       = lower(try("${local.prefix}-${var.elastic_index_name}", var.elastic_index_name))
   elastic_credentials_data = local.use_elastic_index ? jsondecode(data.ibm_resource_key.elastic_credentials[0].credentials_json).connection.https : null
@@ -28,6 +30,12 @@ locals {
   prefix = var.prefix != null ? (var.prefix != "" ? var.prefix : null) : null
 }
 
+data "ibm_sm_secret_group" "secret_group_name" {
+  count           = var.existing_secret_group_id != null ? 1 : 0
+  instance_id     = var.secrets_manager_guid
+  secret_group_id = var.existing_secret_group_id
+}
+
 data "ibm_iam_auth_token" "tokendata" {}
 
 # Resource group - create if it doesn't exist
@@ -39,6 +47,16 @@ module "resource_group" {
   version                      = "1.4.0"
   resource_group_name          = var.use_existing_resource_group == false ? var.resource_group_name : null
   existing_resource_group_name = var.use_existing_resource_group == true ? var.resource_group_name : null
+}
+
+module "secret_group" {
+  count                    = var.existing_secret_group_id == null ? 1 : 0
+  source                   = "terraform-ibm-modules/secrets-manager-secret-group/ibm"
+  version                  = "1.3.37"
+  region                   = var.secrets_manager_region
+  secrets_manager_guid     = var.secrets_manager_guid
+  secret_group_name        = local.secret_group_name
+  secret_group_description = "secret group used for examples, has a matching access group"
 }
 
 # secrets manager secrets - IBM IAM API KEY
@@ -54,6 +72,7 @@ module "secrets_manager_secret_ibm_iam" {
   secret_name             = "ibmcloud-api-key"
   secret_description      = "IBM IAM Api key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
+  secret_group_id         = var.secret_group_name != null ? module.secret_group[0].secret_group_id : var.existing_secret_group_id
   secret_payload_password = var.ibmcloud_api_key
   endpoint_type           = var.secrets_manager_endpoint_type
 }
@@ -74,7 +93,7 @@ module "gpg_signing_key" {
   ibmcloud_api_key     = var.ibmcloud_api_key
   gpg_name             = var.gpg_name
   gpg_email            = var.gpg_email
-  sm_secret_group_name = var.secret_group_name
+  sm_secret_group_name = local.secret_group_name
   sm_resource_group    = var.secrets_manager_resource_group_name
   sm_location          = var.secrets_manager_region
   sm_instance_id       = var.secrets_manager_guid
@@ -95,6 +114,7 @@ module "secrets_manager_secret_signing_key" {
   version                 = "1.9.1"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
+  secret_group_id         = var.secret_group_name != null ? module.secret_group[0].secret_group_id : var.existing_secret_group_id
   secret_name             = "signing-key"
   secret_description      = "IBM Signing GPG key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
@@ -112,6 +132,7 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   version                 = "1.9.1"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
+  secret_group_id         = var.secret_group_name != null ? module.secret_group[0].secret_group_id : var.existing_secret_group_id
   secret_name             = "watsonx-admin-api-key"
   secret_description      = "WatsonX Admin API Key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6

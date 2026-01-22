@@ -231,26 +231,25 @@ variable "secrets_manager_region" {
 }
 
 variable "secrets_manager_resource_group_name" {
-  description = "The resource group name of the Secrets Manager instance. This value is required if the `signing_key` is not provided."
+  description = "The resource group name of the Secrets Manager instance."
+  type        = string
+  nullable    = false
+}
+
+variable "secret_group_name" {
+  description = "Name of the secret group that will be created to store the generated secrets."
+  type        = string
+  default     = "DevSecOps"
+}
+
+variable "existing_secret_group_id" {
+  description = "ID of the existing secret group to store the generated secrets."
   type        = string
   default     = null
 
   validation {
-    condition = (
-    var.signing_key != null || (var.signing_key == null && var.secrets_manager_resource_group_name != null))
-    error_message = "`secrets_manager_resource_group_name` must be provided when `signing_key` is not set."
-  }
-}
-
-variable "secret_group_name" {
-  description = "Name of the secret group that will be created to store the generated signing key secret when `signing_key` is not provided. Ignored if `signing_key` is set."
-  type        = string
-  default     = "General"
-
-  validation {
-    condition = (
-    var.signing_key != null || (var.signing_key == null && var.secret_group_name != null))
-    error_message = "`secret_group_name` must be provided when `signing_key` is not set."
+    condition     = (var.existing_secret_group_id != null && var.secret_group_name != null) == false
+    error_message = "existing_secret_group_id and secret_group_name are mutually exclusive, you must set one of these to `null`."
   }
 }
 
