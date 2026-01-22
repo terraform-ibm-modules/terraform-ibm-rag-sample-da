@@ -12,7 +12,8 @@ locals {
   watson_ml_project_name           = try("${local.prefix}-${var.watson_project_name}", var.watson_project_name)
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
-  secret_group_name = var.secret_group_name != null ? try("${local.prefix}-${var.secret_group_name}", var.secret_group_name) : data.ibm_sm_secret_group.secret_group_name[0].name
+  secret_group_name    = var.secret_group_name != null ? try("${local.prefix}-${var.secret_group_name}", var.secret_group_name) : data.ibm_sm_secret_group.secret_group_name[0].name
+  generate_signing_key = var.create_secrets && var.signing_key == null
 
   # Translate index name to lowercase to avoid Elastic errors
   elastic_index_name       = lower(try("${local.prefix}-${var.elastic_index_name}", var.elastic_index_name))
@@ -75,10 +76,6 @@ module "secrets_manager_secret_ibm_iam" {
   secret_group_id         = var.secret_group_name != null ? module.secret_group[0].secret_group_id : var.existing_secret_group_id
   secret_payload_password = var.ibmcloud_api_key
   endpoint_type           = var.secrets_manager_endpoint_type
-}
-
-locals {
-  generate_signing_key = var.create_secrets && var.signing_key == null
 }
 
 data "ibm_resource_instance" "secrets_manager_name" {
