@@ -44,7 +44,7 @@ output "watsonx_assistant_skills_status" {
 }
 
 output "elastic_collection_count" {
-  description = "Count of sample data items uplaoded to elastic index"
+  description = "Count of sample data items uploaded to elastic index"
   value       = local.use_elastic_index ? module.configure_elastic_index[0].elastic_upload_count : 0
 }
 
