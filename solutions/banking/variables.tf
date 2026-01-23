@@ -24,7 +24,7 @@ variable "watsonx_admin_api_key" {
 variable "prefix" {
   description = "The prefix to add to all resources that this solution creates. To not use any prefix value, you can set this value to `null` or an empty string."
   type        = string
-  default     = "dev"
+  default     = "app"
 }
 
 variable "use_existing_resource_group" {
@@ -235,13 +235,13 @@ variable "secrets_manager_resource_group_name" {
 }
 
 variable "secret_group_name" {
-  description = "Name of the secret group that will be created to store the generated secrets."
+  description = "Name of the secret group that will be created to store the generated secrets. If `prefix` is set, then it will append that to the `secret_group_name` value. This will be ignored if `existing_secret_group_id` is passed."
   type        = string
   default     = "DevSecOps"
 }
 
 variable "existing_secret_group_id" {
-  description = "ID of the existing secret group to store the generated secrets."
+  description = "ID of the existing secret group to store the generated secrets. If no value is passed, then the value of `secret_group_name` will be used to create a new Secret Group."
   type        = string
   default     = null
 

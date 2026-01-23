@@ -13,6 +13,7 @@ locals {
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
   secret_group_name    = var.secret_group_name != null ? try("${local.prefix}-${var.secret_group_name}", var.secret_group_name) : data.ibm_sm_secret_group.secret_group_name[0].name
+  secret_group_id      = var.existing_secret_group_id != null ? var.existing_secret_group_id : module.secret_group[0].secret_group_id
   generate_signing_key = var.create_secrets && var.signing_key == null
 
   # Translate index name to lowercase to avoid Elastic errors
@@ -57,7 +58,7 @@ module "secret_group" {
   region                   = var.secrets_manager_region
   secrets_manager_guid     = var.secrets_manager_guid
   secret_group_name        = local.secret_group_name
-  secret_group_description = "secret group used for examples, has a matching access group"
+  secret_group_description = "This is used to store secrets required for the Sample App deployment."
 }
 
 # secrets manager secrets - IBM IAM API KEY
@@ -73,7 +74,7 @@ module "secrets_manager_secret_ibm_iam" {
   secret_name             = "ibmcloud-api-key"
   secret_description      = "IBM IAM Api key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
-  secret_group_id         = var.secret_group_name != null ? module.secret_group[0].secret_group_id : var.existing_secret_group_id
+  secret_group_id         = local.secret_group_id
   secret_payload_password = var.ibmcloud_api_key
   endpoint_type           = var.secrets_manager_endpoint_type
 }
@@ -111,7 +112,7 @@ module "secrets_manager_secret_signing_key" {
   version                 = "1.9.1"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
-  secret_group_id         = var.secret_group_name != null ? module.secret_group[0].secret_group_id : var.existing_secret_group_id
+  secret_group_id         = local.secret_group_id
   secret_name             = "signing-key"
   secret_description      = "IBM Signing GPG key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
@@ -129,7 +130,7 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   version                 = "1.9.1"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
-  secret_group_id         = var.secret_group_name != null ? module.secret_group[0].secret_group_id : var.existing_secret_group_id
+  secret_group_id         = local.secret_group_id
   secret_name             = "watsonx-admin-api-key"
   secret_description      = "WatsonX Admin API Key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
