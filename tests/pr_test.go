@@ -25,10 +25,11 @@ const bankingSolutionsDir = "solutions/banking"
 
 // watsonx.ai supported regions
 var validRegions = []string{
-	"au-syd",
-	"jp-tok",
+	// Commenting below regions, for details please refer issue-https://github.ibm.com/GoldenEye/issues/issues/17062
+	// "au-syd",
+	// "jp-tok",
+	// "eu-gb",
 	"eu-de",
-	"eu-gb",
 	"us-south",
 }
 
