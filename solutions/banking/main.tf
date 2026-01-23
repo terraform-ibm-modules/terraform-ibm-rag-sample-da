@@ -46,7 +46,7 @@ module "resource_group" {
     ibm = ibm.ibm_resources
   }
   source                       = "terraform-ibm-modules/resource-group/ibm"
-  version                      = "1.4.0"
+  version                      = "1.4.7"
   resource_group_name          = var.use_existing_resource_group == false ? var.resource_group_name : null
   existing_resource_group_name = var.use_existing_resource_group == true ? var.resource_group_name : null
 }
@@ -68,7 +68,7 @@ module "secrets_manager_secret_ibm_iam" {
   }
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.9.1"
+  version                 = "1.9.13"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "ibmcloud-api-key"
@@ -109,7 +109,7 @@ module "secrets_manager_secret_signing_key" {
   }
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.9.1"
+  version                 = "1.9.13"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_group_id         = local.secret_group_id
@@ -127,7 +127,7 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   }
   count                   = (var.create_secrets && var.watsonx_admin_api_key != null) ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.9.1"
+  version                 = "1.9.13"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_group_id         = local.secret_group_id

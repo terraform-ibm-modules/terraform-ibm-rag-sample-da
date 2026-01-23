@@ -11,7 +11,7 @@ locals {
   cluster_id          = can(local.workload_nlb_dns_data.Nlb) ? local.workload_nlb_dns_data.Nlb.cluster : local.workload_nlb_dns_data.cluster
   ingress_secret_name = split(".", local.ingress_subdomain)[0]
 
-  cluster_workload_ingress_alb_hostname = data.kubernetes_service.ingress_router_service.status[0].load_balancer[0].ingress[0].hostname
+  cluster_workload_ingress_alb_hostname = data.kubernetes_service_v1.ingress_router_service.status[0].load_balancer[0].ingress[0].hostname
 
   nlb_dns_data = jsonencode({
     cluster      = var.cluster_name
@@ -126,7 +126,7 @@ resource "time_sleep" "wait_for_ingress_provisioning" {
   }
 }
 
-data "kubernetes_service" "ingress_router_service" {
+data "kubernetes_service_v1" "ingress_router_service" {
   depends_on = [time_sleep.wait_for_ingress_provisioning]
   metadata {
     name      = "router-${kubernetes_manifest.workload_ingress.object.metadata.name}"
@@ -187,7 +187,7 @@ resource "restapi_object" "workload_nlb_dns_cleanup" {
 
 # Need to get private IPs (private_ips) of the ALB to include in ACL
 data "ibm_is_lb" "ingress_vpc_alb" {
-  name       = "kube-${local.cluster_id}-${replace(data.kubernetes_service.ingress_router_service.metadata[0].uid, "-", "")}"
+  name       = "kube-${local.cluster_id}-${replace(data.kubernetes_service_v1.ingress_router_service.metadata[0].uid, "-", "")}"
   depends_on = [time_sleep.wait_for_alb_provisioning, time_sleep.wait_for_ingress_provisioning]
 }
 

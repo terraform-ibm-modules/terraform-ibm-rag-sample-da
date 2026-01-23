@@ -4,7 +4,7 @@ module "cos" {
     ibm = ibm.ibm_resources
   }
   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-  version           = "10.5.5"
+  version           = "10.8.5"
   resource_group_id = var.resource_group_id
   cos_instance_name = var.cos_instance_name
   cos_plan          = "standard"
@@ -28,7 +28,7 @@ module "storage_delegation" {
 # parse the crn for region and guid
 module "crn_parser" {
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
-  version = "1.3.3"
+  version = "1.3.7"
   crn     = var.watson_ml_instance_crn
 }
 

@@ -37,7 +37,7 @@ APIs are needed to create the Watson Discovery artifacts.
 2.	Create Collection in the Project
 - https://cloud.ibm.com/apidocs/discovery-data#createcollection
 
-3.	Import trainig model to the Collection
+3.	Import training model to the Collection
 File: WatsonDiscoveryModel.sdumodel
 - Details TBD. Currently manual step. Does not appear to have API.
 
