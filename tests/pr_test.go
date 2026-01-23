@@ -25,10 +25,12 @@ const bankingSolutionsDir = "solutions/banking"
 
 // watsonx.ai supported regions
 var validRegions = []string{
-	"au-syd",
-	"jp-tok",
+	// Temporarily commenting out the regions as a workaround. Currently, tests are only passing in us-south and eu-de.
+	// For more details, see issue: https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/345
+	// "au-syd",
+	// "jp-tok",
+	// "eu-gb",
 	"eu-de",
-	"eu-gb",
 	"us-south",
 }
 
