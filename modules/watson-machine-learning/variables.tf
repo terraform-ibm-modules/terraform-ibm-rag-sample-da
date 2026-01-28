@@ -44,11 +44,6 @@ variable "watson_ml_instance_crn" {
   type        = string
 }
 
-variable "watson_ml_instance_guid" {
-  description = "Watson Machine Learning instance GUID"
-  type        = string
-}
-
 variable "watson_ml_instance_resource_name" {
   description = "Watson Machine Learning instance resource name"
   type        = string
@@ -75,11 +70,6 @@ variable "watson_ml_project_sensitive" {
   description = "Mark Watson project as sensitive"
   type        = bool
   default     = false
-}
-
-variable "location" {
-  description = "The location that's used with the IBM Cloud Terraform IBM provider. It's also used during resource creation."
-  type        = string
 }
 
 variable "watsonx_project_delegated" {

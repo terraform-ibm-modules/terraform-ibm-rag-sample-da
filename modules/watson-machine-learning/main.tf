@@ -4,7 +4,7 @@ module "cos" {
     ibm = ibm.ibm_resources
   }
   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-  version           = "10.5.5"
+  version           = "10.8.5"
   resource_group_id = var.resource_group_id
   cos_instance_name = var.cos_instance_name
   cos_plan          = "standard"
@@ -16,13 +16,25 @@ module "storage_delegation" {
     ibm.deployer                  = ibm
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//storage_delegation?ref=v2.0.1"
+  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//storage_delegation?ref=v2.2.21"
   count                = var.watsonx_project_delegated ? 1 : 0
   cos_kms_crn          = var.cos_kms_crn
   cos_kms_key_crn      = var.cos_kms_key_crn
   cos_kms_new_key_name = var.cos_kms_new_key_name
   cos_kms_ring_id      = var.cos_kms_ring_id
   cos_guid             = module.cos.cos_instance_guid
+}
+
+# parse the crn for region and guid
+module "crn_parser" {
+  source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
+  version = "1.3.7"
+  crn     = var.watson_ml_instance_crn
+}
+
+locals {
+  watson_ml_instance_guid   = module.crn_parser.service_instance
+  watson_ml_instance_region = module.crn_parser.region
 }
 
 ## Use code from Watson SaaS directly to avoid "legacy module" issues
@@ -57,7 +69,7 @@ var.watson_ml_project_sensitive ? "\"settings\": {\"access_restrictions\":  {\"d
                     "compute": [
                       {
                         "name": "${var.watson_ml_instance_resource_name}",
-                        "guid": "${var.watson_ml_instance_guid}",
+                        "guid": "${local.watson_ml_instance_guid}",
                         "type": "machine_learning",
                         "crn": "${var.watson_ml_instance_crn}"
                       }
@@ -75,7 +87,7 @@ update_data   = <<-EOT
                     "compute": [
                       {
                         "name": "${var.watson_ml_instance_resource_name}",
-                        "guid": "${var.watson_ml_instance_guid}",
+                        "guid": "${local.watson_ml_instance_guid}",
                         "type": "machine_learning",
                         "crn": "${var.watson_ml_instance_crn}",
                         "credentials": { }
@@ -106,10 +118,12 @@ locals {
     "us-south" = "//api.dataplatform.cloud.ibm.com",
     "eu-gb"    = "//api.eu-uk.dataplatform.cloud.ibm.com",
     "eu-de"    = "//api.eu-de.dataplatform.cloud.ibm.com",
-    "jp-tok"   = "//api.jp-tok.dataplatform.cloud.ibm.com"
+    "jp-tok"   = "//api.jp-tok.dataplatform.cloud.ibm.com",
+    "au-syd"   = "//api.au-syd.dai.cloud.ibm.com",
+    "ca-tor"   = "//api.ca-tor.dai.cloud.ibm.com"
   }
 
-  dataplatform_api          = local.dataplatform_api_mapping[var.location]
+  dataplatform_api          = local.dataplatform_api_mapping[local.watson_ml_instance_region]
   watsonx_project_id_object = restapi_object.configure_project.id
   watsonx_project_id        = regex("^.+/([a-f0-9\\-]+)$", local.watsonx_project_id_object)[0]
 }

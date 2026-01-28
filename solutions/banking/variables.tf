@@ -99,12 +99,6 @@ variable "watson_machine_learning_instance_crn" {
   default     = null # WML usage is optional, elastic can be used instead
 }
 
-variable "watson_machine_learning_instance_guid" {
-  description = "Watson Machine Learning instance GUID"
-  type        = string
-  default     = null # WML usage is optional, elastic can be used instead
-}
-
 variable "watson_machine_learning_instance_resource_name" {
   description = "Watson Machine Learning instance resource name"
   type        = string

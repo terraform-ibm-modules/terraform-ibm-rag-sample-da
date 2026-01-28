@@ -23,11 +23,6 @@ output "watson_machine_learning_instance_crn" {
   description = "Watson Machine Learning instance CRN."
 }
 
-output "watson_machine_learning_instance_guid" {
-  value       = ibm_resource_instance.machine_learning_instance.guid
-  description = "Watson Machine Learning instance GUID."
-}
-
 output "watson_machine_learning_instance_resource_name" {
   value       = ibm_resource_instance.machine_learning_instance.resource_name
   description = "Watson Machine Learning instance resource name."
@@ -57,4 +52,19 @@ output "signing_key" {
 output "cluster_name" {
   value       = var.create_ocp_cluster ? module.ocp_base[0].cluster_name : null
   description = "The name of the provisioned cluster."
+}
+
+output "elasticsearch_crn" {
+  value       = module.elasticsearch.crn
+  description = "Elasticsearch instance CRN."
+}
+
+output "kms_instance_crn" {
+  value       = module.key_protect.key_protect_crn
+  description = "CRN of created KMS instance"
+}
+
+output "region" {
+  value       = var.region
+  description = "Region"
 }

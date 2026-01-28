@@ -13,13 +13,16 @@
       ],
       "keywords": [],
       "short_description": "Configures provided toolchain infrastructure and uploads PDF files to a Watson project, part of a larger automation workflow.",
-      "long_description": "This automation is a dependent component of a more comprehensive workflow, which can be found in the [Retrieval Augmented Generation Pattern](https://cloud.ibm.com/catalog/7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3/architecture/Retrieval_Augmented_Generation_Pattern-5fdd0045-30fc-4013-a8bc-6db9d5447a52-global) tile. \n\nFor a complete understanding of the automation process, please refer to the full workflow located in the [Retrieval Augmented Generation Pattern](https://cloud.ibm.com/catalog/7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3/architecture/Retrieval_Augmented_Generation_Pattern-5fdd0045-30fc-4013-a8bc-6db9d5447a52-global) tile, where you can find detailed information on the entire automation sequence.",
+      "long_description": "This automation is a dependent component of a more comprehensive workflow, which can be found in the [Retrieval Augmented Generation Pattern](https://cloud.ibm.com/catalog/7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3/architecture/Retrieval_Augmented_Generation_Pattern-5fdd0045-30fc-4013-a8bc-6db9d5447a52-global) tile.  \n\nLeverage [Terraform IBM Modules](https://github.com/terraform-ibm-modules) to shape and scale your solutions. You can integrate Terraform IBM Modules (TIM) to extend functionality and design a solution tailored to your environment and operations needs. These modules offer reusable, customizable elements that follow IBM Cloud's recommended practices. You can access the [source code and documentation](https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da) and use it to extend your current architecture or create new solutions.\n\nFor a complete understanding of the automation process, please refer to the full workflow located in the [Retrieval Augmented Generation Pattern](https://cloud.ibm.com/catalog/7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3/architecture/Retrieval_Augmented_Generation_Pattern-5fdd0045-30fc-4013-a8bc-6db9d5447a52-global) tile, where you can find detailed information on the entire automation sequence.",
+      "offering_docs_url": "https://cloud.ibm.com/docs/ibm-cloud-provider-for-terraform?topic=ibm-cloud-provider-for-terraform-about-tim",
       "provider_name": "IBM",
       "flavors": [
         {
           "label": "Banking Application",
           "name": "banking",
+          "short_description": "Sample banking application",
           "working_directory": "solutions/banking",
+          "release_notes_url": "https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/releases",
           "iam_permissions": [
             {
               "service_name": "iam-groups",
@@ -111,6 +114,10 @@
                   "value": "ca-tor"
                 },
                 {
+                  "displayname": "Montreal (ca-mon)",
+                  "value": "ca-mon"
+                },
+                {
                   "displayname": "Washington DC (us-east)",
                   "value": "us-east"
                 },
@@ -122,7 +129,6 @@
             },
             {
               "key": "toolchain_resource_group",
-              "required": true,
               "custom_config": {
                 "type": "resource_group",
                 "grouping": "deployment",
@@ -149,70 +155,37 @@
             },
             {
               "key": "watson_assistant_region",
-              "options": [
-                {
-                  "displayname": "Sydney (au-syd)",
-                  "value": "au-syd"
-                },
-                {
-                  "displayname": "Tokyo (jp-tok)",
-                  "value": "jp-tok"
-                },
-                {
-                  "displayname": "Frankfurt (eu-de)",
-                  "value": "eu-de"
-                },
-                {
-                  "displayname": "London (eu-gb)",
-                  "value": "eu-gb"
-                },
-                {
-                  "displayname": "Dallas (us-south)",
-                  "value": "us-south"
-                },
-                {
-                  "displayname": "Washington DC (us-east)",
-                  "value": "us-east"
+              "custom_config": {
+                "type": "region",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "filterString": "service:conversation",
+                  "showKinds": [
+                    "region"
+                  ]
                 }
-              ]
+              }
             },
             {
               "key": "watson_discovery_instance_id"
             },
             {
               "key": "watson_discovery_region",
-              "options": [
-                {
-                  "displayname": "Sydney (au-syd)",
-                  "value": "au-syd"
-                },
-                {
-                  "displayname": "Tokyo (jp-tok)",
-                  "value": "jp-tok"
-                },
-                {
-                  "displayname": "Frankfurt (eu-de)",
-                  "value": "eu-de"
-                },
-                {
-                  "displayname": "London (eu-gb)",
-                  "value": "eu-gb"
-                },
-                {
-                  "displayname": "Dallas (us-south)",
-                  "value": "us-south"
-                },
-                {
-                  "displayname": "Washington DC (us-east)",
-                  "value": "us-east"
+              "custom_config": {
+                "type": "region",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "filterString": "service:discovery",
+                  "showKinds": [
+                    "region"
+                  ]
                 }
-              ]
+              }
             },
             {
               "key": "watson_machine_learning_instance_crn"
-            },
-            {
-              "key": "watson_machine_learning_instance_guid"
             },
             {
               "key": "watson_machine_learning_instance_resource_name"
@@ -271,52 +244,17 @@
             },
             {
               "key": "secrets_manager_region",
-              "options": [
-                {
-                  "displayname": "Osaka (jp-osa)",
-                  "value": "jp-osa"
-                },
-                {
-                  "displayname": "Sydney (au-syd)",
-                  "value": "au-syd"
-                },
-                {
-                  "displayname": "Tokyo (jp-tok)",
-                  "value": "jp-tok"
-                },
-                {
-                  "displayname": "Frankfurt (eu-de)",
-                  "value": "eu-de"
-                },
-                {
-                  "displayname": "London (eu-gb)",
-                  "value": "eu-gb"
-                },
-                {
-                  "displayname": "Madrid (eu-es)",
-                  "value": "eu-es"
-                },
-                {
-                  "displayname": "Dallas (us-south)",
-                  "value": "us-south"
-                },
-                {
-                  "displayname": "Montreal (ca-mon)",
-                  "value": "ca-mon"
-                },
-                {
-                  "displayname": "Toronto (ca-tor)",
-                  "value": "ca-tor"
-                },
-                {
-                  "displayname": "Washington DC (us-east)",
-                  "value": "us-east"
-                },
-                {
-                  "displayname": "Sao Paolo (br-sao)",
-                  "value": "br-sao"
+              "custom_config": {
+                "type": "region",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "filterString": "service:secrets-manager",
+                  "showKinds": [
+                    "region"
+                  ]
                 }
-              ]
+              }
             },
             {
               "key": "trigger_ci_pipeline_run"
@@ -331,8 +269,6 @@
               "key": "provision_public_ingress"
             }
           ],
-          "release_notes_url": "RELEASE NOTES URL",
-          "outputs": [],
           "install_type": "fullstack",
           "terraform_version": "1.12.2",
           "ignore_readme": true

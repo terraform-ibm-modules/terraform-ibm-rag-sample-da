@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/IBM/go-sdk-core/core"
+	"github.com/IBM/go-sdk-core/v5/core"
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -22,7 +22,17 @@ import (
 )
 
 const bankingSolutionsDir = "solutions/banking"
-const region = "us-south" // Binding all the resources to the us-south location.
+
+// watsonx.ai supported regions
+var validRegions = []string{
+	// Temporarily commenting out the regions as a workaround. Currently, tests are only passing in us-south and eu-de.
+	// For more details, see issue: https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/345
+	// "au-syd",
+	// "jp-tok",
+	// "eu-gb",
+	"eu-de",
+	"us-south",
+}
 
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
@@ -33,9 +43,12 @@ var sharedInfoSvc *cloudinfo.CloudInfoService
 
 // TestMain will be run before any parallel tests, used to read data from yaml for use with tests
 func TestMain(m *testing.M) {
-	sharedInfoSvc, _ = cloudinfo.NewCloudInfoServiceFromEnv("TF_VAR_ibmcloud_api_key", cloudinfo.CloudInfoServiceOptions{})
-
 	var err error
+	sharedInfoSvc, err = cloudinfo.NewCloudInfoServiceFromEnv("TF_VAR_ibmcloud_api_key", cloudinfo.CloudInfoServiceOptions{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	permanentResources, err = common.LoadMapFromYaml(yamlLocation)
 	if err != nil {
 		log.Fatal(err)
@@ -45,13 +58,17 @@ func TestMain(m *testing.M) {
 }
 
 func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terraform.Options) *testhelper.TestOptions {
+
+	region := terraform.Output(t, existingTerraformOptions, "region")
+
 	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
 		Testing:            t,
 		TerraformDir:       bankingSolutionsDir,
 		ApiDataIsSensitive: core.BoolPtr(false),
 		// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
-		ImplicitRequired: false,
-		Region:           region,
+		ImplicitRequired:           false,
+		Region:                     region,
+		CheckApplyResultForUpgrade: true,
 		TerraformVars: map[string]interface{}{
 			"toolchain_region":                               region,
 			"prefix":                                         prefix,
@@ -66,7 +83,6 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"resource_group_name":                            terraform.Output(t, existingTerraformOptions, "resource_group_name"),
 			"toolchain_resource_group":                       terraform.Output(t, existingTerraformOptions, "resource_group_name"),
 			"watson_machine_learning_instance_crn":           terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"),
-			"watson_machine_learning_instance_guid":          terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_guid"),
 			"watson_machine_learning_instance_resource_name": terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
 			"secrets_manager_guid":                           permanentResources["secretsManagerGuid"],
 			"secrets_manager_region":                         region,
@@ -75,6 +91,30 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"secrets_manager_endpoint_type":                  "public",
 			"provider_visibility":                            "public",
 			"create_secrets":                                 false,
+			"elastic_instance_crn":                           terraform.Output(t, existingTerraformOptions, "elasticsearch_crn"),
+			"cluster_name":                                   terraform.Output(t, existingTerraformOptions, "cluster_name"),
+			"cos_kms_crn":                                    terraform.Output(t, existingTerraformOptions, "kms_instance_crn"),
+		},
+		IgnoreUpdates: testhelper.Exemptions{
+			List: []string{
+				// Need to be checked, see https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/342
+				"module.configure_discovery_project[0].restapi_object.configure_discovery_collection",
+				"module.configure_discovery_project[0].restapi_object.configure_discovery_project",
+				"module.configure_watson_assistant.restapi_object.assistant_action_skill[0]",
+				"module.configure_watson_assistant.restapi_object.assistant_search_skill[0]",
+				"module.configure_watson_assistant.restapi_object.assistant_skills_references[0]",
+				"module.configure_wml_project[0].restapi_object.configure_project",
+				"module.cluster_ingress[0].restapi_object.workload_nlb_dns_cleanup",
+				"module.cluster_ingress[0].restapi_object.workload_nlb_dns",
+				"module.cluster_ingress[0].restapi_object.workload_nlb_dns_patch",
+				"module.configure_wml_project[0].module.storage_delegation[0].restapi_object.storage_delegation",
+			},
+		},
+		IgnoreDestroys: testhelper.Exemptions{
+			List: []string{
+				// destroy / re-create expected due to always_run trigger
+				"module.configure_discovery_project[0].null_resource.discovery_file_upload",
+			},
 		},
 	})
 
@@ -102,7 +142,7 @@ func TestRunBankingSolutions(t *testing.T) {
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
-			"region":             region,
+			"region":             validRegions[common.CryptoIntn(len(validRegions))],
 			"create_ocp_cluster": true,
 		},
 		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
@@ -115,13 +155,10 @@ func TestRunBankingSolutions(t *testing.T) {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
 	} else {
 		// ------------------------------------------------------------------------------------
-		// Deploy RAG DA passing in existing watson assistance ID and watson discovery ID.
+		// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
 		// ------------------------------------------------------------------------------------
 		options := setupOptions(t, prefix, existingTerraformOptions)
-
-		options.TerraformVars["cluster_name"] = terraform.Output(t, existingTerraformOptions, "cluster_name")
-
-		output, err := options.RunTest()
+		output, err := options.RunTestConsistency()
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
 	}
@@ -157,7 +194,7 @@ func TestRunUpgradeExample(t *testing.T) {
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
-			"region":             region,
+			"region":             validRegions[common.CryptoIntn(len(validRegions))],
 			"create_ocp_cluster": true,
 		},
 		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
@@ -171,25 +208,9 @@ func TestRunUpgradeExample(t *testing.T) {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
 	} else {
 		// ------------------------------------------------------------------------------------
-		// Deploy RAG DA passing in existing watson assistance ID and watson discovery ID.
+		// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
 		// ------------------------------------------------------------------------------------
 		options := setupOptions(t, prefix, existingTerraformOptions)
-
-		options.TerraformVars["cluster_name"] = terraform.Output(t, existingTerraformOptions, "cluster_name")
-
-		options.IgnoreDestroys = testhelper.Exemptions{
-			List: []string{
-				"module.configure_discovery_project[0].null_resource.discovery_file_upload",
-			},
-		}
-
-		options.IgnoreUpdates = testhelper.Exemptions{
-			List: []string{
-				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_cd",
-				"ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci",
-			},
-		}
-
 		output, err := options.RunTestUpgrade()
 		if !options.UpgradeTestSkipped {
 			assert.Nil(t, err, "This should not have errored")

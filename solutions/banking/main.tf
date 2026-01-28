@@ -1,6 +1,6 @@
 locals {
   use_watson_discovery        = (var.watson_discovery_instance_id != null) ? true : false
-  use_watson_machine_learning = (var.watson_machine_learning_instance_guid != null && var.watson_project_name != null) ? true : false
+  use_watson_machine_learning = (var.watson_machine_learning_instance_crn != null && var.watson_project_name != null) ? true : false
   use_elastic_index           = (var.elastic_instance_crn != null) ? true : false
 
   cos_instance_name                = try("${local.prefix}-rag-sample-app-cos", "gen-ai-rag-sample-app-cos")
@@ -36,7 +36,7 @@ module "resource_group" {
     ibm = ibm.ibm_resources
   }
   source                       = "terraform-ibm-modules/resource-group/ibm"
-  version                      = "1.4.0"
+  version                      = "1.4.7"
   resource_group_name          = var.use_existing_resource_group == false ? var.resource_group_name : null
   existing_resource_group_name = var.use_existing_resource_group == true ? var.resource_group_name : null
 }
@@ -48,7 +48,7 @@ module "secrets_manager_secret_ibm_iam" {
   }
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.9.1"
+  version                 = "1.9.13"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "ibmcloud-api-key"
@@ -65,7 +65,7 @@ module "secrets_manager_secret_signing_key" {
   }
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.9.1"
+  version                 = "1.9.13"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "signing-key"
@@ -82,7 +82,7 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   }
   count                   = (var.create_secrets && var.watsonx_admin_api_key != null) ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.9.1"
+  version                 = "1.9.13"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "watsonx-admin-api-key"
@@ -133,7 +133,6 @@ module "configure_wml_project" {
   count                            = local.use_watson_machine_learning ? 1 : 0
   source                           = "../../modules/watson-machine-learning"
   watsonx_project_delegated        = var.cos_kms_crn != null ? true : false
-  watson_ml_instance_guid          = var.watson_machine_learning_instance_guid
   watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
   watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
   watson_ml_project_name           = local.watson_ml_project_name
@@ -144,7 +143,6 @@ module "configure_wml_project" {
   cos_kms_key_crn                  = var.cos_kms_key_crn
   cos_kms_ring_id                  = var.cos_kms_ring_id
   cos_kms_new_key_name             = local.cos_kms_new_key_name
-  location                         = var.watson_assistant_region
 }
 
 moved {
