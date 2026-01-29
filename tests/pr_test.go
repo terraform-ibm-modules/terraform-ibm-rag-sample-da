@@ -86,7 +86,6 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"watson_machine_learning_instance_resource_name": terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
 			"secrets_manager_guid":                           permanentResources["secretsManagerGuid"],
 			"secrets_manager_region":                         region,
-			"signing_key":                                    terraform.Output(t, existingTerraformOptions, "signing_key"),
 			"trigger_ci_pipeline_run":                        false,
 			"secrets_manager_endpoint_type":                  "public",
 			"provider_visibility":                            "public",

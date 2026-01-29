@@ -43,12 +43,6 @@ output "resource_group_name" {
   description = "Resource group name."
 }
 
-output "signing_key" {
-  value       = local.signing_key_payload
-  sensitive   = true
-  description = "Signing key payload."
-}
-
 output "cluster_name" {
   value       = var.create_ocp_cluster ? module.ocp_base[0].cluster_name : null
   description = "The name of the provisioned cluster."

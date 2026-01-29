@@ -14,7 +14,7 @@ locals {
 
   secret_group_name    = try("${local.prefix}-${var.secret_group_name}", var.secret_group_name)
   secret_group_id      = var.secret_group_id != null ? var.secret_group_id : module.secret_group[0].secret_group_id
-  generate_signing_key = var.create_secrets && var.signing_key == null
+  generate_signing_key = var.create_secrets && (var.signing_key == null || var.signing_key == "")
 
   # Translate index name to lowercase to avoid Elastic errors
   elastic_index_name       = lower(try("${local.prefix}-${var.elastic_index_name}", var.elastic_index_name))
