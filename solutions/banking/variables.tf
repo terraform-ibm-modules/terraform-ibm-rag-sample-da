@@ -24,6 +24,7 @@ variable "watsonx_admin_api_key" {
 variable "prefix" {
   description = "The prefix to add to all resources that this solution creates. To not use any prefix value, you can set this value to `null` or an empty string."
   type        = string
+  nullable    = true
 }
 
 variable "use_existing_resource_group" {
