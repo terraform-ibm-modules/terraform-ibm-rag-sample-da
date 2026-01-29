@@ -12,8 +12,8 @@ locals {
   watson_ml_project_name           = try("${local.prefix}-${var.watson_project_name}", var.watson_project_name)
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
-  secret_group_name    = var.secret_group_name != null ? try("${local.prefix}-${var.secret_group_name}", var.secret_group_name) : data.ibm_sm_secret_group.secret_group_name[0].name
-  secret_group_id      = var.existing_secret_group_id != null ? var.existing_secret_group_id : module.secret_group[0].secret_group_id
+  secret_group_name    = try("${local.prefix}-${var.secret_group_name}", var.secret_group_name)
+  secret_group_id      = var.secret_group_id != null ? var.secret_group_id : module.secret_group[0].secret_group_id
   generate_signing_key = var.create_secrets && var.signing_key == null
 
   # Translate index name to lowercase to avoid Elastic errors
@@ -32,12 +32,6 @@ locals {
   prefix = var.prefix != null ? (var.prefix != "" ? var.prefix : null) : null
 }
 
-data "ibm_sm_secret_group" "secret_group_name" {
-  count           = var.existing_secret_group_id != null ? 1 : 0
-  instance_id     = var.secrets_manager_guid
-  secret_group_id = var.existing_secret_group_id
-}
-
 data "ibm_iam_auth_token" "tokendata" {}
 
 # Resource group - create if it doesn't exist
@@ -52,9 +46,9 @@ module "resource_group" {
 }
 
 module "secret_group" {
-  count                    = var.existing_secret_group_id == null ? 1 : 0
+  count                    = var.secret_group_id == null ? 1 : 0
   source                   = "terraform-ibm-modules/secrets-manager-secret-group/ibm"
-  version                  = "1.3.37"
+  version                  = "1.4.1"
   region                   = var.secrets_manager_region
   secrets_manager_guid     = var.secrets_manager_guid
   secret_group_name        = local.secret_group_name
