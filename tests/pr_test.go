@@ -43,6 +43,11 @@ var permanentResources map[string]interface{}
 
 var sharedInfoSvc *cloudinfo.CloudInfoService
 
+func isUpgradeTestSkipped() bool {
+	val, ok := os.LookupEnv("SKIP_UPGRADE_TEST")
+	return ok && strings.ToLower(val) == "true"
+}
+
 func validateEnvVariable(t *testing.T, varName string) string {
 	val, present := os.LookupEnv(varName)
 	require.True(t, present, "%s environment variable not set", varName)
@@ -177,17 +182,23 @@ func TestRunBankingSolutions(t *testing.T) {
 		Upgrade: true,
 	})
 	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
+
 	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
+
+	region := existingTerraformOptions.Vars["region"].(string)
+	resourceGroup := terraform.Output(t, existingTerraformOptions, "resource_group_name")
+
+	// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
+	createContainersApikey(t, region, resourceGroup)
+
 	if existErr != nil {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
 	} else {
 		// ------------------------------------------------------------------------------------
 		// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
 		// ------------------------------------------------------------------------------------
-		options := setupOptions(t, prefix, existingTerraformOptions)
 
-		// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
-		createContainersApikey(t, options.Region, options.ResourceGroup)
+		options := setupOptions(t, prefix, existingTerraformOptions)
 
 		output, err := options.RunTestConsistency()
 		assert.Nil(t, err, "This should not have errored")
@@ -208,6 +219,10 @@ func TestRunBankingSolutions(t *testing.T) {
 }
 
 func TestRunUpgradeExample(t *testing.T) {
+	if isUpgradeTestSkipped() {
+		t.Skip("SKIP_UPGRADE_TEST=true, skipping upgrade test and prereq infra creation.")
+	}
+
 	t.Parallel()
 
 	prefix := fmt.Sprintf("rag-da-upgr-%s", strings.ToLower(random.UniqueId()))
@@ -235,6 +250,13 @@ func TestRunUpgradeExample(t *testing.T) {
 
 	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
 	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
+
+	region := existingTerraformOptions.Vars["region"].(string)
+	resourceGroup := terraform.Output(t, existingTerraformOptions, "resource_group_name")
+
+	// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
+	createContainersApikey(t, region, resourceGroup)
+
 	if existErr != nil {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
 	} else {
@@ -242,9 +264,6 @@ func TestRunUpgradeExample(t *testing.T) {
 		// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
 		// ------------------------------------------------------------------------------------
 		options := setupOptions(t, prefix, existingTerraformOptions)
-
-		// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
-		createContainersApikey(t, options.Region, options.ResourceGroup)
 
 		output, err := options.RunTestUpgrade()
 		if !options.UpgradeTestSkipped {
