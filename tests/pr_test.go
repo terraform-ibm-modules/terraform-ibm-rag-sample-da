@@ -43,11 +43,6 @@ var permanentResources map[string]interface{}
 
 var sharedInfoSvc *cloudinfo.CloudInfoService
 
-func isUpgradeTestSkipped() bool {
-	val, ok := os.LookupEnv("SKIP_UPGRADE_TEST")
-	return ok && strings.ToLower(val) == "true"
-}
-
 func validateEnvVariable(t *testing.T, varName string) string {
 	val, present := os.LookupEnv(varName)
 	require.True(t, present, "%s environment variable not set", varName)
@@ -219,10 +214,6 @@ func TestRunBankingSolutions(t *testing.T) {
 }
 
 func TestRunUpgradeExample(t *testing.T) {
-	if isUpgradeTestSkipped() {
-		t.Skip("SKIP_UPGRADE_TEST=true, skipping upgrade test and prereq infra creation.")
-	}
-
 	t.Parallel()
 
 	prefix := fmt.Sprintf("rag-da-upgr-%s", strings.ToLower(random.UniqueId()))
