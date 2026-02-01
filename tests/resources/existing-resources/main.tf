@@ -40,7 +40,7 @@ module "resource_group" {
 
 module "elasticsearch" {
   source              = "terraform-ibm-modules/icd-elasticsearch/ibm"
-  version             = "2.9.2"
+  version             = "2.9.4"
   resource_group_id   = module.resource_group.resource_group_id
   name                = "${var.prefix}-es"
   region              = var.region
