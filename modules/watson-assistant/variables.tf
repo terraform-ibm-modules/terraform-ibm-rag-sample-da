@@ -1,6 +1,7 @@
 variable "prefix" {
-  description = "Prefix for resources to be created"
+  description = "Prefix for resources to be created. To not use any prefix value, you can set this value to `null` or an empty string."
   type        = string
+  nullable    = true
 }
 
 variable "watsonx_admin_api_key" {

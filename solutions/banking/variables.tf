@@ -24,7 +24,7 @@ variable "watsonx_admin_api_key" {
 variable "prefix" {
   description = "The prefix to add to all resources that this solution creates. To not use any prefix value, you can set this value to `null` or an empty string."
   type        = string
-  default     = "dev"
+  nullable    = true
 }
 
 variable "use_existing_resource_group" {
@@ -174,9 +174,32 @@ variable "elastic_upload_sample_data" {
 }
 
 variable "signing_key" {
-  description = "Signing GPG key."
+  description = "Signing GPG key. If it is not provided by the user, then automation will create one. "
   type        = string
   sensitive   = true
+  default     = null
+}
+
+variable "gpg_name" {
+  type        = string
+  description = "The name to be associated with the GPG key. Required when `signing_key` is not provided by the user. Ignored if `signing_key` is set."
+  default     = "IBMer"
+
+  validation {
+    condition     = !local.generate_signing_key || (var.gpg_name != null && var.gpg_name != "")
+    error_message = "`gpg_name` must be provided when `signing_key` is not set."
+  }
+}
+
+variable "gpg_email" {
+  type        = string
+  description = "The email address associated with the GPG key. Required when `signing_key` is not provided by the user. Ignored if `signing_key` is set."
+  default     = "ibmer@ibm.com"
+
+  validation {
+    condition     = !local.generate_signing_key || (var.gpg_email != null && var.gpg_email != "")
+    error_message = "`gpg_email` must be provided when `signing_key` is not set."
+  }
 }
 
 variable "create_secrets" {
@@ -203,6 +226,30 @@ variable "secrets_manager_guid" {
 variable "secrets_manager_region" {
   description = "The region where the Secrets Manager instance previously created reside."
   type        = string
+}
+
+variable "secrets_manager_resource_group_name" {
+  description = "The resource group name of the Secrets Manager instance."
+  type        = string
+  nullable    = false
+}
+
+variable "secret_group_name" {
+  description = "Name of the secret group that will be created to store the generated secrets. If `prefix` is set, then it will be prepended to the `secret_group_name` value. This will be ignored if `secret_group_id` is passed."
+  type        = string
+  default     = "DevSecOps"
+  nullable    = false
+}
+
+variable "secret_group_id" {
+  description = "ID of the existing secret group to store the generated secrets. If no value is passed, then the value of `secret_group_name` will be used to create a new Secret Group."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = (var.secret_group_id != null && var.secret_group_name != null) == false
+    error_message = "secret_group_id and secret_group_name are mutually exclusive, you must set one of these to `null`."
+  }
 }
 
 variable "trigger_ci_pipeline_run" {
