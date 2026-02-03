@@ -39,6 +39,8 @@ var validRegions = []string{
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
 
+const resourceGroup = "geretain-test-resources"
+
 var permanentResources map[string]interface{}
 
 var sharedInfoSvc *cloudinfo.CloudInfoService
@@ -155,6 +157,7 @@ func TestRunBankingSolutions(t *testing.T) {
 	// Provision a resource group, watson assistance and watson discovery instances.
 	// ------------------------------------------------------------------------------------
 	prefix := fmt.Sprintf("rag-da-%s", strings.ToLower(random.UniqueId()))
+	region := validRegions[common.CryptoIntn(len(validRegions))]
 	realTerraformDir := "./resources/existing-resources"
 	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())))
 
@@ -169,22 +172,19 @@ func TestRunBankingSolutions(t *testing.T) {
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
-			"region":             validRegions[common.CryptoIntn(len(validRegions))],
+			"region":             region,
+			"resource_group":	  resourceGroup,
 			"create_ocp_cluster": true,
 		},
-		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
+		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
 		// This is the same as setting the -upgrade=true flag with terraform.
 		Upgrade: true,
 	})
 	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
 
-	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
-
-	region := existingTerraformOptions.Vars["region"].(string)
-	resourceGroup := terraform.Output(t, existingTerraformOptions, "resource_group_name")
-
 	// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
 	createContainersApikey(t, region, resourceGroup)
+	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
 
 	if existErr != nil {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
@@ -217,6 +217,7 @@ func TestRunUpgradeExample(t *testing.T) {
 	t.Parallel()
 
 	prefix := fmt.Sprintf("rag-da-upgr-%s", strings.ToLower(random.UniqueId()))
+	region := validRegions[common.CryptoIntn(len(validRegions))]
 	realTerraformDir := "./resources/existing-resources"
 	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())))
 
@@ -231,22 +232,20 @@ func TestRunUpgradeExample(t *testing.T) {
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
-			"region":             validRegions[common.CryptoIntn(len(validRegions))],
+			"region":             region,
+			"resource_group":	  resourceGroup,
 			"create_ocp_cluster": true,
 		},
-		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
+		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
 		// This is the same as setting the -upgrade=true flag with terraform.
 		Upgrade: true,
 	})
 
-	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
-	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
-
-	region := existingTerraformOptions.Vars["region"].(string)
-	resourceGroup := terraform.Output(t, existingTerraformOptions, "resource_group_name")
-
 	// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
 	createContainersApikey(t, region, resourceGroup)
+
+	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
+	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
 
 	if existErr != nil {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
