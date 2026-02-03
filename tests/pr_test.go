@@ -173,7 +173,7 @@ func TestRunBankingSolutions(t *testing.T) {
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
 			"region":             region,
-			"resource_group":	  resourceGroup,
+			"resource_group":     resourceGroup,
 			"create_ocp_cluster": true,
 		},
 		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
@@ -233,7 +233,7 @@ func TestRunUpgradeExample(t *testing.T) {
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
 			"region":             region,
-			"resource_group":	  resourceGroup,
+			"resource_group":     resourceGroup,
 			"create_ocp_cluster": true,
 		},
 		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
