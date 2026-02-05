@@ -2,9 +2,11 @@
 package test
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"strings"
 	"testing"
 
@@ -37,9 +39,36 @@ var validRegions = []string{
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
 
+const resourceGroup = "geretain-test-resources"
+
 var permanentResources map[string]interface{}
 
 var sharedInfoSvc *cloudinfo.CloudInfoService
+
+func validateEnvVariable(t *testing.T, varName string) string {
+	val, present := os.LookupEnv(varName)
+	require.True(t, present, "%s environment variable not set", varName)
+	require.NotEqual(t, "", val, "%s environment variable is empty", varName)
+	return val
+}
+
+func createContainersApikey(t *testing.T, region string, rg string) {
+
+	err := os.Setenv("IBMCLOUD_API_KEY", validateEnvVariable(t, "TF_VAR_ibmcloud_api_key"))
+	require.NoError(t, err, "Failed to set IBMCLOUD_API_KEY environment variable")
+	scriptPath := "../common-dev-assets/scripts/iks-api-key-reset/reset_iks_api_key.sh"
+	cmd := exec.Command("bash", scriptPath, region, rg)
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	// Execute the command
+	if err := cmd.Run(); err != nil {
+		log.Fatalf("Failed to execute script: %v\nStderr: %s", err, stderr.String())
+	}
+	// Print script output
+	fmt.Println(stdout.String())
+}
 
 // TestMain will be run before any parallel tests, used to read data from yaml for use with tests
 func TestMain(m *testing.M) {
@@ -86,7 +115,6 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"watson_machine_learning_instance_resource_name": terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
 			"secrets_manager_guid":                           permanentResources["secretsManagerGuid"],
 			"secrets_manager_region":                         region,
-			"signing_key":                                    terraform.Output(t, existingTerraformOptions, "signing_key"),
 			"trigger_ci_pipeline_run":                        false,
 			"secrets_manager_endpoint_type":                  "public",
 			"provider_visibility":                            "public",
@@ -94,6 +122,7 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"elastic_instance_crn":                           terraform.Output(t, existingTerraformOptions, "elasticsearch_crn"),
 			"cluster_name":                                   terraform.Output(t, existingTerraformOptions, "cluster_name"),
 			"cos_kms_crn":                                    terraform.Output(t, existingTerraformOptions, "kms_instance_crn"),
+			"secrets_manager_resource_group_name":            terraform.Output(t, existingTerraformOptions, "resource_group_name"),
 		},
 		IgnoreUpdates: testhelper.Exemptions{
 			List: []string{
@@ -128,6 +157,7 @@ func TestRunBankingSolutions(t *testing.T) {
 	// Provision a resource group, watson assistance and watson discovery instances.
 	// ------------------------------------------------------------------------------------
 	prefix := fmt.Sprintf("rag-da-%s", strings.ToLower(random.UniqueId()))
+	region := validRegions[common.CryptoIntn(len(validRegions))]
 	realTerraformDir := "./resources/existing-resources"
 	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())))
 
@@ -142,22 +172,29 @@ func TestRunBankingSolutions(t *testing.T) {
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
-			"region":             validRegions[common.CryptoIntn(len(validRegions))],
+			"region":             region,
+			"resource_group":     resourceGroup,
 			"create_ocp_cluster": true,
 		},
-		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
+		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
 		// This is the same as setting the -upgrade=true flag with terraform.
 		Upgrade: true,
 	})
 	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
+
+	// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
+	createContainersApikey(t, region, resourceGroup)
 	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
+
 	if existErr != nil {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
 	} else {
 		// ------------------------------------------------------------------------------------
 		// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
 		// ------------------------------------------------------------------------------------
+
 		options := setupOptions(t, prefix, existingTerraformOptions)
+
 		output, err := options.RunTestConsistency()
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
@@ -180,6 +217,7 @@ func TestRunUpgradeExample(t *testing.T) {
 	t.Parallel()
 
 	prefix := fmt.Sprintf("rag-da-upgr-%s", strings.ToLower(random.UniqueId()))
+	region := validRegions[common.CryptoIntn(len(validRegions))]
 	realTerraformDir := "./resources/existing-resources"
 	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())))
 
@@ -194,16 +232,21 @@ func TestRunUpgradeExample(t *testing.T) {
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
-			"region":             validRegions[common.CryptoIntn(len(validRegions))],
+			"region":             region,
+			"resource_group":     resourceGroup,
 			"create_ocp_cluster": true,
 		},
-		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
+		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
 		// This is the same as setting the -upgrade=true flag with terraform.
 		Upgrade: true,
 	})
 
+	// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
+	createContainersApikey(t, region, resourceGroup)
+
 	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
 	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
+
 	if existErr != nil {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
 	} else {
@@ -211,6 +254,7 @@ func TestRunUpgradeExample(t *testing.T) {
 		// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
 		// ------------------------------------------------------------------------------------
 		options := setupOptions(t, prefix, existingTerraformOptions)
+
 		output, err := options.RunTestUpgrade()
 		if !options.UpgradeTestSkipped {
 			assert.Nil(t, err, "This should not have errored")

@@ -1,6 +1,5 @@
 locals {
 
-  signing_key_payload = sensitive("secret-signing-key-payload")
   cluster_vpc_subnets = {
     default = [
       {
