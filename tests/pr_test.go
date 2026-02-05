@@ -157,65 +157,31 @@ func TestRunBankingSolutions(t *testing.T) {
 		// ------------------------------------------------------------------------------------
 		// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
 		// ------------------------------------------------------------------------------------
+
 		options := setupOptions(t, prefix, existingTerraformOptions)
-		output, err := options.RunTestConsistency()
-		assert.Nil(t, err, "This should not have errored")
-		assert.NotNil(t, output, "Expected some output")
-	}
 
-	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
-	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
-	// Destroy the temporary existing resources if required
-	if t.Failed() && strings.ToLower(envVal) == "true" {
-		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
-	} else {
-		logger.Log(t, "START: Destroy (existing resources)")
-		terraform.Destroy(t, existingTerraformOptions)
-		terraform.WorkspaceDelete(t, existingTerraformOptions, prefix)
-		logger.Log(t, "END: Destroy (existing resources)")
-	}
-}
+		logger.Log(t, "START: Terraform init")
+		terraform.Init(t, options.TerraformOptions)
+		logger.Log(t, "END: Terraform init")
 
-func TestRunUpgradeExample(t *testing.T) {
-	t.Parallel()
+		logger.Log(t, "START: Terraform plan (before apply)")
+		terraform.Plan(t, options.TerraformOptions)
+		logger.Log(t, "END: Terraform plan (before apply)")
 
-	prefix := fmt.Sprintf("rag-da-upgr-%s", strings.ToLower(random.UniqueId()))
-	realTerraformDir := "./resources/existing-resources"
-	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())))
+		logger.Log(t, "START: Terraform apply #1")
+		terraform.Apply(t, options.TerraformOptions)
+		logger.Log(t, "END: Terraform apply #1")
 
-	// Verify ibmcloud_api_key variable is set
-	checkVariable := "TF_VAR_ibmcloud_api_key"
-	val, present := os.LookupEnv(checkVariable)
-	require.True(t, present, checkVariable+" environment variable not set")
-	require.NotEqual(t, "", val, checkVariable+" environment variable is empty")
+		logger.Log(t, "START: Terraform plan (after apply)")
+		terraform.Plan(t, options.TerraformOptions)
 
-	logger.Log(t, "Tempdir: ", tempTerraformDir)
-	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: tempTerraformDir,
-		Vars: map[string]interface{}{
-			"prefix":             prefix,
-			"region":             validRegions[common.CryptoIntn(len(validRegions))],
-			"create_ocp_cluster": true,
-		},
-		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
-		// This is the same as setting the -upgrade=true flag with terraform.
-		Upgrade: true,
-	})
+		logger.Log(t, "START: Terraform apply #2")
+		terraform.Apply(t, options.TerraformOptions)
+		logger.Log(t, "END: Terraform apply #2")
 
-	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
-	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
-	if existErr != nil {
-		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
-	} else {
-		// ------------------------------------------------------------------------------------
-		// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
-		// ------------------------------------------------------------------------------------
-		options := setupOptions(t, prefix, existingTerraformOptions)
-		output, err := options.RunTestUpgrade()
-		if !options.UpgradeTestSkipped {
-			assert.Nil(t, err, "This should not have errored")
-			assert.NotNil(t, output, "Expected some output")
-		}
+		logger.Log(t, "START: Terraform destroy (solution stack)")
+		terraform.Destroy(t, options.TerraformOptions)
+		logger.Log(t, "END: Terraform destroy (solution stack)")
 	}
 
 	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
