@@ -4,6 +4,7 @@ package test
 import (
 	"bytes"
 	"fmt"
+	"github.com/google/uuid"
 	"log"
 	"os"
 	"os/exec"
@@ -39,8 +40,6 @@ var validRegions = []string{
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
 
-const resourceGroup = "geretain-test-resources"
-
 var permanentResources map[string]interface{}
 
 var sharedInfoSvc *cloudinfo.CloudInfoService
@@ -68,6 +67,11 @@ func createContainersApikey(t *testing.T, region string, rg string) {
 	}
 	// Print script output
 	fmt.Println(stdout.String())
+}
+
+func generateUniqueResourceGroupName(baseName string) string {
+	id := uuid.New().String()[:8]
+	return fmt.Sprintf("%s-%s", baseName, id)
 }
 
 // TestMain will be run before any parallel tests, used to read data from yaml for use with tests
@@ -166,14 +170,21 @@ func TestRunBankingSolutions(t *testing.T) {
 	val, present := os.LookupEnv(checkVariable)
 	require.True(t, present, checkVariable+" environment variable not set")
 	require.NotEqual(t, "", val, checkVariable+" environment variable is empty")
-
 	logger.Log(t, "Tempdir: ", tempTerraformDir)
+
+	// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
+	uniqueResourceGroup := generateUniqueResourceGroupName(prefix)
+	rg, _, err := sharedInfoSvc.CreateResourceGroup(uniqueResourceGroup)
+	assert.Nil(t, err, "Resource group creation should not have errored")
+	assert.NotNil(t, rg, "Expected resource group to be created")
+	createContainersApikey(t, region, uniqueResourceGroup)
+
 	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
 			"region":             region,
-			"resource_group":     resourceGroup,
+			"resource_group":     uniqueResourceGroup,
 			"create_ocp_cluster": true,
 		},
 		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
@@ -182,8 +193,6 @@ func TestRunBankingSolutions(t *testing.T) {
 	})
 	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
 
-	// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
-	createContainersApikey(t, region, resourceGroup)
 	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
 
 	if existErr != nil {
@@ -226,23 +235,27 @@ func TestRunUpgradeExample(t *testing.T) {
 	val, present := os.LookupEnv(checkVariable)
 	require.True(t, present, checkVariable+" environment variable not set")
 	require.NotEqual(t, "", val, checkVariable+" environment variable is empty")
-
 	logger.Log(t, "Tempdir: ", tempTerraformDir)
+
+	// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
+	uniqueResourceGroup := generateUniqueResourceGroupName(prefix)
+	rg, _, err := sharedInfoSvc.CreateResourceGroup(uniqueResourceGroup)
+	assert.Nil(t, err, "Resource group creation should not have errored")
+	assert.NotNil(t, rg, "Expected resource group to be created")
+	createContainersApikey(t, region, uniqueResourceGroup)
+
 	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: tempTerraformDir,
 		Vars: map[string]interface{}{
 			"prefix":             prefix,
 			"region":             region,
-			"resource_group":     resourceGroup,
+			"resource_group":     uniqueResourceGroup,
 			"create_ocp_cluster": true,
 		},
 		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
 		// This is the same as setting the -upgrade=true flag with terraform.
 		Upgrade: true,
 	})
-
-	// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
-	createContainersApikey(t, region, resourceGroup)
 
 	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
 	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
