@@ -244,9 +244,7 @@ func TestRunUpgradeExample(t *testing.T) {
 	assert.Nil(t, err, "Resource group creation should not have errored")
 	assert.NotNil(t, rg, "Expected resource group to be created")
 	createContainersApikey(t, region, uniqueResourceGroup)
-	println("SKIP:")
 	skip, err := testhelper.ShouldSkipUpgradeTest(t)
-	println(skip)
 	if err != nil {
 		t.Fatal(err)
 	}
