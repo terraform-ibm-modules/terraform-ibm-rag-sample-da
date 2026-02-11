@@ -13,16 +13,12 @@ module "cos" {
 module "storage_delegation" {
   providers = {
     ibm                           = ibm
-    ibm.deployer                  = ibm
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//storage_delegation?ref=v2.2.30"
-  count                = var.watsonx_project_delegated ? 1 : 0
-  cos_kms_crn          = var.cos_kms_crn
-  cos_kms_key_crn      = var.cos_kms_key_crn
-  cos_kms_new_key_name = var.cos_kms_new_key_name
-  cos_kms_ring_id      = var.cos_kms_ring_id
-  cos_guid             = module.cos.cos_instance_guid
+  source            = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-ai.git//modules/storage_delegation?ref=v2.15.1"
+  count             = var.watsonx_project_delegated ? 1 : 0
+  cos_kms_key_crn   = var.cos_kms_key_crn
+  cos_instance_guid = module.cos.cos_instance_guid
 }
 
 # parse the crn for region and guid
@@ -37,64 +33,31 @@ locals {
   watson_ml_instance_region = module.crn_parser.region
 }
 
-## Use code from Watson SaaS directly to avoid "legacy module" issues
-## Note: passing a non-null delegated storage attribute may result in API errors
+module "watson_ml_project" {
+  providers = {
+    ibm     = ibm.ibm_resources
+    restapi = restapi.restapi_watsonx_admin
+  }
 
-resource "restapi_object" "configure_project" {
-  depends_on     = [module.storage_delegation]
-  provider       = restapi.restapi_watsonx_admin
-  path           = local.dataplatform_api
-  read_path      = "${local.dataplatform_api}{id}"
-  read_method    = "GET"
-  create_path    = "${local.dataplatform_api}/transactional/v2/projects?verify_unique_name=true"
-  create_method  = "POST"
-  id_attribute   = "location"
-  destroy_method = "DELETE"
-  destroy_path   = "${local.dataplatform_api}/transactional{id}"
-  data = <<-EOT
-                  {
-                    "name": "${var.watson_ml_project_name}",
-                    "generator": "watsonx-saas-da",
-                    "type": "wx",
-                    "storage": {
-                      "type": "bmcos_object_storage",
-                      "guid": "${module.cos.cos_instance_guid}",
-                      ${var.watsonx_project_delegated == true ? "\"delegated\": true," : ""}
-                      "resource_crn": "${module.cos.cos_instance_crn}"
-                    },
-                    "description": "${var.watson_ml_project_description}",
-                    "public": true,
-                    "tags": ${jsonencode(var.watson_ml_project_tags)},${
-var.watson_ml_project_sensitive ? "\"settings\": {\"access_restrictions\":  {\"data\": true} }," : ""}
-                    "compute": [
-                      {
-                        "name": "${var.watson_ml_instance_resource_name}",
-                        "guid": "${local.watson_ml_instance_guid}",
-                        "type": "machine_learning",
-                        "crn": "${var.watson_ml_instance_crn}"
-                      }
-                    ]
-                  }
-                  EOT
-update_method = "PATCH"
-update_path   = "${local.dataplatform_api}{id}"
-update_data   = <<-EOT
-                  {
-                    "name": "${var.watson_ml_project_name}",
-                    "type": "wx",
-                    "description": "${var.watson_ml_project_description}",
-                    "public": true,
-                    "compute": [
-                      {
-                        "name": "${var.watson_ml_instance_resource_name}",
-                        "guid": "${local.watson_ml_instance_guid}",
-                        "type": "machine_learning",
-                        "crn": "${var.watson_ml_instance_crn}",
-                        "credentials": { }
-                      }
-                    ]
-                  }
-                  EOT
+  source     = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-ai.git//modules/configure_project?ref=v2.15.1"
+  depends_on = [module.storage_delegation]
+
+  project_name              = var.watson_ml_project_name
+  project_description       = var.watson_ml_project_description
+  project_tags              = var.watson_ml_project_tags
+  watsonx_project_delegated = var.watsonx_project_delegated
+  mark_as_sensitive         = var.watson_ml_project_sensitive
+  region                    = local.watson_ml_instance_region
+  cos_guid                  = module.cos.cos_instance_guid
+  cos_crn                   = module.cos.cos_instance_crn
+  watsonx_ai_runtime_name   = var.watson_ml_instance_resource_name
+  watsonx_ai_runtime_guid   = local.watson_ml_instance_guid
+  watsonx_ai_runtime_crn    = var.watson_ml_instance_crn
+}
+
+moved {
+  from = restapi_object.configure_project
+  to   = module.watson_ml_project.restapi_object.configure_project
 }
 
 /* Reading the project after creating it has some issues with the API - we do not need that data yet
@@ -124,6 +87,6 @@ locals {
   }
 
   dataplatform_api          = local.dataplatform_api_mapping[local.watson_ml_instance_region]
-  watsonx_project_id_object = restapi_object.configure_project.id
-  watsonx_project_id        = regex("^.+/([a-f0-9\\-]+)$", local.watsonx_project_id_object)[0]
+  watsonx_project_id        = module.watson_ml_project.watsonx_ai_project_id
+  watsonx_project_id_object = "/transactional/v2/projects/${local.watsonx_project_id}"
 }
