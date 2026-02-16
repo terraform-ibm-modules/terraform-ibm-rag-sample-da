@@ -111,7 +111,7 @@ TF_VARS_FILE="terraform.tfvars"
           ($watson_machine_learning_instance_resource_name_var_name): $watson_machine_learning_instance_resource_name_value,
           ($secrets_manager_guid_var_name): $secrets_manager_guid_value,
           ($secrets_manager_region_var_name): $secrets_manager_region_value,
-          ($trigger_ci_pipeline_run_var_name): $trigger_ci_pipeline_run_value' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
+          ($trigger_ci_pipeline_run_var_name): $trigger_ci_pipeline_run_value}' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
 
   echo "Pre-validation complete successfully"
 )
