@@ -12,6 +12,7 @@ JSON_FILE="${DA_DIR}/catalogValidationValues.json"
 REGION="us-south"
 FILE_PATH="common-dev-assets/common-go-assets/common-permanent-resources.yaml"
 SECRETS_MANAGER_GUID=$(yq e '.secretsManagerGuid' "$FILE_PATH")
+SECRETS_MANAGER_RESOURCE_GROUP=$(yq e '.secretsManagerResourceGroup' "$FILE_PATH")
 PREFIX="rag-da-$(openssl rand -hex 2)"
 TF_VARS_FILE="terraform.tfvars"
 
@@ -43,6 +44,7 @@ TF_VARS_FILE="terraform.tfvars"
   use_existing_resource_group_var_name="use_existing_resource_group"
   create_continuous_delivery_service_instance_var_name="create_continuous_delivery_service_instance"
   secrets_manager_guid_var_name="secrets_manager_guid"
+  secrets_manager_resource_group_name_var_name="secrets_manager_resource_group_name"
   secrets_manager_region_var_name="secrets_manager_region"
   trigger_ci_pipeline_run_var_name="trigger_ci_pipeline_run"
 
@@ -90,9 +92,11 @@ TF_VARS_FILE="terraform.tfvars"
         --arg create_continuous_delivery_service_instance_var_name "${create_continuous_delivery_service_instance_var_name}" \
         --arg create_continuous_delivery_service_instance_value "${create_continuous_delivery_service_instance_value}" \
         --arg secrets_manager_guid_var_name "${secrets_manager_guid_var_name}" \
+        --arg secrets_manager_resource_group_name_var_name "${secrets_manager_resource_group_name_var_name}" \
         --arg secrets_manager_region_var_name "${secrets_manager_region_var_name}" \
         --arg secrets_manager_region_value "${REGION}" \
         --arg secrets_manager_guid_value "${SECRETS_MANAGER_GUID}" \
+        --arg secrets_manager_resource_group_name_value "${SECRETS_MANAGER_RESOURCE_GROUP}" \
         --arg trigger_ci_pipeline_run_var_name "${trigger_ci_pipeline_run_var_name}" \
         --arg trigger_ci_pipeline_run_value "${trigger_ci_pipeline_run_value}" \
         '. + {($prefix_var_name): $prefix_value,
@@ -110,8 +114,9 @@ TF_VARS_FILE="terraform.tfvars"
           ($create_continuous_delivery_service_instance_var_name): $create_continuous_delivery_service_instance_value,
           ($watson_machine_learning_instance_resource_name_var_name): $watson_machine_learning_instance_resource_name_value,
           ($secrets_manager_guid_var_name): $secrets_manager_guid_value,
+          ($secrets_manager_resource_group_name_var_name): $secrets_manager_resource_group_name_value,
           ($secrets_manager_region_var_name): $secrets_manager_region_value,
-          ($trigger_ci_pipeline_run_var_name): $trigger_ci_pipeline_run_value' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
+          ($trigger_ci_pipeline_run_var_name): $trigger_ci_pipeline_run_value}' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
 
   echo "Pre-validation complete successfully"
 )
