@@ -11,7 +11,7 @@ output "cluster_workload_ingress_controller" {
 
 output "cluster_workload_ingress_service" {
   description = "Ingress controller service attributes"
-  value       = data.kubernetes_service.ingress_router_service
+  value       = data.kubernetes_service_v1.ingress_router_service
 }
 
 output "vpc_public_load_balancer" {

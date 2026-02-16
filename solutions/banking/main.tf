@@ -12,6 +12,10 @@ locals {
   watson_ml_project_name           = try("${local.prefix}-${var.watson_project_name}", var.watson_project_name)
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
+  secret_group_name    = try("${local.prefix}-${var.secret_group_name}", var.secret_group_name)
+  secret_group_id      = var.secret_group_id != null ? var.secret_group_id : module.secret_group[0].secret_group_id
+  generate_signing_key = var.create_secrets && (var.signing_key == null || var.signing_key == "")
+
   # Translate index name to lowercase to avoid Elastic errors
   elastic_index_name       = lower(try("${local.prefix}-${var.elastic_index_name}", var.elastic_index_name))
   elastic_credentials_data = local.use_elastic_index ? jsondecode(data.ibm_resource_key.elastic_credentials[0].credentials_json).connection.https : null
@@ -36,9 +40,19 @@ module "resource_group" {
     ibm = ibm.ibm_resources
   }
   source                       = "terraform-ibm-modules/resource-group/ibm"
-  version                      = "1.4.0"
+  version                      = "1.4.7"
   resource_group_name          = var.use_existing_resource_group == false ? var.resource_group_name : null
   existing_resource_group_name = var.use_existing_resource_group == true ? var.resource_group_name : null
+}
+
+module "secret_group" {
+  count                    = var.secret_group_id == null ? 1 : 0
+  source                   = "terraform-ibm-modules/secrets-manager-secret-group/ibm"
+  version                  = "1.4.1"
+  region                   = var.secrets_manager_region
+  secrets_manager_guid     = var.secrets_manager_guid
+  secret_group_name        = local.secret_group_name
+  secret_group_description = "This is used to store secrets required for the Sample App deployment."
 }
 
 # secrets manager secrets - IBM IAM API KEY
@@ -48,14 +62,38 @@ module "secrets_manager_secret_ibm_iam" {
   }
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.9.1"
+  version                 = "1.9.13"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
   secret_name             = "ibmcloud-api-key"
   secret_description      = "IBM IAM Api key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
+  secret_group_id         = local.secret_group_id
   secret_payload_password = var.ibmcloud_api_key
   endpoint_type           = var.secrets_manager_endpoint_type
+}
+
+data "ibm_resource_instance" "secrets_manager_name" {
+  count      = local.generate_signing_key ? 1 : 0
+  identifier = var.secrets_manager_guid
+}
+
+# generate signing key if it is not provided.
+module "gpg_signing_key" {
+  count                = local.generate_signing_key ? 1 : 0
+  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v2.8.35"
+  ibmcloud_api_key     = var.ibmcloud_api_key
+  gpg_name             = var.gpg_name
+  gpg_email            = var.gpg_email
+  sm_secret_group_name = module.secret_group[0].secret_group_name
+  sm_resource_group    = var.secrets_manager_resource_group_name
+  sm_location          = var.secrets_manager_region
+  sm_instance_id       = var.secrets_manager_guid
+  sm_name              = data.ibm_resource_instance.secrets_manager_name[0].name
+  sm_endpoint_type     = var.secrets_manager_endpoint_type
+  sm_exists            = true
+  create_secret_group  = false
+  create_signing_key   = true
 }
 
 # secrets manager secrets - IBM signing key
@@ -65,13 +103,14 @@ module "secrets_manager_secret_signing_key" {
   }
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.9.1"
+  version                 = "1.9.13"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
+  secret_group_id         = local.secret_group_id
   secret_name             = "signing-key"
   secret_description      = "IBM Signing GPG key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
-  secret_payload_password = var.signing_key
+  secret_payload_password = var.signing_key == null ? module.gpg_signing_key[0].gpg_key : var.signing_key
   endpoint_type           = var.secrets_manager_endpoint_type
 }
 
@@ -82,9 +121,10 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   }
   count                   = (var.create_secrets && var.watsonx_admin_api_key != null) ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
-  version                 = "1.9.1"
+  version                 = "1.9.13"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
+  secret_group_id         = local.secret_group_id
   secret_name             = "watsonx-admin-api-key"
   secret_description      = "WatsonX Admin API Key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6

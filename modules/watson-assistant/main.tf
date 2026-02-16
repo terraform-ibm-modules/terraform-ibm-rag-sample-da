@@ -7,6 +7,8 @@ locals {
   assistant_skills_map           = { for skill in local.watsonx_assistant_environment.skill_references : skill.type => skill.skill_id }
   assistant_search_skill         = var.assistant_search_skill != null ? { search_settings = merge(jsondecode(var.assistant_search_skill).search_settings, { elastic_search = merge(var.elastic_service_binding, { "index" : var.elastic_index_name }) }) } : null
   assistant_action_skill         = var.assistant_action_skill != null ? jsondecode(var.assistant_action_skill) : null
+  watson_assistant_name          = try("${local.prefix}-gen-ai-rag-sample-app-assistant", "gen-ai-rag-sample-app-assistant")
+  prefix                         = var.prefix != null ? (var.prefix != "" ? var.prefix : null) : null
 }
 
 # assistant creation
@@ -21,7 +23,7 @@ resource "shell_script" "watson_assistant" {
     WATSON_ASSISTANT_API_VERSION = local.watson_assistant_api_version
     WATSON_ASSISTANT_DESCRIPTION = "Generative AI sample app assistant"
     WATSON_ASSISTANT_LANGUAGE    = "en"
-    WATSON_ASSISTANT_NAME        = var.prefix != "" ? "${var.prefix}-gen-ai-rag-sample-app-assistant" : "gen-ai-rag-sample-app-assistant"
+    WATSON_ASSISTANT_NAME        = local.watson_assistant_name
     WATSON_ASSISTANT_URL         = "https:${var.watsonx_assistant_url}"
   }
 

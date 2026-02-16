@@ -3,7 +3,7 @@ terraform {
   required_providers {
     ibm = {
       source  = "IBM-Cloud/ibm"
-      version = "1.84.3"
+      version = "1.87.3"
     }
     null = {
       source  = "hashicorp/null"
@@ -11,7 +11,7 @@ terraform {
     }
     random = {
       source  = "hashicorp/random"
-      version = "3.7.2"
+      version = "3.8.1"
     }
     restapi = {
       source  = "Mastercard/restapi"
@@ -23,11 +23,11 @@ terraform {
     }
     elasticstack = {
       source  = "elastic/elasticstack"
-      version = "0.12.1"
+      version = "0.13.1"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.38.0"
+      version = "3.0.1"
     }
   }
   required_version = ">= 1.9.0"
