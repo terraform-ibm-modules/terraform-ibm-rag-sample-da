@@ -41,6 +41,7 @@ output "watson_discovery_project_id" {
 output "watsonx_assistant_skills_status" {
   description = "WatsonX assistant skills status"
   value       = module.configure_watson_assistant.watsonx_assistant_skills_status
+  sensitive   = true
 }
 
 output "elastic_collection_count" {
@@ -51,9 +52,11 @@ output "elastic_collection_count" {
 output "cluster_workload_ingress_subdomain" {
   description = "Subdomain of the cluster's public ingress"
   value       = var.cluster_name != null && var.provision_public_ingress ? module.cluster_ingress[0].cluster_workload_ingress_subdomain : null
+  sensitive   = true
 }
 
 output "sample_app_public_url" {
   description = "URL of the public route of the sample app deployed on ROKS cluster"
   value       = var.cluster_name != null && var.provision_public_ingress ? "https://gen-ai-rag-sample-app-tls-dev.${module.cluster_ingress[0].cluster_workload_ingress_subdomain}" : null
+  sensitive   = true
 }
