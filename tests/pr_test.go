@@ -65,8 +65,8 @@ func createContainersApikey(t *testing.T, region string, rg string) {
 	if err := cmd.Run(); err != nil {
 		log.Fatalf("Failed to execute script: %v\nStderr: %s", err, stderr.String())
 	}
-	// Print script output
-	fmt.Println(stdout.String())
+	// Log script output
+	logger.Log(t, stdout.String())
 }
 
 func generateUniqueResourceGroupName(baseName string) string {
@@ -122,7 +122,7 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"trigger_ci_pipeline_run":                        false,
 			"secrets_manager_endpoint_type":                  "public",
 			"provider_visibility":                            "public",
-			"create_secrets":                                 false,
+			"create_secrets":                                 true,
 			"elastic_instance_crn":                           terraform.Output(t, existingTerraformOptions, "elasticsearch_crn"),
 			"cluster_name":                                   terraform.Output(t, existingTerraformOptions, "cluster_name"),
 			"cos_kms_crn":                                    terraform.Output(t, existingTerraformOptions, "kms_instance_crn"),
@@ -213,7 +213,7 @@ func TestRunBankingSolutions(t *testing.T) {
 	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
 	// Destroy the temporary existing resources if required
 	if t.Failed() && strings.ToLower(envVal) == "true" {
-		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
+		logger.Log(t, "Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
 		terraform.Destroy(t, existingTerraformOptions)
@@ -279,7 +279,7 @@ func TestRunUpgradeExample(t *testing.T) {
 	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
 	// Destroy the temporary existing resources if required
 	if t.Failed() && strings.ToLower(envVal) == "true" {
-		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
+		logger.Log(t, "Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
 		terraform.Destroy(t, existingTerraformOptions)
