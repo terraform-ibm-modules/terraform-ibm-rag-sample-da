@@ -172,7 +172,7 @@ func TestRunBankingSolutions(t *testing.T) {
 	require.NotEqual(t, "", val, checkVariable+" environment variable is empty")
 	logger.Log(t, "Tempdir: ", tempTerraformDir)
 
-	// Temp workaround for https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc?tab=readme-ov-file#the-specified-api-key-could-not-be-found
+	// Temp workaround for https://cloud.ibm.com/docs/ibm-cloud-provider-for-terraform?topic=ibm-cloud-provider-for-terraform-known-issues#ki-apikey-error
 	uniqueResourceGroup := generateUniqueResourceGroupName(prefix)
 	rg, _, err := sharedInfoSvc.CreateResourceGroup(uniqueResourceGroup)
 	assert.Nil(t, err, "Resource group creation should not have errored")

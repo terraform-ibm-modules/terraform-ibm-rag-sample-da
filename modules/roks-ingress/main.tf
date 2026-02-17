@@ -205,40 +205,39 @@ data "ibm_is_network_acl_rules" "alb_acl_rules" {
 
 # Add ACL rules to allow HTTPS requests from the outside to the new public load balancer
 resource "ibm_is_network_acl_rule" "alb_https_req" {
-  count       = var.cluster_zone_count
-  network_acl = data.ibm_is_network_acl.alb_acl.id
-  before      = local.cluster_acl_deny_rule
-  name        = "${local.prefix_used}public-ingress-lba-zone${count.index + 1}-https-req"
-  action      = "allow"
-  source      = "0.0.0.0/0"
-  destination = "${data.ibm_is_lb.ingress_vpc_alb.private_ips[count.index]}/32"
-  direction   = "inbound"
-  tcp {
-    port_max        = 443
-    port_min        = 443
-    source_port_max = 65535
-    source_port_min = 1024
-  }
+  count           = var.cluster_zone_count
+  network_acl     = data.ibm_is_network_acl.alb_acl.id
+  before          = local.cluster_acl_deny_rule
+  name            = "${local.prefix_used}public-ingress-lba-zone${count.index + 1}-https-req"
+  action          = "allow"
+  source          = "0.0.0.0/0"
+  destination     = "${data.ibm_is_lb.ingress_vpc_alb.private_ips[count.index]}/32"
+  direction       = "inbound"
+  protocol        = "tcp"
+  port_max        = 443
+  port_min        = 443
+  source_port_max = 65535
+  source_port_min = 1024
+
   lifecycle {
     ignore_changes = [before]
   }
 }
 
 resource "ibm_is_network_acl_rule" "alb_https_resp" {
-  count       = var.cluster_zone_count
-  network_acl = data.ibm_is_network_acl.alb_acl.id
-  before      = local.cluster_acl_deny_rule
-  name        = "${local.prefix_used}public-ingress-lba-zone${count.index + 1}-https-resp"
-  action      = "allow"
-  source      = "${data.ibm_is_lb.ingress_vpc_alb.private_ips[count.index]}/32"
-  destination = "0.0.0.0/0"
-  direction   = "outbound"
-  tcp {
-    port_max        = 65535
-    port_min        = 1024
-    source_port_max = 443
-    source_port_min = 443
-  }
+  count           = var.cluster_zone_count
+  network_acl     = data.ibm_is_network_acl.alb_acl.id
+  before          = local.cluster_acl_deny_rule
+  name            = "${local.prefix_used}public-ingress-lba-zone${count.index + 1}-https-resp"
+  action          = "allow"
+  source          = "${data.ibm_is_lb.ingress_vpc_alb.private_ips[count.index]}/32"
+  destination     = "0.0.0.0/0"
+  direction       = "outbound"
+  protocol        = "tcp"
+  port_max        = 65535
+  port_min        = 1024
+  source_port_max = 443
+  source_port_min = 443
   lifecycle {
     ignore_changes = [before]
   }
