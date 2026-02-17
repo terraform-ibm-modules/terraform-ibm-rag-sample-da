@@ -122,7 +122,6 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"trigger_ci_pipeline_run":                        false,
 			"secrets_manager_endpoint_type":                  "public",
 			"provider_visibility":                            "public",
-			"create_secrets":                                 false,
 			"elastic_instance_crn":                           terraform.Output(t, existingTerraformOptions, "elasticsearch_crn"),
 			"cluster_name":                                   terraform.Output(t, existingTerraformOptions, "cluster_name"),
 			"cos_kms_crn":                                    terraform.Output(t, existingTerraformOptions, "kms_instance_crn"),
