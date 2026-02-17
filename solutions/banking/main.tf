@@ -85,14 +85,14 @@ module "gpg_signing_key" {
   ibmcloud_api_key     = var.ibmcloud_api_key
   gpg_name             = var.gpg_name
   gpg_email            = var.gpg_email
-  sm_secret_group_name = module.secret_group[0].secret_group_name
+  sm_secret_group_name = local.secret_group_name
   sm_resource_group    = var.secrets_manager_resource_group_name
   sm_location          = var.secrets_manager_region
   sm_instance_id       = var.secrets_manager_guid
   sm_name              = data.ibm_resource_instance.secrets_manager_name[0].name
   sm_endpoint_type     = var.secrets_manager_endpoint_type
   sm_exists            = true
-  create_secret_group  = false
+  create_secret_group  = true
   create_signing_key   = true
 }
 
