@@ -117,15 +117,15 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"toolchain_resource_group":                       terraform.Output(t, existingTerraformOptions, "resource_group_name"),
 			"watson_machine_learning_instance_crn":           terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"),
 			"watson_machine_learning_instance_resource_name": terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
-			"secrets_manager_guid":                           permanentResources["secretsManagerGuid"],
-			"secrets_manager_region":                         permanentResources["secretsManagerRegion"],
+			"secrets_manager_guid":                           terraform.Output(t, existingTerraformOptions, "secrets_manager_guid"),
+			"secrets_manager_region":                         terraform.Output(t, existingTerraformOptions, "secrets_manager_region"),
 			"trigger_ci_pipeline_run":                        false,
 			"secrets_manager_endpoint_type":                  "public",
 			"provider_visibility":                            "public",
 			"elastic_instance_crn":                           terraform.Output(t, existingTerraformOptions, "elasticsearch_crn"),
 			"cluster_name":                                   terraform.Output(t, existingTerraformOptions, "cluster_name"),
 			"cos_kms_crn":                                    terraform.Output(t, existingTerraformOptions, "kms_instance_crn"),
-			"secrets_manager_resource_group_name":            permanentResources["secretsManagerResourceGroup"],
+			"secrets_manager_resource_group_name":            terraform.Output(t, existingTerraformOptions, "resource_group_name"),
 		},
 		IgnoreUpdates: testhelper.Exemptions{
 			List: []string{
