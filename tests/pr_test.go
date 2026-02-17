@@ -125,7 +125,7 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"elastic_instance_crn":                           terraform.Output(t, existingTerraformOptions, "elasticsearch_crn"),
 			"cluster_name":                                   terraform.Output(t, existingTerraformOptions, "cluster_name"),
 			"cos_kms_crn":                                    terraform.Output(t, existingTerraformOptions, "kms_instance_crn"),
-			"secrets_manager_resource_group_name":            terraform.Output(t, existingTerraformOptions, "resource_group_name"),
+			"secrets_manager_resource_group_name":            permanentResources["secretsManagerResourceGroup"],
 		},
 		IgnoreUpdates: testhelper.Exemptions{
 			List: []string{
