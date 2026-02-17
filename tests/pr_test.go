@@ -4,12 +4,13 @@ package test
 import (
 	"bytes"
 	"fmt"
-	"github.com/google/uuid"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
 	"testing"
+
+	"github.com/google/uuid"
 
 	"github.com/IBM/go-sdk-core/v5/core"
 	"github.com/gruntwork-io/terratest/modules/files"
@@ -28,11 +29,11 @@ const bankingSolutionsDir = "solutions/banking"
 
 // watsonx.ai supported regions
 var validRegions = []string{
-	// Temporarily commenting out the regions as a workaround. Currently, tests are only passing in us-south and eu-de.
+	// Commented `au-syd` region as failure in seen in storage delegation.
 	// For more details, see issue: https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/345
 	// "au-syd",
-	// "jp-tok",
-	// "eu-gb",
+	"jp-tok",
+	"eu-gb",
 	"eu-de",
 	"us-south",
 }
