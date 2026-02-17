@@ -216,4 +216,5 @@ module "secrets_manager" {
   region               = var.region
   secrets_manager_name = "${var.prefix}-secrets-manager"
   sm_service_plan      = "trial"
+  resource_group_id    = module.resource_group.resource_group_id
 }
