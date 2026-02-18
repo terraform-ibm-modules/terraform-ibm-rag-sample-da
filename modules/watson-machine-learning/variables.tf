@@ -49,6 +49,12 @@ variable "watson_ml_instance_resource_name" {
   type        = string
 }
 
+variable "skip_iam_authorization_policy" {
+  type        = bool
+  description = "Whether to create an IAM authorization policy that permits the Object Storage instance to read the encryption key from the KMS instance. An authorization policy must exist before an encrypted bucket can be created. Set to `true` to avoid creating the policy."
+  default     = false
+}
+
 variable "watson_ml_project_name" {
   description = "Watson Machine Learning project name"
   type        = string
