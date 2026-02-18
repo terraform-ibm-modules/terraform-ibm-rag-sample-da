@@ -196,7 +196,17 @@
               }
             },
             {
-              "key": "watson_machine_learning_instance_crn"
+              "key": "watson_machine_learning_instance_crn",
+              "custom_config": {
+                "type": "platform_resource",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "resourceType": "discovery",
+                  "selection": "single_select",
+                  "valueType": "crn"
+                }
+              }
             },
             {
               "key": "watson_machine_learning_instance_resource_name"
@@ -208,7 +218,18 @@
               "key": "watson_project_sensitive"
             },
             {
-              "key": "cos_kms_crn"
+              "key": "cos_kms_crn",
+              "display_name": "cos_kms_instance",
+              "custom_config": {
+                "type": "platform_resource",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "resourceType": "kms",
+                  "selection": "single_select",
+                  "valueType": "crn"
+                }
+              }
             },
             {
               "key": "cos_kms_key_crn"
