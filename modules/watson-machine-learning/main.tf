@@ -119,8 +119,3 @@ data "restapi_object" "get_project" {
   id_attribute = "metadata/guid"
 }
 */
-
-locals {
-  watsonx_project_id        = module.configure_project.watsonx_ai_project_id
-  watsonx_project_id_object = "/transactional/v2/projects/${local.watsonx_project_id}"
-}
