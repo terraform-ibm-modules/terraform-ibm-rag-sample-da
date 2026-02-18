@@ -121,16 +121,6 @@ data "restapi_object" "get_project" {
 */
 
 locals {
-  dataplatform_api_mapping = {
-    "us-south" = "//api.dataplatform.cloud.ibm.com",
-    "eu-gb"    = "//api.eu-gb.dataplatform.cloud.ibm.com",
-    "eu-de"    = "//api.eu-de.dataplatform.cloud.ibm.com",
-    "jp-tok"   = "//api.jp-tok.dataplatform.cloud.ibm.com",
-    "au-syd"   = "//api.au-syd.dai.cloud.ibm.com",
-    "ca-tor"   = "//api.ca-tor.dai.cloud.ibm.com"
-  }
-
-  dataplatform_api          = local.dataplatform_api_mapping[local.watson_ml_instance_region]
   watsonx_project_id        = module.configure_project.watsonx_ai_project_id
   watsonx_project_id_object = "/transactional/v2/projects/${local.watsonx_project_id}"
 }

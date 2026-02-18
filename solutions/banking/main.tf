@@ -187,12 +187,7 @@ module "configure_wml_project" {
 
 moved {
   from = module.configure_project
-  to   = module.configure_wml_project[0].module.watson_ml_project
-}
-
-moved {
-  from = module.configure_project.restapi_object.configure_project[0]
-  to   = module.configure_wml_project[0].module.watson_ml_project.restapi_object.configure_project
+  to   = module.configure_wml_project[0].module.configure_project
 }
 
 moved {
