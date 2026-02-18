@@ -92,11 +92,11 @@ TF_VARS_FILE="terraform.tfvars"
         --arg create_continuous_delivery_service_instance_var_name "${create_continuous_delivery_service_instance_var_name}" \
         --arg create_continuous_delivery_service_instance_value "${create_continuous_delivery_service_instance_value}" \
         --arg secrets_manager_guid_var_name "${secrets_manager_guid_var_name}" \
+        --arg secrets_manager_guid_value "${SECRETS_MANAGER_GUID}" \
         --arg secrets_manager_resource_group_name_var_name "${secrets_manager_resource_group_name_var_name}" \
+        --arg secrets_manager_resource_group_name_value "${SECRETS_MANAGER_RESOURCE_GROUP}" \
         --arg secrets_manager_region_var_name "${secrets_manager_region_var_name}" \
         --arg secrets_manager_region_value "${REGION}" \
-        --arg secrets_manager_guid_value "${SECRETS_MANAGER_GUID}" \
-        --arg secrets_manager_resource_group_name_value "${SECRETS_MANAGER_RESOURCE_GROUP}" \
         --arg trigger_ci_pipeline_run_var_name "${trigger_ci_pipeline_run_var_name}" \
         --arg trigger_ci_pipeline_run_value "${trigger_ci_pipeline_run_value}" \
         '. + {($prefix_var_name): $prefix_value,
