@@ -53,6 +53,7 @@ module "secret_group" {
   secrets_manager_guid     = var.secrets_manager_guid
   secret_group_name        = local.secret_group_name
   secret_group_description = "This is used to store secrets required for the Sample App deployment."
+  endpoint_type            = var.secrets_manager_endpoint_type
 }
 
 # secrets manager secrets - IBM IAM API KEY
