@@ -243,47 +243,50 @@ func TestRunUpgradeExample(t *testing.T) {
 	assert.Nil(t, err, "Resource group creation should not have errored")
 	assert.NotNil(t, rg, "Expected resource group to be created")
 	createContainersApikey(t, region, uniqueResourceGroup)
+	skip, err := testhelper.ShouldSkipUpgradeTest(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !skip {
+		existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+			TerraformDir: tempTerraformDir,
+			Vars: map[string]interface{}{
+				"prefix":             prefix,
+				"region":             region,
+				"resource_group":     uniqueResourceGroup,
+				"create_ocp_cluster": true,
+			},
+			// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
+			// This is the same as setting the -upgrade=true flag with terraform.
+			Upgrade: true,
+		})
 
-	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: tempTerraformDir,
-		Vars: map[string]interface{}{
-			"prefix":             prefix,
-			"region":             region,
-			"resource_group":     uniqueResourceGroup,
-			"create_ocp_cluster": true,
-		},
-		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
-		// This is the same as setting the -upgrade=true flag with terraform.
-		Upgrade: true,
-	})
+		terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
+		_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
 
-	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
-	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
+		if existErr != nil {
+			assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
+		} else {
+			// ------------------------------------------------------------------------------------
+			// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
+			// ------------------------------------------------------------------------------------
+			options := setupOptions(t, prefix, existingTerraformOptions)
 
-	if existErr != nil {
-		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
-	} else {
-		// ------------------------------------------------------------------------------------
-		// Deploy RAG DA passing in existing cluster, ES, watson assistance ID and watson discovery ID.
-		// ------------------------------------------------------------------------------------
-		options := setupOptions(t, prefix, existingTerraformOptions)
-
-		output, err := options.RunTestUpgrade()
-		if !options.UpgradeTestSkipped {
+			output, err := options.RunTestUpgrade()
 			assert.Nil(t, err, "This should not have errored")
 			assert.NotNil(t, output, "Expected some output")
 		}
-	}
 
-	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
-	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
-	// Destroy the temporary existing resources if required
-	if t.Failed() && strings.ToLower(envVal) == "true" {
-		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
-	} else {
-		logger.Log(t, "START: Destroy (existing resources)")
-		terraform.Destroy(t, existingTerraformOptions)
-		terraform.WorkspaceDelete(t, existingTerraformOptions, prefix)
-		logger.Log(t, "END: Destroy (existing resources)")
+		// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
+		envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
+		// Destroy the temporary existing resources if required
+		if t.Failed() && strings.ToLower(envVal) == "true" {
+			fmt.Println("Terratest failed. Debug the test and delete resources manually.")
+		} else {
+			logger.Log(t, "START: Destroy (existing resources)")
+			terraform.Destroy(t, existingTerraformOptions)
+			terraform.WorkspaceDelete(t, existingTerraformOptions, prefix)
+			logger.Log(t, "END: Destroy (existing resources)")
+		}
 	}
 }
