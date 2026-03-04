@@ -59,7 +59,7 @@ output "sample_app_public_url" {
 }
 
 output "secret_group_name" {
-  description = "Name of the secret group that will store the generated secrets"
+  description = "Name of the secret group that will store the generated secrets."
   value       = local.secret_group_name
 }
 
