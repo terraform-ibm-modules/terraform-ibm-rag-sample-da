@@ -13,29 +13,16 @@ if [ -z "$WEBHOOK_SECRET" ]; then
   exit 1
 fi
 
-MAX_RETRIES=3
-RETRY_DELAY=10
+echo "[INFO] Attempting webhook trigger."
 
-for ((i=1; i<=MAX_RETRIES; i++)); do
+curl -fsS -X POST \
+  --connect-timeout 10 \
+  --max-time 30 \
+  --retry 3 \
+  --retry-delay 10 \
+  --retry-connrefused \
+  -H "Content-Type: application/json" \
+  --data "{\"webhook-token\":\"$WEBHOOK_SECRET\"}" \
+  "$WEBHOOK_URL"
 
- echo "[INFO] Attempting webhook trigger: (attempt $i/$MAX_RETRIES)."
-
-  if curl -fsS -X POST \
-    -H "Content-Type: application/json" \
-    --data "{\"webhook-token\":\"$WEBHOOK_SECRET\"}" \
-    "$WEBHOOK_URL"; then
-
-    echo "[INFO] Webhook trigger succeeded."
-    exit 0
-  fi
-
-  echo "[WARN] Webhook trigger call failed."
-
-  if [ "$i" -lt "$MAX_RETRIES" ]; then
-    echo "[INFO] Retrying in $RETRY_DELAY seconds..."
-    sleep "$RETRY_DELAY"
-  fi
-done
-
-echo "[ERROR] Failed to trigger webhook after $MAX_RETRIES attempts."
-exit 1
+echo "[INFO] Webhook trigger succeeded."
