@@ -58,6 +58,16 @@ output "sample_app_public_url" {
   value       = var.cluster_name != null && var.provision_public_ingress ? "https://gen-ai-rag-sample-app-tls-dev.${module.cluster_ingress[0].cluster_workload_ingress_subdomain}" : null
 }
 
+output "secret_group_name" {
+  description = "Name of the secret group that will store the generated secrets."
+  value       = local.secret_group_name
+}
+
+output "secret_group_id" {
+  description = "The ID of the created secret group."
+  value       = local.secret_group_id
+}
+
 output "watson_studio_instance" {
   description = "Watson Studio instance details. This instance provides storage delegation entitlement when KMS encryption is enabled."
   value       = local.use_watson_machine_learning ? module.configure_wml_project[0].watson_studio_instance : null
