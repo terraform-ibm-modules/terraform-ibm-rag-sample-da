@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
-set +x
 
 if [ -z "$WEBHOOK_URL" ]; then
   echo "WEBHOOK_URL not set" >&2
