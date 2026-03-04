@@ -459,7 +459,7 @@ resource "null_resource" "ci_pipeline_run" {
     command = "${path.module}/watson-scripts/webhook-trigger.sh"
     environment = {
       WEBHOOK_URL    = ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook.webhook_url
-      WEBHOOK_SECRET = random_string.webhook_secret.result
+      WEBHOOK_SECRET = sensitive(random_string.webhook_secret.result)
     }
     interpreter = ["/bin/bash", "-c"]
     quiet       = true
