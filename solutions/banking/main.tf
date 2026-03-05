@@ -439,7 +439,7 @@ resource "ibm_cd_tekton_pipeline_trigger" "cd_pipeline_inventory_promotion_trigg
 
 # Trigger webhook to start CI pipeline run
 resource "null_resource" "ci_pipeline_run" {
-  count = var.trigger_ci_pipeline_run == true ? 1 : 0
+  count = var.trigger_ci_pipeline_run ? 1 : 0
   depends_on = [
     ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook,
     ibm_cd_tekton_pipeline_trigger_property.ci_pipeline_webhook_branch_property,
@@ -456,7 +456,11 @@ resource "null_resource" "ci_pipeline_run" {
   }
 
   provisioner "local-exec" {
-    command     = "${path.module}/watson-scripts/webhook-trigger.sh \"${ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook.webhook_url}\" \"${random_string.webhook_secret.result}\""
+    command = "${path.module}/watson-scripts/webhook-trigger.sh"
+    environment = {
+      WEBHOOK_URL    = ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook.webhook_url
+      WEBHOOK_SECRET = sensitive(random_string.webhook_secret.result)
+    }
     interpreter = ["/bin/bash", "-c"]
     quiet       = true
   }
