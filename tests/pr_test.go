@@ -29,9 +29,7 @@ const bankingSolutionsDir = "solutions/banking"
 
 // watsonx.ai supported regions
 var validRegions = []string{
-	// Commented `au-syd` region as failure in seen in storage delegation.
-	// For more details, see issue: https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/345
-	// "au-syd",
+	"au-syd",
 	"jp-tok",
 	"eu-gb",
 	"eu-de",
