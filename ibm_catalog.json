@@ -197,12 +197,13 @@
             },
             {
               "key": "watson_machine_learning_instance_crn",
+              "display_name": "watson_machine_learning_instance",
               "custom_config": {
                 "type": "platform_resource",
                 "grouping": "deployment",
                 "original_grouping": "deployment",
                 "config_constraints": {
-                  "resourceType": "discovery",
+                  "resourceType": "pm-20",
                   "selection": "single_select",
                   "valueType": "crn"
                 }
@@ -241,7 +242,18 @@
               "key": "cos_kms_ring_id"
             },
             {
-              "key": "elastic_instance_crn"
+              "key": "elastic_instance_crn",
+              "display_name": "existing_elasticsearch_instance",
+              "custom_config": {
+                "type": "platform_resource",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "resourceType": "databases-for-elasticsearch",
+                  "selection": "single_select",
+                  "valueType": "crn"
+                }
+              }
             },
             {
               "key": "elastic_credentials_name"
