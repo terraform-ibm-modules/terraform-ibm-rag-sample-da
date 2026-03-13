@@ -10,7 +10,55 @@ module "cos" {
   cos_plan          = "standard"
 }
 
+# Create Watson Studio instance to provide entitlement for storage delegation
+resource "ibm_resource_instance" "watson_studio" {
+  count             = var.watsonx_project_delegated ? 1 : 0
+  provider          = ibm.ibm_resources
+  name              = "${var.cos_instance_name}-studio"
+  service           = "data-science-experience"
+  plan              = "professional-v1"
+  location          = local.watson_ml_instance_region
+  resource_group_id = var.resource_group_id
+
+  timeouts {
+    create = "15m"
+    update = "15m"
+    delete = "15m"
+  }
+
+  lifecycle {
+    precondition {
+      condition     = var.watsonx_project_delegated == false || local.watson_ml_instance_region != null
+      error_message = "Watson ML instance region must be available when storage delegation is enabled. Check that watson_ml_instance_crn is valid."
+    }
+  }
+}
+
+# Validation check to ensure Studio instance is created before storage delegation
+resource "null_resource" "validate_studio_creation" {
+  count = var.watsonx_project_delegated ? 1 : 0
+
+  triggers = {
+    studio_id = ibm_resource_instance.watson_studio[0].id
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      echo "✅ Watson Studio instance created successfully"
+      echo "   Region: ${ibm_resource_instance.watson_studio[0].location}"
+      echo "   Name: ${ibm_resource_instance.watson_studio[0].name}"
+      echo "   CRN: ${ibm_resource_instance.watson_studio[0].crn}"
+      echo "   Status: ${ibm_resource_instance.watson_studio[0].status}"
+      echo "   Storage delegation entitlement is now available in ${ibm_resource_instance.watson_studio[0].location} region"
+    EOT
+  }
+}
+
 module "storage_delegation" {
+  depends_on = [
+    ibm_resource_instance.watson_studio,
+    null_resource.validate_studio_creation
+  ]
   providers = {
     ibm                           = ibm
     ibm.deployer                  = ibm
