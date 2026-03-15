@@ -209,3 +209,12 @@ module "ocp_base" {
   ocp_entitlement                     = null
   disable_outbound_traffic_protection = true # set as True to enable outbound traffic; required for accessing Operator Hub in the OpenShift console.
 }
+
+module "secrets_manager" {
+  source               = "terraform-ibm-modules/secrets-manager/ibm"
+  version              = "v2.13.3"
+  region               = var.region
+  secrets_manager_name = "${var.prefix}-secrets-manager"
+  sm_service_plan      = "trial"
+  resource_group_id    = module.resource_group.resource_group_id
+}

@@ -29,11 +29,9 @@ const bankingSolutionsDir = "solutions/banking"
 
 // watsonx.ai supported regions
 var validRegions = []string{
-	// Temporarily commenting out the regions as a workaround. Currently, tests are only passing in us-south and eu-de.
-	// For more details, see issue: https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/345
-	// "au-syd",
-	// "jp-tok",
-	// "eu-gb",
+	"au-syd",
+	"jp-tok",
+	"eu-gb",
 	"eu-de",
 	"us-south",
 }
@@ -118,12 +116,11 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"toolchain_resource_group":                       terraform.Output(t, existingTerraformOptions, "resource_group_name"),
 			"watson_machine_learning_instance_crn":           terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"),
 			"watson_machine_learning_instance_resource_name": terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
-			"secrets_manager_guid":                           permanentResources["secretsManagerGuid"],
-			"secrets_manager_region":                         permanentResources["secretsManagerRegion"],
+			"secrets_manager_guid":                           terraform.Output(t, existingTerraformOptions, "secrets_manager_guid"),
+			"secrets_manager_region":                         terraform.Output(t, existingTerraformOptions, "secrets_manager_region"),
 			"trigger_ci_pipeline_run":                        false,
 			"secrets_manager_endpoint_type":                  "public",
 			"provider_visibility":                            "public",
-			"create_secrets":                                 false,
 			"elastic_instance_crn":                           terraform.Output(t, existingTerraformOptions, "elasticsearch_crn"),
 			"cluster_name":                                   terraform.Output(t, existingTerraformOptions, "cluster_name"),
 			"cos_kms_crn":                                    terraform.Output(t, existingTerraformOptions, "kms_instance_crn"),
