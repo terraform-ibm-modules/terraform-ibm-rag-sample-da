@@ -31,9 +31,9 @@ const bankingSolutionsDir = "solutions/banking"
 var validRegions = []string{
 	//"au-syd",
 	//"jp-tok",
-	"eu-gb",
+	//"eu-gb",
 	//"eu-de",
-	//"us-south",
+	"us-south",
 }
 
 // Define a struct with fields that match the structure of the YAML data
