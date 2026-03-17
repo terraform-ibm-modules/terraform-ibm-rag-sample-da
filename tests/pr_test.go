@@ -31,8 +31,8 @@ const bankingSolutionsDir = "solutions/banking"
 var validRegions = []string{
 	//"au-syd",
 	//"jp-tok",
-	"eu-gb",
-	"eu-de",
+	//"eu-gb",
+	//"eu-de",
 	"us-south",
 }
 
