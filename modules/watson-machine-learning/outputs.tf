@@ -17,11 +17,11 @@ output "watson_ml_cos_instance" {
 output "watson_studio_instance" {
   description = "Watson Studio instance details including region and CRN. Required for storage delegation entitlement."
   value = var.watsonx_project_delegated ? {
-    id       = ibm_resource_instance.watson_studio[0].id
-    crn      = ibm_resource_instance.watson_studio[0].crn
-    name     = ibm_resource_instance.watson_studio[0].name
-    region   = ibm_resource_instance.watson_studio[0].location
-    status   = ibm_resource_instance.watson_studio[0].status
-    message  = "Watson Studio instance created successfully in ${ibm_resource_instance.watson_studio[0].location} region to provide storage delegation entitlement"
+    id      = ibm_resource_instance.watson_studio[0].id
+    crn     = ibm_resource_instance.watson_studio[0].crn
+    name    = ibm_resource_instance.watson_studio[0].name
+    region  = ibm_resource_instance.watson_studio[0].location
+    status  = ibm_resource_instance.watson_studio[0].status
+    message = "Watson Studio instance created successfully in ${ibm_resource_instance.watson_studio[0].location} region to provide storage delegation entitlement"
   } : null
 }
