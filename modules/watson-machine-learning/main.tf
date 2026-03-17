@@ -25,6 +25,14 @@ module "storage_delegation" {
   cos_guid             = module.cos.cos_instance_guid
 }
 
+# Wait for Watson Studio backend to register storage delegation
+# Increased from 3m to 5m to handle slower propagation in JP-TOK, EU-GB, AU-SYD regions
+resource "time_sleep" "wait_for_storage_delegation_backend" {
+  count           = var.watsonx_project_delegated ? 1 : 0
+  depends_on      = [module.storage_delegation]
+  create_duration = "10m"
+}
+
 # parse the crn for region and guid
 module "crn_parser" {
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
@@ -41,7 +49,7 @@ locals {
 ## Note: passing a non-null delegated storage attribute may result in API errors
 
 resource "restapi_object" "configure_project" {
-  depends_on     = [module.storage_delegation]
+  depends_on     = [module.storage_delegation, time_sleep.wait_for_storage_delegation_backend]
   provider       = restapi.restapi_watsonx_admin
   path           = local.dataplatform_api
   read_path      = "${local.dataplatform_api}{id}"
