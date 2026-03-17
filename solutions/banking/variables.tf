@@ -237,7 +237,7 @@ variable "secrets_manager_resource_group_name" {
 variable "secret_group_name" {
   description = "Name of the secret group that will be created to store the generated secrets. If `prefix` is set, then it will be prepended to the `secret_group_name` value. This will be ignored if `secret_group_id` is passed."
   type        = string
-  default     = "DevSecOps"
+  default     = "Default"
   nullable    = false
 }
 
