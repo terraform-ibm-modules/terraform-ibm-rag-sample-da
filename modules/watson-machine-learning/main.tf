@@ -10,7 +10,92 @@ module "cos" {
   cos_plan          = "standard"
 }
 
+# Create Watson Studio instance to provide entitlement for storage delegation
+resource "ibm_resource_instance" "watson_studio" {
+  count             = var.watsonx_project_delegated ? 1 : 0
+  provider          = ibm.ibm_resources
+  name              = "${var.cos_instance_name}-studio"
+  service           = "data-science-experience"
+  plan              = "professional-v1"
+  location          = local.watson_ml_instance_region
+  resource_group_id = var.resource_group_id
+
+  timeouts {
+    create = "15m"
+    update = "15m"
+    delete = "15m"
+  }
+
+  lifecycle {
+    precondition {
+      condition     = var.watsonx_project_delegated == false || local.watson_ml_instance_region != null
+      error_message = "Watson ML instance region must be available when storage delegation is enabled. Check that watson_ml_instance_crn is valid."
+    }
+  }
+}
+
+# Validation check to ensure Studio instance is created before storage delegation
+resource "null_resource" "validate_studio_creation" {
+  count = var.watsonx_project_delegated ? 1 : 0
+
+  triggers = {
+    studio_id = ibm_resource_instance.watson_studio[0].id
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      echo "✅ Watson Studio instance created successfully"
+      echo "   Region: ${ibm_resource_instance.watson_studio[0].location}"
+      echo "   Name: ${ibm_resource_instance.watson_studio[0].name}"
+      echo "   CRN: ${ibm_resource_instance.watson_studio[0].crn}"
+      echo "   Status: ${ibm_resource_instance.watson_studio[0].status}"
+      echo "   Storage delegation entitlement is now available in ${ibm_resource_instance.watson_studio[0].location} region"
+    EOT
+  }
+}
+
+# Wait for Watson Studio to be fully registered in IBM backend systems
+# This prevents race condition where storage delegation API is called before Studio is queryable
+resource "time_sleep" "wait_for_studio_backend_registration" {
+  count = var.watsonx_project_delegated ? 1 : 0
+
+  depends_on = [
+    ibm_resource_instance.watson_studio,
+    null_resource.validate_studio_creation
+  ]
+
+  # Wait 3 minutes for Watson Studio to propagate through backend systems
+  # This resolves the 504 timeout issue where storage delegation API cannot find the Studio instance
+  create_duration = "3m"
+}
+
+# Optional: Log message about the wait (controlled by enable_studio_wait_logging variable)
+resource "null_resource" "log_studio_wait" {
+  count = var.watsonx_project_delegated && var.enable_studio_wait_logging ? 1 : 0
+
+  depends_on = [time_sleep.wait_for_studio_backend_registration]
+
+  triggers = {
+    studio_id = ibm_resource_instance.watson_studio[0].id
+    region    = ibm_resource_instance.watson_studio[0].location
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      echo "⏳ Waited 3 minutes for Watson Studio backend registration"
+      echo "   Region: ${ibm_resource_instance.watson_studio[0].location}"
+      echo "   Studio ID: ${ibm_resource_instance.watson_studio[0].id}"
+      echo "   Storage delegation API can now find the Studio instance"
+    EOT
+  }
+}
+
 module "storage_delegation" {
+  depends_on = [
+    ibm_resource_instance.watson_studio,
+    null_resource.validate_studio_creation,
+    time_sleep.wait_for_studio_backend_registration
+  ]
   providers = {
     ibm                           = ibm
     ibm.deployer                  = ibm
