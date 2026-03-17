@@ -32,10 +32,10 @@ var validRegions = []string{
 	// Re-enabled au-syd region after fixing storage delegation entitlement issue
 	// Watson Studio instance is now created to provide entitlement in all regions
 	// Commented out eu-gb and us-south to test other regions (au-syd, jp-tok, eu-de)
-	"au-syd",
+	//"au-syd",
 	"jp-tok",
 	// "eu-gb",     // Commented to test other regions
-	"eu-de",
+	//"eu-de",
 	// "us-south",  // Commented to test other regions
 }
 
