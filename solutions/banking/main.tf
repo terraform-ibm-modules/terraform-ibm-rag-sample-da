@@ -12,7 +12,7 @@ locals {
   watson_ml_project_name           = try("${local.prefix}-${var.watson_project_name}", var.watson_project_name)
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
-  secret_group_name    = try("${local.prefix}-${var.secret_group_name}", var.secret_group_name)
+  secret_group_name    = var.secret_group_name == "Default" ? var.secret_group_name : try("${local.prefix}-${var.secret_group_name}", var.secret_group_name)
   secret_group_id      = var.secret_group_id != null ? var.secret_group_id : module.secret_group[0].secret_group_id
   generate_signing_key = var.create_secrets && (var.signing_key == null || var.signing_key == "")
 
