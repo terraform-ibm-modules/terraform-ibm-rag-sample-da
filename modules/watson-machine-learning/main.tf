@@ -26,7 +26,6 @@ module "storage_delegation" {
 }
 
 # Wait for Watson Studio backend to register storage delegation
-# Increased from 3m to 5m to handle slower propagation in JP-TOK, EU-GB, AU-SYD regions
 resource "time_sleep" "wait_for_storage_delegation_backend" {
   count           = var.watsonx_project_delegated ? 1 : 0
   depends_on      = [module.storage_delegation]
