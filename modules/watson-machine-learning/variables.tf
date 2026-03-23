@@ -77,3 +77,9 @@ variable "watsonx_project_delegated" {
   type        = bool
   default     = null
 }
+
+variable "enable_studio_wait_logging" {
+  description = "Enable logging for Watson Studio backend registration wait time. Set to true to see detailed wait messages."
+  type        = bool
+  default     = false
+}

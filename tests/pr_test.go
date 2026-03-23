@@ -29,11 +29,14 @@ const bankingSolutionsDir = "solutions/banking"
 
 // watsonx.ai supported regions
 var validRegions = []string{
-	"au-syd",
+	// Re-enabled au-syd region after fixing storage delegation entitlement issue
+	// Watson Studio instance is now created to provide entitlement in all regions
+	// Commented out eu-gb and us-south to test other regions (au-syd, jp-tok, eu-de)
+	//"au-syd",
 	"jp-tok",
-	"eu-gb",
-	"eu-de",
-	"us-south",
+	// "eu-gb",     // Commented to test other regions
+	//"eu-de",
+	// "us-south",  // Commented to test other regions
 }
 
 // Define a struct with fields that match the structure of the YAML data

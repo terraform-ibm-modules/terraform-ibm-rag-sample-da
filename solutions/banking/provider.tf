@@ -31,6 +31,11 @@ provider "restapi" {
   alias                = "restapi_watsonx_admin"
   uri                  = "https:"
   write_returns_object = true
+
+  # Increase timeout for storage delegation API calls
+  # Storage delegation can take 5+ minutes due to backend processing
+  timeout = 600 # 10 minutes (in seconds)
+
   headers = {
     Authorization = data.ibm_iam_auth_token.tokendata.iam_access_token
     Content-Type  = "application/json"

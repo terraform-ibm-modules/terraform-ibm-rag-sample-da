@@ -67,3 +67,8 @@ output "secret_group_id" {
   description = "The ID of the created secret group."
   value       = local.secret_group_id
 }
+
+output "watson_studio_instance" {
+  description = "Watson Studio instance details. This instance provides storage delegation entitlement when KMS encryption is enabled."
+  value       = local.use_watson_machine_learning ? module.configure_wml_project[0].watson_studio_instance : null
+}
