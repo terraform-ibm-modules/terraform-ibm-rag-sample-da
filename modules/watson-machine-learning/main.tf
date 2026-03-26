@@ -65,6 +65,13 @@ module "storage_delegation" {
   skip_iam_authorization_policy = var.skip_iam_authorization_policy
 }
 
+# Wait for Watson Studio backend to register storage delegation
+resource "time_sleep" "wait_for_storage_delegation_backend" {
+  count           = var.watsonx_project_delegated ? 1 : 0
+  depends_on      = [module.storage_delegation]
+  create_duration = "10m"
+}
+
 # parse the crn for region and guid
 module "crn_parser" {
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
@@ -76,6 +83,9 @@ locals {
   watson_ml_instance_guid   = module.crn_parser.service_instance
   watson_ml_instance_region = module.crn_parser.region
 }
+
+## Use code from Watson SaaS directly to avoid "legacy module" issues
+## Note: passing a non-null delegated storage attribute may result in API errors
 
 module "configure_project" {
   source  = "terraform-ibm-modules/watsonx-ai/ibm//modules/configure_project"
@@ -119,3 +129,18 @@ data "restapi_object" "get_project" {
   id_attribute = "metadata/guid"
 }
 */
+
+locals {
+  dataplatform_api_mapping = {
+    "us-south" = "//api.dataplatform.cloud.ibm.com",
+    "eu-gb"    = "//api.eu-gb.dataplatform.cloud.ibm.com",
+    "eu-de"    = "//api.eu-de.dataplatform.cloud.ibm.com",
+    "jp-tok"   = "//api.jp-tok.dataplatform.cloud.ibm.com",
+    "au-syd"   = "//api.au-syd.dai.cloud.ibm.com",
+    "ca-tor"   = "//api.ca-tor.dai.cloud.ibm.com"
+  }
+
+  dataplatform_api          = local.dataplatform_api_mapping[local.watson_ml_instance_region]
+  watsonx_project_id_object = restapi_object.configure_project.id
+  watsonx_project_id        = regex("^.+/([a-f0-9\\-]+)$", local.watsonx_project_id_object)[0]
+}
