@@ -1,4 +1,7 @@
-# create COS instance for WatsonX.AI project
+##############################################################################################################
+# Cloud Object Storage
+##############################################################################################################
+
 module "cos" {
   providers = {
     ibm = ibm.ibm_resources
@@ -10,6 +13,10 @@ module "cos" {
   cos_plan          = "standard"
 }
 
+##############################################################################################################
+# CRN PARSERS
+##############################################################################################################
+
 module "cos_kms_key_crn_parser" {
   count   = var.watsonx_project_delegated && var.cos_kms_key_crn != null ? 1 : 0
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
@@ -17,11 +24,19 @@ module "cos_kms_key_crn_parser" {
   crn     = var.cos_kms_key_crn
 }
 
+module "cos_kms_crn_parser" {
+  count   = var.watsonx_project_delegated && var.cos_kms_key_crn == null ? 1 : 0
+  source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
+  version = "1.4.2"
+  crn     = var.cos_kms_crn
+}
+
 data "ibm_resource_instance" "kms_instance" {
   provider   = ibm.ibm_resources
   count      = var.watsonx_project_delegated ? 1 : 0
   identifier = var.cos_kms_key_crn != null ? module.cos_kms_key_crn_parser[0].service_instance : var.cos_kms_crn
 }
+
 
 resource "ibm_kms_key" "cos_kms_key" {
   provider      = ibm.ibm_resources
@@ -42,15 +57,21 @@ moved {
 data "ibm_kms_key" "cos_kms_key" {
   provider      = ibm.ibm_resources
   count         = var.watsonx_project_delegated ? 1 : 0
-  depends_on    = [resource.ibm_kms_key.cos_kms_key]
   endpoint_type = try(jsondecode(data.ibm_resource_instance.kms_instance[0].parameters_json).allowed_network, "{}") == "private-only" ? "private" : "public"
-  instance_id   = var.cos_kms_key_crn != null ? module.cos_kms_key_crn_parser[0].service_instance : var.cos_kms_crn
-  key_id        = var.cos_kms_key_crn != null ? module.cos_kms_key_crn_parser[0].resource : resource.ibm_kms_key.cos_kms_key[0].key_id
+  # Resolve the key identity for both modes:
+  # - If cos_kms_key_crn is provided, use parser outputs from that CRN.
+  # - If cos_kms_key_crn is null, use the key created by ibm_kms_key.cos_kms_key.
+  instance_id = var.cos_kms_key_crn != null ? module.cos_kms_key_crn_parser[0].service_instance : module.cos_kms_crn_parser[0].service_instance
+  key_id      = var.cos_kms_key_crn != null ? module.cos_kms_key_crn_parser[0].resource : resource.ibm_kms_key.cos_kms_key[0].key_id
 }
 
 locals {
-  effective_cos_kms_key_crn = var.watsonx_project_delegated ? data.ibm_kms_key.cos_kms_key[0].keys[0].crn : null
+  kms_key_crn = var.watsonx_project_delegated ? data.ibm_kms_key.cos_kms_key[0].keys[0].crn : null
 }
+
+##############################################################################################################
+# Storage Delegation
+##############################################################################################################
 
 module "storage_delegation" {
   source  = "terraform-ibm-modules/watsonx-ai/ibm//modules/storage_delegation"
@@ -60,23 +81,9 @@ module "storage_delegation" {
     ibm     = ibm.ibm_resources
     restapi = restapi.restapi_watsonx_admin
   }
-  cos_kms_key_crn               = local.effective_cos_kms_key_crn
   cos_instance_guid             = module.cos.cos_instance_guid
+  cos_kms_key_crn               = local.kms_key_crn
   skip_iam_authorization_policy = var.skip_iam_authorization_policy
-}
-
-# Wait for Watson Studio backend to register storage delegation
-resource "time_sleep" "wait_for_storage_delegation_backend" {
-  count           = var.watsonx_project_delegated ? 1 : 0
-  depends_on      = [module.storage_delegation]
-  create_duration = "10m"
-}
-
-# Wait for Watson Studio backend to register storage delegation
-resource "time_sleep" "wait_for_storage_delegation_backend" {
-  count           = var.watsonx_project_delegated ? 1 : 0
-  depends_on      = [module.storage_delegation]
-  create_duration = "10m"
 }
 
 # parse the crn for region and guid
@@ -91,8 +98,9 @@ locals {
   watson_ml_instance_region = module.crn_parser.region
 }
 
-## Use code from Watson SaaS directly to avoid "legacy module" issues
-## Note: passing a non-null delegated storage attribute may result in API errors
+##############################################################################################################
+# Configure Project
+##############################################################################################################
 
 module "configure_project" {
   source  = "terraform-ibm-modules/watsonx-ai/ibm//modules/configure_project"
@@ -100,27 +108,32 @@ module "configure_project" {
   providers = {
     restapi = restapi.restapi_watsonx_admin
   }
-
   depends_on = [module.storage_delegation]
+  count      = var.watson_ml_project_name == null || var.watson_ml_project_name == "" ? 0 : 1
+  region     = local.watson_ml_instance_region
 
-  project_name              = var.watson_ml_project_name
-  project_description       = var.watson_ml_project_description
-  project_tags              = var.watson_ml_project_tags
+  # watsonx Project
+  project_name                   = var.watson_ml_project_name
+  project_description            = var.watson_ml_project_description
+  project_tags                   = var.watson_ml_project_tags
+  mark_as_sensitive              = var.watson_ml_project_sensitive
+  watsonx_ai_new_project_members = var.watsonx_ai_new_project_members
+
+  # Machine Learning
+  watsonx_ai_runtime_name = var.watson_ml_instance_resource_name
+  watsonx_ai_runtime_guid = local.watson_ml_instance_guid
+  watsonx_ai_runtime_crn  = var.watson_ml_instance_crn
+
+  # COS / Storage delegation
   watsonx_project_delegated = var.watsonx_project_delegated
-  mark_as_sensitive         = var.watson_ml_project_sensitive
-  region                    = local.watson_ml_instance_region
   cos_guid                  = module.cos.cos_instance_guid
   cos_crn                   = module.cos.cos_instance_crn
-  watsonx_ai_runtime_name   = var.watson_ml_instance_resource_name
-  watsonx_ai_runtime_guid   = local.watson_ml_instance_guid
-  watsonx_ai_runtime_crn    = var.watson_ml_instance_crn
 }
 
 moved {
   from = restapi_object.configure_project
   to   = module.configure_project.restapi_object.configure_project
 }
-
 /* Reading the project after creating it has some issues with the API - we do not need that data yet
 resource "time_sleep" "wait_60_seconds" { # tflint-ignore: terraform_required_providers
   depends_on      = [restapi_object.configure_project]
@@ -136,18 +149,3 @@ data "restapi_object" "get_project" {
   id_attribute = "metadata/guid"
 }
 */
-
-locals {
-  dataplatform_api_mapping = {
-    "us-south" = "//api.dataplatform.cloud.ibm.com",
-    "eu-gb"    = "//api.eu-gb.dataplatform.cloud.ibm.com",
-    "eu-de"    = "//api.eu-de.dataplatform.cloud.ibm.com",
-    "jp-tok"   = "//api.jp-tok.dataplatform.cloud.ibm.com",
-    "au-syd"   = "//api.au-syd.dai.cloud.ibm.com",
-    "ca-tor"   = "//api.ca-tor.dai.cloud.ibm.com"
-  }
-
-  dataplatform_api          = local.dataplatform_api_mapping[local.watson_ml_instance_region]
-  watsonx_project_id_object = restapi_object.configure_project.id
-  watsonx_project_id        = regex("^.+/([a-f0-9\\-]+)$", local.watsonx_project_id_object)[0]
-}
