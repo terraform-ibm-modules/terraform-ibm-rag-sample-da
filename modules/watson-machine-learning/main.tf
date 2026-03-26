@@ -72,6 +72,13 @@ resource "time_sleep" "wait_for_storage_delegation_backend" {
   create_duration = "10m"
 }
 
+# Wait for Watson Studio backend to register storage delegation
+resource "time_sleep" "wait_for_storage_delegation_backend" {
+  count           = var.watsonx_project_delegated ? 1 : 0
+  depends_on      = [module.storage_delegation]
+  create_duration = "10m"
+}
+
 # parse the crn for region and guid
 module "crn_parser" {
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
