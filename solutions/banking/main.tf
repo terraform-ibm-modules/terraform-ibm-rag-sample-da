@@ -34,6 +34,7 @@ locals {
 data "ibm_sm_secret_groups" "secret_groups" {
   instance_id = var.secrets_manager_guid
   region      = var.secrets_manager_region
+  endpoint_type = "private"
 }
 
 data "ibm_iam_auth_token" "tokendata" {}
