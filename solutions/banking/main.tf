@@ -12,7 +12,7 @@ locals {
   watson_ml_project_name           = try("${local.prefix}-${var.watson_project_name}", var.watson_project_name)
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
-  secret_group_id      = [for sg in data.ibm_sm_secret_groups.secret_groups.secret_groups : sg.id if sg.name == "Default"][0]
+  # secret_group_id      = [for sg in data.ibm_sm_secret_groups.secret_groups.secret_groups : sg.id if sg.name == "Default"][0]
   generate_signing_key = var.create_secrets && (var.signing_key == null || var.signing_key == "")
 
   # Translate index name to lowercase to avoid Elastic errors
@@ -63,7 +63,7 @@ module "secrets_manager_secret_ibm_iam" {
   secret_name             = "ibmcloud-api-key"
   secret_description      = "IBM IAM Api key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
-  secret_group_id         = local.secret_group_id
+  # secret_group_id         = local.secret_group_id
   secret_payload_password = var.ibmcloud_api_key
   endpoint_type           = var.secrets_manager_endpoint_type
 }
@@ -100,7 +100,7 @@ module "secrets_manager_secret_signing_key" {
   version                 = "1.9.13"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
-  secret_group_id         = local.secret_group_id
+  # secret_group_id         = local.secret_group_id
   secret_name             = "signing-key"
   secret_description      = "IBM Signing GPG key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
@@ -118,7 +118,7 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   version                 = "1.9.13"
   region                  = var.secrets_manager_region
   secrets_manager_guid    = var.secrets_manager_guid
-  secret_group_id         = local.secret_group_id
+  # secret_group_id         = local.secret_group_id
   secret_name             = "watsonx-admin-api-key"
   secret_description      = "WatsonX Admin API Key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
