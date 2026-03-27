@@ -32,9 +32,9 @@ locals {
 }
 
 data "ibm_sm_secret_groups" "secret_groups" {
-  instance_id = var.secrets_manager_guid
-  region      = var.secrets_manager_region
-  endpoint_type = "private"
+  instance_id   = var.secrets_manager_guid
+  region        = var.secrets_manager_region
+  endpoint_type = var.secrets_manager_endpoint_type
 }
 
 data "ibm_iam_auth_token" "tokendata" {}
@@ -86,7 +86,7 @@ module "gpg_signing_key" {
   sm_name             = data.ibm_resource_instance.secrets_manager_name[0].name
   sm_endpoint_type    = var.secrets_manager_endpoint_type
   sm_exists           = true
-  create_secret_group = true
+  create_secret_group = false
   create_signing_key  = true
 }
 
