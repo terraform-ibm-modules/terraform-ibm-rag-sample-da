@@ -1,6 +1,6 @@
 
 output "watsonx_project_id" {
-  value       = module.configure_project[0].watsonx_ai_project_id
+  value       = module.configure_project.watsonx_ai_project_id
   description = "The ID watsonx project that's created."
 }
 

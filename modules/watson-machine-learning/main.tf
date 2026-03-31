@@ -109,7 +109,6 @@ module "configure_project" {
     restapi = restapi.restapi_watsonx_admin
   }
   depends_on = [module.storage_delegation]
-  count      = var.watson_ml_project_name == null || var.watson_ml_project_name == "" ? 0 : 1
   region     = local.watson_ml_instance_region
 
   # watsonx Project
