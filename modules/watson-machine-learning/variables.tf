@@ -77,3 +77,22 @@ variable "watsonx_project_delegated" {
   type        = bool
   default     = null
 }
+
+variable "watsonx_ai_new_project_members" {
+  description = "List of new members that can be added to the watsonx.ai project."
+  type = list(object({
+    email  = string
+    iam_id = string
+    role   = string
+    state  = optional(string, "ACTIVE")
+    type   = optional(string, "user")
+    })
+  )
+  default = []
+}
+
+variable "skip_iam_authorization_policy" {
+  type        = bool
+  description = "Whether to create an IAM authorization policy that permits the Object Storage instance to read the encryption key from the KMS instance. An authorization policy must exist before an encrypted bucket can be created. Set to `true` to avoid creating the policy."
+  default     = false
+}
