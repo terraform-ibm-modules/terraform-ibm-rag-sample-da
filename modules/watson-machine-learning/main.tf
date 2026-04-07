@@ -25,7 +25,7 @@ module "storage_delegation" {
   cos_guid             = module.cos.cos_instance_guid
 }
 
-# Wait for Watson Studio backend to register storage delegation to test 
+# Wait for Watson Studio backend to register storage delegation to test
 resource "time_sleep" "wait_for_storage_delegation_backend" {
   count           = var.watsonx_project_delegated ? 1 : 0
   depends_on      = [module.storage_delegation]
