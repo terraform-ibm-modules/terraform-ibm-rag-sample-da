@@ -274,12 +274,6 @@
               "key": "gpg_name"
             },
             {
-              "key": "secret_group_name"
-            },
-            {
-              "key": "secret_group_id"
-            },
-            {
               "key": "secrets_manager_resource_group_name"
             },
             {
