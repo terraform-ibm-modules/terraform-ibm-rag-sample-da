@@ -234,24 +234,6 @@ variable "secrets_manager_resource_group_name" {
   nullable    = false
 }
 
-variable "secret_group_name" {
-  description = "Name of the secret group that will be created to store the generated secrets. If `prefix` is set, then it will be prepended to the `secret_group_name` value. This will be ignored if `secret_group_id` is passed."
-  type        = string
-  default     = "DevSecOps"
-  nullable    = false
-}
-
-variable "secret_group_id" {
-  description = "ID of the existing secret group to store the generated secrets. If no value is passed, then the value of `secret_group_name` will be used to create a new Secret Group."
-  type        = string
-  default     = null
-
-  validation {
-    condition     = (var.secret_group_id != null && var.secret_group_name != null) == false
-    error_message = "secret_group_id and secret_group_name are mutually exclusive, you must set one of these to `null`."
-  }
-}
-
 variable "trigger_ci_pipeline_run" {
   description = "Whether to trigger the CI pipeline to build and deploy the application when deploying this solution"
   type        = bool
