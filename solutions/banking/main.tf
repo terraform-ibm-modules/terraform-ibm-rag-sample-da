@@ -12,7 +12,8 @@ locals {
   watson_ml_project_name           = try("${local.prefix}-${var.watson_project_name}", var.watson_project_name)
   sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
-  secret_group_id      = [for sg in data.ibm_sm_secret_groups.secret_groups.secret_groups : sg.id if sg.name == "default"][0]
+  sm_secret_group_name = "default"
+  secret_group_id      = [for sg in data.ibm_sm_secret_groups.secret_groups.secret_groups : sg.id if sg.name == local.sm_secret_group_name][0]
   generate_signing_key = var.create_secrets && (var.signing_key == null || var.signing_key == "")
 
   # Translate index name to lowercase to avoid Elastic errors
@@ -75,19 +76,20 @@ data "ibm_resource_instance" "secrets_manager_name" {
 
 # generate signing key if it is not provided.
 module "gpg_signing_key" {
-  count               = local.generate_signing_key ? 1 : 0
-  source              = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v2.8.35"
-  ibmcloud_api_key    = var.ibmcloud_api_key
-  gpg_name            = var.gpg_name
-  gpg_email           = var.gpg_email
-  sm_resource_group   = var.secrets_manager_resource_group_name
-  sm_location         = var.secrets_manager_region
-  sm_instance_id      = var.secrets_manager_guid
-  sm_name             = data.ibm_resource_instance.secrets_manager_name[0].name
-  sm_endpoint_type    = var.secrets_manager_endpoint_type
-  sm_exists           = true
-  create_secret_group = true
-  create_signing_key  = true
+  count                = local.generate_signing_key ? 1 : 0
+  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v2.8.35"
+  ibmcloud_api_key     = var.ibmcloud_api_key
+  gpg_name             = var.gpg_name
+  gpg_email            = var.gpg_email
+  sm_resource_group    = var.secrets_manager_resource_group_name
+  sm_location          = var.secrets_manager_region
+  sm_instance_id       = var.secrets_manager_guid
+  sm_name              = data.ibm_resource_instance.secrets_manager_name[0].name
+  sm_endpoint_type     = var.secrets_manager_endpoint_type
+  sm_exists            = true
+  create_secret_group  = false
+  create_signing_key   = true
+  sm_secret_group_name = local.sm_secret_group_name
 }
 
 # secrets manager secrets - IBM signing key
