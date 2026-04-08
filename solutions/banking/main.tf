@@ -177,6 +177,7 @@ module "configure_wml_project" {
   cos_kms_key_crn                  = var.cos_kms_key_crn
   cos_kms_ring_id                  = var.cos_kms_ring_id
   cos_kms_new_key_name             = local.cos_kms_new_key_name
+  prefix                           = var.prefix
 }
 
 moved {

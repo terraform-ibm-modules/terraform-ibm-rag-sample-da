@@ -77,3 +77,10 @@ variable "watsonx_project_delegated" {
   type        = bool
   default     = null
 }
+
+variable "prefix" {
+  description = "The prefix to add to all resources that this solution creates."
+  type        = string
+  nullable    = true
+  default     = null
+}

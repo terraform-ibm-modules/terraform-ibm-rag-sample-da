@@ -1,3 +1,53 @@
+# parse the crn for region and guid
+module "crn_parser" {
+  source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
+  version = "1.4.1"
+  crn     = var.watson_ml_instance_crn
+}
+
+locals {
+  watson_ml_instance_guid   = module.crn_parser.service_instance
+  watson_ml_instance_region = module.crn_parser.region
+}
+
+# ----------------------- Watson Studio Instance Management
+# Search for existing Watson Studio instances in the region and resource group
+data "ibm_resource_instances" "watson_studio_instances" {
+  provider          = ibm.ibm_resources
+  resource_group_id = var.resource_group_id
+  service           = "data-science-experience"
+  location          = local.watson_ml_instance_region
+}
+
+locals {
+  # Check if any Watson Studio instance exists
+  watson_studio_exists = length(data.ibm_resource_instances.watson_studio_instances.instances) > 0
+}
+
+# Create Watson Studio instance only if none exists in the region
+resource "ibm_resource_instance" "studio_instance" {
+  provider          = ibm.ibm_resources
+  count             = local.watson_studio_exists ? 0 : 1
+  name              = "${var.prefix != null ? "${var.prefix}-" : ""}watson-studio-instance"
+  service           = "data-science-experience"
+  plan              = "professional-v1"
+  location          = local.watson_ml_instance_region
+  resource_group_id = var.resource_group_id
+
+  timeouts {
+    create = "15m"
+    update = "15m"
+    delete = "15m"
+  }
+}
+
+locals {
+  # Use existing Watson Studio instance if available, otherwise use the newly created one
+  watson_studio_crn = local.watson_studio_exists ? (
+    data.ibm_resource_instances.watson_studio_instances.instances[0].crn
+  ) : resource.ibm_resource_instance.studio_instance[0].crn
+}
+
 # create COS instance for WatsonX.AI project
 module "cos" {
   providers = {
@@ -28,20 +78,8 @@ module "storage_delegation" {
 # Wait for Watson Studio backend to register storage delegation to test
 resource "time_sleep" "wait_for_storage_delegation_backend" {
   count           = var.watsonx_project_delegated ? 1 : 0
-  depends_on      = [module.storage_delegation]
+  depends_on      = [module.storage_delegation, data.ibm_resource_instances.watson_studio_instances, resource.ibm_resource_instance.studio_instance]
   create_duration = "10m"
-}
-
-# parse the crn for region and guid
-module "crn_parser" {
-  source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
-  version = "1.4.1"
-  crn     = var.watson_ml_instance_crn
-}
-
-locals {
-  watson_ml_instance_guid   = module.crn_parser.service_instance
-  watson_ml_instance_region = module.crn_parser.region
 }
 
 ## Use code from Watson SaaS directly to avoid "legacy module" issues
