@@ -13,26 +13,26 @@ locals {
 # ----------------------- Watson Studio Instance Management
 # Create Watson Studio instance for the Watson ML project
 # Note: Watson Studio is required for Watson ML projects to function properly
-resource "ibm_resource_instance" "studio_instance" {
-  provider          = ibm.ibm_resources
-  name              = "${var.prefix != null ? "${var.prefix}-" : ""}watson-studio-instance"
-  service           = "data-science-experience"
-  plan              = "professional-v1"
-  location          = local.watson_ml_instance_region
-  resource_group_id = var.resource_group_id
+# resource "ibm_resource_instance" "studio_instance" {
+#   provider          = ibm.ibm_resources
+#   name              = "${var.prefix != null ? "${var.prefix}-" : ""}watson-studio-instance"
+#   service           = "data-science-experience"
+#   plan              = "professional-v1"
+#   location          = local.watson_ml_instance_region
+#   resource_group_id = var.resource_group_id
 
-  timeouts {
-    create = "15m"
-    update = "15m"
-    delete = "15m"
-  }
-}
+#   timeouts {
+#     create = "15m"
+#     update = "15m"
+#     delete = "15m"
+#   }
+# }
 
 # Wait for Watson Studio to be fully provisioned and backend services to be ready
-resource "time_sleep" "wait_for_studio_backend" {
-  depends_on      = [resource.ibm_resource_instance.studio_instance]
-  create_duration = "10m"
-}
+# resource "time_sleep" "wait_for_studio_backend" {
+#   depends_on      = [resource.ibm_resource_instance.studio_instance]
+#   create_duration = "10m"
+# }
 
 # create COS instance for WatsonX.AI project
 module "cos" {
@@ -54,7 +54,7 @@ module "storage_delegation" {
   }
   source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//storage_delegation?ref=v2.2.30"
   count                = var.watsonx_project_delegated ? 1 : 0
-  depends_on           = [resource.time_sleep.wait_for_studio_backend]
+  # depends_on           = [resource.time_sleep.wait_for_studio_backend]
   cos_kms_crn          = var.cos_kms_crn
   cos_kms_key_crn      = var.cos_kms_key_crn
   cos_kms_new_key_name = var.cos_kms_new_key_name
@@ -65,7 +65,8 @@ module "storage_delegation" {
 # Wait for Watson Studio backend to register storage delegation to test
 resource "time_sleep" "wait_for_storage_delegation_backend" {
   count           = var.watsonx_project_delegated ? 1 : 0
-  depends_on      = [module.storage_delegation, resource.ibm_resource_instance.studio_instance]
+  depends_on      = [module.storage_delegation]
+  # depends_on      = [module.storage_delegation, resource.ibm_resource_instance.studio_instance]
   create_duration = "10m"
 }
 
