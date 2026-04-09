@@ -31,7 +31,7 @@ const bankingSolutionsDir = "solutions/banking"
 var validRegions = []string{
 	"au-syd",
 	"jp-tok",
-	"eu-gb",
+	// "eu-gb", Commenting this region due to failure seen due to storage delegation, issue- https://github.ibm.com/GoldenEye/issues/issues/17812
 	"eu-de",
 	"us-south",
 }
