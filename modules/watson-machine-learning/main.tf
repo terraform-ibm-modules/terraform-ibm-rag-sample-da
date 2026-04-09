@@ -52,8 +52,8 @@ module "storage_delegation" {
     ibm.deployer                  = ibm
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//storage_delegation?ref=v2.2.30"
-  count                = var.watsonx_project_delegated ? 1 : 0
+  source = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-saas-da.git//storage_delegation?ref=v2.2.30"
+  count  = var.watsonx_project_delegated ? 1 : 0
   # depends_on           = [resource.time_sleep.wait_for_studio_backend]
   cos_kms_crn          = var.cos_kms_crn
   cos_kms_key_crn      = var.cos_kms_key_crn
@@ -64,8 +64,8 @@ module "storage_delegation" {
 
 # Wait for Watson Studio backend to register storage delegation to test
 resource "time_sleep" "wait_for_storage_delegation_backend" {
-  count           = var.watsonx_project_delegated ? 1 : 0
-  depends_on      = [module.storage_delegation]
+  count      = var.watsonx_project_delegated ? 1 : 0
+  depends_on = [module.storage_delegation]
   # depends_on      = [module.storage_delegation, resource.ibm_resource_instance.studio_instance]
   create_duration = "10m"
 }
