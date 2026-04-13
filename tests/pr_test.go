@@ -29,10 +29,10 @@ const bankingSolutionsDir = "solutions/banking"
 
 // watsonx.ai supported regions
 var validRegions = []string{
-	"au-syd",
+	//"au-syd",
 	//"jp-tok",
 	//"eu-gb",
-	//"eu-de",
+	"eu-de",
 	//"us-south",
 }
 
