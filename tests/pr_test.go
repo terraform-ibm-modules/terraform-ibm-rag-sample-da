@@ -29,11 +29,11 @@ const bankingSolutionsDir = "solutions/banking"
 
 // watsonx.ai supported regions
 var validRegions = []string{
-	"au-syd",
+	//"au-syd",
 	"jp-tok",
 	// "eu-gb", Commenting this region due to failure seen due to storage delegation, issue- https://github.ibm.com/GoldenEye/issues/issues/17812
-	"eu-de",
-	"us-south",
+	//"eu-de",
+	//"us-south",
 }
 
 // Define a struct with fields that match the structure of the YAML data
