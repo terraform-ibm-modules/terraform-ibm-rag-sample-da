@@ -166,21 +166,18 @@ module "configure_wml_project" {
     ibm.ibm_resources             = ibm.ibm_resources
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-  count                            = local.use_watson_machine_learning ? 1 : 0
-  source                           = "../../modules/watson-machine-learning"
-  watsonx_project_delegated        = var.cos_kms_crn != null ? true : false
-  
-  # Watson Studio Instance (from test resources)
-  watson_studio_instance_crn = var.watson_studio_instance_crn
-  
+  count                     = local.use_watson_machine_learning ? 1 : 0
+  source                    = "../../modules/watson-machine-learning"
+  watsonx_project_delegated = var.cos_kms_crn != null ? true : false
+
   # Watson Machine Learning Instance (from test resources)
   watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
   watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
-  
+
   # Watson Project Configuration
   watson_ml_project_name      = local.watson_ml_project_name
   watson_ml_project_sensitive = var.watson_project_sensitive
-  
+
   # Resource Group and COS
   resource_group_id    = module.resource_group.resource_group_id
   cos_instance_name    = local.cos_instance_name

@@ -4,16 +4,6 @@ variable "resource_group_id" {
 }
 
 ##############################################################################################################
-# Watson Studio Instance Variables (from test resources)
-##############################################################################################################
-
-variable "watson_studio_instance_crn" {
-  description = "The CRN of an existing Watson Studio instance (created in test resources)."
-  type        = string
-  default     = null
-}
-
-##############################################################################################################
 # Cloud Object Storage Variables
 ##############################################################################################################
 

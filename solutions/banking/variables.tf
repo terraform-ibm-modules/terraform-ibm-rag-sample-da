@@ -94,16 +94,6 @@ variable "watson_discovery_region" {
 }
 
 ##############################################################################################################
-# Watson Studio Instance Variables
-##############################################################################################################
-
-variable "watson_studio_instance_crn" {
-  description = "The CRN of an existing Watson Studio instance (created in test resources)."
-  type        = string
-  default     = null
-}
-
-##############################################################################################################
 # Watson Machine Learning Instance Variables
 ##############################################################################################################
 

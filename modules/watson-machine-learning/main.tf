@@ -2,17 +2,8 @@
 # Watson Studio Instance (from test resources)
 ##############################################################################################################
 
-data "ibm_resource_instance" "watson_studio_instance" {
-  provider   = ibm.ibm_resources
-  count      = var.watson_studio_instance_crn != null ? 1 : 0
-  identifier = var.watson_studio_instance_crn
-}
-
-locals {
-  watson_studio_crn  = var.watson_studio_instance_crn
-  watson_studio_guid = var.watson_studio_instance_crn != null ? data.ibm_resource_instance.watson_studio_instance[0].guid : null
-  watson_studio_name = var.watson_studio_instance_crn != null ? data.ibm_resource_instance.watson_studio_instance[0].resource_name : null
-}
+# Note: Watson Studio instance CRN is passed as input variable.
+# The instance is created in test resources and used for storage delegation.
 
 ##############################################################################################################
 # Cloud Object Storage
