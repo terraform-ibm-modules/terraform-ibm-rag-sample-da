@@ -3,6 +3,20 @@ variable "resource_group_id" {
   type        = string
 }
 
+##############################################################################################################
+# Watson Studio Instance Variables (from test resources)
+##############################################################################################################
+
+variable "watson_studio_instance_crn" {
+  description = "The CRN of an existing Watson Studio instance (created in test resources)."
+  type        = string
+  default     = null
+}
+
+##############################################################################################################
+# Cloud Object Storage Variables
+##############################################################################################################
+
 variable "cos_instance_name" {
   description = "Watson ML COS instance name"
   type        = string

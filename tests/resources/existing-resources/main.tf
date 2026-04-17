@@ -111,6 +111,20 @@ resource "ibm_resource_instance" "machine_learning_instance" {
   }
 }
 
+resource "ibm_resource_instance" "studio_instance" {
+  name              = "${var.prefix}-watson-studio-instance"
+  service           = "data-science-experience"
+  plan              = "professional-v1"
+  location          = var.region
+  resource_group_id = module.resource_group.resource_group_id
+
+  timeouts {
+    create = "15m"
+    update = "15m"
+    delete = "15m"
+  }
+}
+
 
 
 ########################################################################################################################
