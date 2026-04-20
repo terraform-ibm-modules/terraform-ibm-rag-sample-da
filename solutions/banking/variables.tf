@@ -93,6 +93,10 @@ variable "watson_discovery_region" {
   default     = null # Discovery usage is optional, elastic can be used instead
 }
 
+##############################################################################################################
+# Watson Machine Learning Instance Variables
+##############################################################################################################
+
 variable "watson_machine_learning_instance_crn" {
   description = "Watson Machine Learning instance CRN"
   type        = string
@@ -104,6 +108,10 @@ variable "watson_machine_learning_instance_resource_name" {
   type        = string
   default     = null # WML usage is optional, elastic can be used instead
 }
+
+##############################################################################################################
+# Watson Project Variables
+##############################################################################################################
 
 variable "watson_project_name" {
   description = "Watson project name"

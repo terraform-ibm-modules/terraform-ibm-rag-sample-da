@@ -166,29 +166,30 @@ module "configure_wml_project" {
     ibm.ibm_resources             = ibm.ibm_resources
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-  count                            = local.use_watson_machine_learning ? 1 : 0
-  source                           = "../../modules/watson-machine-learning"
-  watsonx_project_delegated        = var.cos_kms_crn != null ? true : false
+  count                     = local.use_watson_machine_learning ? 1 : 0
+  source                    = "../../modules/watson-machine-learning"
+  watsonx_project_delegated = var.cos_kms_crn != null ? true : false
+
+  # Watson Machine Learning Instance (from test resources)
   watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
   watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
-  watson_ml_project_name           = local.watson_ml_project_name
-  watson_ml_project_sensitive      = var.watson_project_sensitive
-  resource_group_id                = module.resource_group.resource_group_id
-  cos_instance_name                = local.cos_instance_name
-  cos_kms_crn                      = var.cos_kms_crn
-  cos_kms_key_crn                  = var.cos_kms_key_crn
-  cos_kms_ring_id                  = var.cos_kms_ring_id
-  cos_kms_new_key_name             = local.cos_kms_new_key_name
+
+  # Watson Project Configuration
+  watson_ml_project_name      = local.watson_ml_project_name
+  watson_ml_project_sensitive = var.watson_project_sensitive
+
+  # Resource Group and COS
+  resource_group_id    = module.resource_group.resource_group_id
+  cos_instance_name    = local.cos_instance_name
+  cos_kms_crn          = var.cos_kms_crn
+  cos_kms_key_crn      = var.cos_kms_key_crn
+  cos_kms_ring_id      = var.cos_kms_ring_id
+  cos_kms_new_key_name = local.cos_kms_new_key_name
 }
 
 moved {
   from = module.configure_project
-  to   = module.configure_wml_project[0].module.watson_ml_project
-}
-
-moved {
-  from = module.configure_project.restapi_object.configure_project[0]
-  to   = module.configure_wml_project[0].restapi_object.configure_project
+  to   = module.configure_wml_project[0].module.configure_project
 }
 
 moved {

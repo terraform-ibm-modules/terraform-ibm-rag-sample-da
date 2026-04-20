@@ -31,7 +31,7 @@ const bankingSolutionsDir = "solutions/banking"
 var validRegions = []string{
 	"au-syd",
 	"jp-tok",
-	// "eu-gb", Commenting this region due to failure seen due to storage delegation, issue- https://github.ibm.com/GoldenEye/issues/issues/17812
+	"eu-gb",
 	"eu-de",
 	"us-south",
 }
@@ -134,7 +134,7 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 				"module.configure_watson_assistant.restapi_object.assistant_action_skill[0]",
 				"module.configure_watson_assistant.restapi_object.assistant_search_skill[0]",
 				"module.configure_watson_assistant.restapi_object.assistant_skills_references[0]",
-				"module.configure_wml_project[0].restapi_object.configure_project",
+				"module.configure_wml_project[0].module.configure_project.restapi_object.configure_project",
 				"module.cluster_ingress[0].restapi_object.workload_nlb_dns_cleanup",
 				"module.cluster_ingress[0].restapi_object.workload_nlb_dns",
 				"module.cluster_ingress[0].restapi_object.workload_nlb_dns_patch",
