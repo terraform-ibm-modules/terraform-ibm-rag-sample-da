@@ -33,8 +33,18 @@ variable "cos_kms_key_crn" {
 }
 
 variable "cos_kms_new_key_name" {
-  description = "Name of the KMS key to create for encrypting the COS buckets used by the watsonx projects."
+  description = "Name of the KMS key to create for encrypting the COS buckets used by the watsonx projects. Required when watsonx_project_delegated is true and cos_kms_key_crn is not provided."
   type        = string
+  default     = null
+
+  validation {
+    condition = (
+      var.watsonx_project_delegated != true ||
+      var.cos_kms_key_crn != null ||
+      var.cos_kms_new_key_name != null
+    )
+    error_message = "cos_kms_new_key_name is required when watsonx_project_delegated is true and cos_kms_key_crn is not provided (i.e., when creating a new KMS key)."
+  }
 }
 
 variable "cos_kms_ring_id" {
@@ -77,9 +87,18 @@ variable "watson_ml_project_sensitive" {
 }
 
 variable "watsonx_project_delegated" {
-  description = "Watson storage delegation."
+  description = "Watson storage delegation. When set to true, either cos_kms_crn or cos_kms_key_crn must be provided."
   type        = bool
   default     = null
+
+  validation {
+    condition = (
+      var.watsonx_project_delegated != true ||
+      var.cos_kms_crn != null ||
+      var.cos_kms_key_crn != null
+    )
+    error_message = "When watsonx_project_delegated is true, either cos_kms_crn (to create a new KMS key) or cos_kms_key_crn (to use an existing KMS key) must be provided."
+  }
 }
 
 variable "watsonx_ai_new_project_members" {

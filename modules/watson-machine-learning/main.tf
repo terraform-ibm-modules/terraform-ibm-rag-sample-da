@@ -20,14 +20,14 @@ module "cos" {
 module "cos_kms_key_crn_parser" {
   count   = var.watsonx_project_delegated && var.cos_kms_key_crn != null ? 1 : 0
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
-  version = "1.4.2"
+  version = "1.5.0"
   crn     = var.cos_kms_key_crn
 }
 
 module "cos_kms_crn_parser" {
   count   = var.watsonx_project_delegated && var.cos_kms_key_crn == null ? 1 : 0
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
-  version = "1.4.2"
+  version = "1.5.0"
   crn     = var.cos_kms_crn
 }
 
@@ -37,6 +37,14 @@ data "ibm_resource_instance" "kms_instance" {
   identifier = var.cos_kms_key_crn != null ? module.cos_kms_key_crn_parser[0].service_instance : var.cos_kms_crn
 }
 
+##############################################################################################################
+# KMS Endpoint Configuration
+##############################################################################################################
+
+locals {
+  kms_allowed_network = var.watsonx_project_delegated ? try(jsondecode(data.ibm_resource_instance.kms_instance[0].parameters_json).allowed_network, "public-only") : "public-only"
+  kms_endpoint_type   = local.kms_allowed_network == "private-only" ? "private" : "public"
+}
 
 resource "ibm_kms_key" "cos_kms_key" {
   provider      = ibm.ibm_resources
@@ -45,7 +53,7 @@ resource "ibm_kms_key" "cos_kms_key" {
   key_name      = var.cos_kms_new_key_name
   standard_key  = false
   force_delete  = true
-  endpoint_type = try(jsondecode(data.ibm_resource_instance.kms_instance[0].parameters_json).allowed_network, "{}") == "private-only" ? "private" : "public"
+  endpoint_type = local.kms_endpoint_type
   key_ring_id   = var.cos_kms_ring_id == null ? "default" : var.cos_kms_ring_id
 }
 
@@ -57,11 +65,11 @@ moved {
 data "ibm_kms_key" "cos_kms_key" {
   provider      = ibm.ibm_resources
   count         = var.watsonx_project_delegated ? 1 : 0
-  endpoint_type = try(jsondecode(data.ibm_resource_instance.kms_instance[0].parameters_json).allowed_network, "{}") == "private-only" ? "private" : "public"
+  endpoint_type = local.kms_endpoint_type
   # Resolve the key identity for both modes:
   # - If cos_kms_key_crn is provided, use parser outputs from that CRN.
   # - If cos_kms_key_crn is null, use the key created by ibm_kms_key.cos_kms_key.
-  instance_id = var.cos_kms_key_crn != null ? module.cos_kms_key_crn_parser[0].service_instance : module.cos_kms_crn_parser[0].service_instance
+  instance_id = var.cos_kms_key_crn != null ? module.cos_kms_key_crn_parser[0].service_instance : var.cos_kms_crn
   key_id      = var.cos_kms_key_crn != null ? module.cos_kms_key_crn_parser[0].resource : resource.ibm_kms_key.cos_kms_key[0].key_id
 }
 
@@ -89,7 +97,7 @@ module "storage_delegation" {
 # parse the crn for region and guid
 module "crn_parser" {
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
-  version = "1.4.1"
+  version = "1.5.0"
   crn     = var.watson_ml_instance_crn
 }
 
