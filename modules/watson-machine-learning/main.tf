@@ -20,7 +20,7 @@ module "cos" {
 module "cos_kms_key_crn_parser" {
   count   = var.watsonx_project_delegated && var.cos_kms_key_crn != null ? 1 : 0
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
-  version = "1.4.1"
+  version = "1.4.2"
   crn     = var.cos_kms_key_crn
 }
 
