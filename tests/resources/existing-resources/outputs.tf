@@ -1,21 +1,11 @@
-output "watson_assistant_instance_id" {
-  value       = ibm_resource_instance.assistant_instance.guid
-  description = "Watson Assistant instance ID."
+output "watson_assistant_instance_crn" {
+  value       = ibm_resource_instance.assistant_instance.crn
+  description = "CRN of the Watson Assistant instance"
 }
 
-output "watson_assistant_region" {
-  value       = ibm_resource_instance.assistant_instance.location
-  description = "Watson Assistant instance Region."
-}
-
-output "watson_discovery_instance_id" {
-  value       = ibm_resource_instance.discovery_instance.guid
-  description = "Watson Discovery instance ID."
-}
-
-output "watson_discovery_region" {
-  value       = ibm_resource_instance.discovery_instance.location
-  description = "Watson Discovery instance Region."
+output "watson_discovery_instance_crn" {
+  value       = ibm_resource_instance.discovery_instance.crn
+  description = "CRN of the Watson Discovery instance"
 }
 
 output "watson_machine_learning_instance_crn" {
@@ -63,12 +53,7 @@ output "region" {
   description = "Region"
 }
 
-output "secrets_manager_guid" {
-  value       = module.secrets_manager.secrets_manager_guid
-  description = "GUID of Secrets Manager instance"
-}
-
-output "secrets_manager_region" {
-  value       = module.secrets_manager.secrets_manager_region
-  description = "Region of the Secrets Manager instance"
+output "secrets_manager_instance_crn" {
+  value       = module.secrets_manager.secrets_manager_crn
+  description = "CRN of the Secrets Manager instance"
 }

@@ -162,36 +162,30 @@
               "key": "inventory_repo_url"
             },
             {
-              "key": "watson_assistant_instance_id"
-            },
-            {
-              "key": "watson_assistant_region",
+              "key": "watson_assistant_instance_crn",
+              "display_name": "watson_assistant_instance",
               "custom_config": {
-                "type": "region",
+                "type": "platform_resource",
                 "grouping": "deployment",
                 "original_grouping": "deployment",
                 "config_constraints": {
-                  "filterString": "service:conversation",
-                  "showKinds": [
-                    "region"
-                  ]
+                  "resourceType": "conversation",
+                  "selection": "single_select",
+                  "valueType": "crn"
                 }
               }
             },
             {
-              "key": "watson_discovery_instance_id"
-            },
-            {
-              "key": "watson_discovery_region",
+              "key": "watson_discovery_instance_crn",
+              "display_name": "watson_discovery_instance",
               "custom_config": {
-                "type": "region",
+                "type": "platform_resource",
                 "grouping": "deployment",
                 "original_grouping": "deployment",
                 "config_constraints": {
-                  "filterString": "service:discovery",
-                  "showKinds": [
-                    "region"
-                  ]
+                  "resourceType": "discovery",
+                  "selection": "single_select",
+                  "valueType": "crn"
                 }
               }
             },
@@ -293,19 +287,16 @@
               ]
             },
             {
-              "key": "secrets_manager_guid"
-            },
-            {
-              "key": "secrets_manager_region",
+              "key": "secrets_manager_instance_crn",
+              "display_name": "secrets_manager_instance",
               "custom_config": {
-                "type": "region",
+                "type": "platform_resource",
                 "grouping": "deployment",
                 "original_grouping": "deployment",
                 "config_constraints": {
-                  "filterString": "service:secrets-manager",
-                  "showKinds": [
-                    "region"
-                  ]
+                  "resourceType": "secrets-manager",
+                  "selection": "single_select",
+                  "valueType": "crn"
                 }
               }
             },

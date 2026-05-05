@@ -71,26 +71,26 @@ variable "inventory_repo_url" {
   default     = null
 }
 
-variable "watson_assistant_instance_id" {
-  description = "ID of the WatsonX Assistant service instance"
+variable "watson_assistant_instance_crn" {
+  description = "CRN of the Watson Assistant service instance."
   type        = string
+  validation {
+    condition     = can(regex("^crn:", var.watson_assistant_instance_crn))
+    error_message = "The value for watson_assistant_instance_crn must be a valid IBM Cloud CRN."
+  }
 }
 
-variable "watson_assistant_region" {
-  description = "Region where WatsonX Assistant resides"
+variable "watson_discovery_instance_crn" {
+  description = "CRN of the Watson Discovery service instance. If provided, Discovery integration is enabled."
   type        = string
-}
-
-variable "watson_discovery_instance_id" {
-  description = "ID of the WatsonX Discovery instance"
-  type        = string
-  default     = null # Discovery usage is optional, elastic can be used instead
-}
-
-variable "watson_discovery_region" {
-  description = "Region where Watson Discovery resides"
-  type        = string
-  default     = null # Discovery usage is optional, elastic can be used instead
+  default     = null
+  validation {
+    condition = anytrue([
+      var.watson_discovery_instance_crn == null,
+      can(regex("^crn:", var.watson_discovery_instance_crn))
+    ])
+    error_message = "The value for watson_discovery_instance_crn must be null or a valid IBM Cloud CRN."
+  }
 }
 
 variable "watson_machine_learning_instance_crn" {
@@ -218,14 +218,13 @@ variable "secrets_manager_endpoint_type" {
   }
 }
 
-variable "secrets_manager_guid" {
-  description = "Secrets Manager GUID where the API key and signing key will be stored."
+variable "secrets_manager_instance_crn" {
+  description = "CRN of the Secrets Manager instance where the API key and signing key will be stored."
   type        = string
-}
-
-variable "secrets_manager_region" {
-  description = "The region where the Secrets Manager instance previously created reside."
-  type        = string
+  validation {
+    condition     = can(regex("^crn:", var.secrets_manager_instance_crn))
+    error_message = "The value for secrets_manager_instance_crn must be a valid IBM Cloud CRN."
+  }
 }
 
 variable "secrets_manager_resource_group_name" {
