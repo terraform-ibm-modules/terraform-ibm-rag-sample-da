@@ -28,6 +28,11 @@ output "watson_machine_learning_instance_resource_name" {
   description = "Watson Machine Learning instance resource name."
 }
 
+output "watson_studio_instance_crn" {
+  value       = ibm_resource_instance.studio_instance.crn
+  description = "Watson Studio instance CRN."
+}
+
 output "ci_pipeline_id" {
   value       = ibm_cd_tekton_pipeline.ci_tekton_pipeline_instance.id
   description = "Id of the CI tekton pipeline instance."
