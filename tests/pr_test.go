@@ -31,7 +31,7 @@ const bankingSolutionsDir = "solutions/banking"
 var validRegions = []string{
 	"au-syd",
 	"jp-tok",
-	// "eu-gb", Commenting this region due to failure seen due to storage delegation, issue- https://github.ibm.com/GoldenEye/issues/issues/17812
+	"eu-gb",
 	"eu-de",
 	"us-south",
 }
@@ -118,13 +118,14 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"watson_machine_learning_instance_resource_name": terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
 			"secrets_manager_guid":                           terraform.Output(t, existingTerraformOptions, "secrets_manager_guid"),
 			"secrets_manager_region":                         terraform.Output(t, existingTerraformOptions, "secrets_manager_region"),
+			"secrets_manager_resource_group_name":            terraform.Output(t, existingTerraformOptions, "resource_group_name"),
 			"trigger_ci_pipeline_run":                        false,
 			"secrets_manager_endpoint_type":                  "public",
 			"provider_visibility":                            "public",
 			"elastic_instance_crn":                           terraform.Output(t, existingTerraformOptions, "elasticsearch_crn"),
 			"cluster_name":                                   terraform.Output(t, existingTerraformOptions, "cluster_name"),
 			"cos_kms_crn":                                    terraform.Output(t, existingTerraformOptions, "kms_instance_crn"),
-			"secrets_manager_resource_group_name":            terraform.Output(t, existingTerraformOptions, "resource_group_name"),
+			"create_secrets":                                 true,
 		},
 		IgnoreUpdates: testhelper.Exemptions{
 			List: []string{
@@ -134,7 +135,7 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 				"module.configure_watson_assistant.restapi_object.assistant_action_skill[0]",
 				"module.configure_watson_assistant.restapi_object.assistant_search_skill[0]",
 				"module.configure_watson_assistant.restapi_object.assistant_skills_references[0]",
-				"module.configure_wml_project[0].restapi_object.configure_project",
+				"module.configure_wml_project[0].module.configure_project.restapi_object.configure_project",
 				"module.cluster_ingress[0].restapi_object.workload_nlb_dns_cleanup",
 				"module.cluster_ingress[0].restapi_object.workload_nlb_dns",
 				"module.cluster_ingress[0].restapi_object.workload_nlb_dns_patch",
