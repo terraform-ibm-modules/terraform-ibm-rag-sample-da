@@ -212,13 +212,12 @@ resource "ibm_is_network_acl_rule" "alb_https_req" {
   action      = "allow"
   source      = "0.0.0.0/0"
   destination = "${data.ibm_is_lb.ingress_vpc_alb.private_ips[count.index]}/32"
-  direction   = "inbound"
-  tcp {
-    port_max        = 443
-    port_min        = 443
-    source_port_max = 65535
-    source_port_min = 1024
-  }
+  direction       = "inbound"
+  protocol        = "tcp"
+  port_min        = 443
+  port_max        = 443
+  source_port_min = 1024
+  source_port_max = 65535
   lifecycle {
     ignore_changes = [before]
   }
@@ -232,13 +231,12 @@ resource "ibm_is_network_acl_rule" "alb_https_resp" {
   action      = "allow"
   source      = "${data.ibm_is_lb.ingress_vpc_alb.private_ips[count.index]}/32"
   destination = "0.0.0.0/0"
-  direction   = "outbound"
-  tcp {
-    port_max        = 65535
-    port_min        = 1024
-    source_port_max = 443
-    source_port_min = 443
-  }
+  direction       = "outbound"
+  protocol        = "tcp"
+  port_min        = 1024
+  port_max        = 65535
+  source_port_min = 443
+  source_port_max = 443
   lifecycle {
     ignore_changes = [before]
   }
