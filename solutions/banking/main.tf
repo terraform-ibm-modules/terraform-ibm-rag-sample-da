@@ -77,7 +77,7 @@ data "ibm_resource_instance" "secrets_manager_name" {
 # generate signing key if it is not provided.
 module "gpg_signing_key" {
   count                = local.generate_signing_key ? 1 : 0
-  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v3.0.2"
+  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v3.1.1"
   ibmcloud_api_key     = var.ibmcloud_api_key
   gpg_name             = var.gpg_name
   gpg_email            = var.gpg_email
