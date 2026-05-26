@@ -45,11 +45,20 @@ module "elasticsearch" {
   region              = var.region
   service_endpoints   = "public-and-private"
   deletion_protection = false
-  service_credential_names = {
-    "elastic_db_admin" : "Administrator",
-    "wxasst_db_user" : "Editor",
-    "toolchain_db_user" : "Editor"
-  }
+  service_credential_names = [
+    {
+      "name" : "elastic_db_admin",
+      "role" : "Administrator"
+    },
+    {
+      "name" : "wxasst_db_user",
+      "role" : "Editor"
+    },
+    {
+      "name" : "toolchain_db_user",
+      "role" : "Editor"
+    }
+  ]
 }
 
 ##############################################################################
