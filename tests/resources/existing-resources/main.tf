@@ -61,6 +61,13 @@ module "elasticsearch" {
   ]
 }
 
+# Wait for Elasticsearch to be fully operational after creation
+# ICD Elasticsearch instances take time to become fully ready even after Terraform reports them as created
+resource "time_sleep" "wait_for_elasticsearch_ready" {
+  depends_on      = [module.elasticsearch]
+  create_duration = "300s" # 5 minutes to ensure Elasticsearch is fully operational
+}
+
 ##############################################################################
 # Key Protect
 ##############################################################################

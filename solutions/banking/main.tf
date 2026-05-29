@@ -230,6 +230,14 @@ data "ibm_resource_key" "elastic_credentials" {
   name                 = var.elastic_credentials_name
 }
 
+# Additional wait for Elasticsearch to be fully ready before attempting connection
+# This provides extra buffer time on top of the wait in test resources
+resource "time_sleep" "wait_for_elasticsearch" {
+  count           = local.use_elastic_index ? 1 : 0
+  depends_on      = [data.ibm_resource_key.elastic_credentials]
+  create_duration = "180s"
+}
+
 module "configure_elastic_index" {
   count                      = local.use_elastic_index ? 1 : 0
   source                     = "../../modules/elastic-index"
@@ -237,7 +245,7 @@ module "configure_elastic_index" {
   elastic_index_name         = local.elastic_index_name
   elastic_index_mapping      = jsonencode(jsondecode(file("${path.module}/artifacts/watsonx.Assistant/elastic-search-skill.json")).search_settings.schema_mapping)
   elastic_index_entries_file = var.elastic_upload_sample_data ? "./artifacts/watsonx.Assistant/bank-loan-faqs.json" : null
-  depends_on                 = [data.ibm_iam_auth_token.tokendata]
+  depends_on                 = [data.ibm_iam_auth_token.tokendata, time_sleep.wait_for_elasticsearch]
 }
 
 # Elastic index creation
