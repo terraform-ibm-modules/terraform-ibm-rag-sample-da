@@ -1,6 +1,6 @@
 output "watson_assistant_instance_crn" {
   value       = ibm_resource_instance.assistant_instance.crn
-  description = "CRN of the Watson Assistant instance"
+  description = "CRN of the watsonx Assistant instance"
 }
 
 output "watson_discovery_instance_crn" {
