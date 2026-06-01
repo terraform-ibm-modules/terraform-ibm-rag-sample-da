@@ -204,9 +204,6 @@
               }
             },
             {
-              "key": "watson_machine_learning_instance_resource_name"
-            },
-            {
               "key": "watson_project_name"
             },
             {

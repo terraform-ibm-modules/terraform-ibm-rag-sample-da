@@ -75,8 +75,8 @@ variable "watson_assistant_instance_crn" {
   description = "CRN of the Watson Assistant service instance."
   type        = string
   validation {
-    condition     = can(regex("^crn:", var.watson_assistant_instance_crn))
-    error_message = "The value for watson_assistant_instance_crn must be a valid IBM Cloud CRN."
+    condition     = can(regex("^crn:v\\d+:[^:]*:[^:]*:conversation:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watson_assistant_instance_crn))
+    error_message = "The value provided for 'watson_assistant_instance_crn' is not valid."
   }
 }
 
@@ -87,9 +87,9 @@ variable "watson_discovery_instance_crn" {
   validation {
     condition = anytrue([
       var.watson_discovery_instance_crn == null,
-      can(regex("^crn:", var.watson_discovery_instance_crn))
+      can(regex("^crn:v\\d+:[^:]*:[^:]*:discovery:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watson_discovery_instance_crn))
     ])
-    error_message = "The value for watson_discovery_instance_crn must be null or a valid IBM Cloud CRN."
+    error_message = "The value provided for 'watson_discovery_instance_crn' is not valid."
   }
 }
 
@@ -101,12 +101,13 @@ variable "watson_machine_learning_instance_crn" {
   description = "Watson Machine Learning instance CRN"
   type        = string
   default     = null # WML usage is optional, elastic can be used instead
-}
-
-variable "watson_machine_learning_instance_resource_name" {
-  description = "Watson Machine Learning instance resource name"
-  type        = string
-  default     = null # WML usage is optional, elastic can be used instead
+  validation {
+    condition = anytrue([
+      var.watson_machine_learning_instance_crn == null,
+      can(regex("^crn:v\\d+:[^:]*:[^:]*:pm-20:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watson_machine_learning_instance_crn))
+    ])
+    error_message = "The value provided for 'watson_machine_learning_instance_crn' is not valid."
+  }
 }
 
 ##############################################################################################################
@@ -135,7 +136,7 @@ variable "cos_kms_crn" {
       can(regex("^crn:(.*:){3}kms:(.*:){2}[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.cos_kms_crn)),
       var.cos_kms_crn == null,
     ])
-    error_message = "Key Protect CRN validation failed."
+    error_message = "The value provided for 'cos_kms_crn' is not valid."
   }
 }
 
@@ -230,8 +231,8 @@ variable "secrets_manager_instance_crn" {
   description = "CRN of the Secrets Manager instance where the API key and signing key will be stored."
   type        = string
   validation {
-    condition     = can(regex("^crn:", var.secrets_manager_instance_crn))
-    error_message = "The value for secrets_manager_instance_crn must be a valid IBM Cloud CRN."
+    condition     = can(regex("^crn:v\\d+:[^:]*:[^:]*:secrets-manager:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.secrets_manager_instance_crn))
+    error_message = "The value provided for 'secrets_manager_instance_crn' is not valid."
   }
 }
 

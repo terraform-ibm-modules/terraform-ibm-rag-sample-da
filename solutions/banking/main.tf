@@ -15,6 +15,13 @@ module "watson_discovery_crn_parser" {
   crn     = var.watson_discovery_instance_crn
 }
 
+module "watson_machine_learning_crn_parser" {
+  count   = var.watson_machine_learning_instance_crn != null ? 1 : 0
+  source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
+  version = "1.4.1"
+  crn     = var.watson_machine_learning_instance_crn
+}
+
 module "secrets_manager_crn_parser" {
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
   version = "1.4.1"
@@ -28,6 +35,8 @@ locals {
 
   watson_discovery_instance_guid = var.watson_discovery_instance_crn != null ? module.watson_discovery_crn_parser[0].service_instance : null
   watson_discovery_region        = var.watson_discovery_instance_crn != null ? module.watson_discovery_crn_parser[0].region : null
+
+  watson_machine_learning_instance_resource_name = var.watson_machine_learning_instance_crn != null ? module.watson_machine_learning_crn_parser[0].resource_name : null
 
   secrets_manager_guid   = module.secrets_manager_crn_parser.service_instance
   secrets_manager_region = module.secrets_manager_crn_parser.region
@@ -203,9 +212,9 @@ module "configure_wml_project" {
   source                    = "../../modules/watson-machine-learning"
   watsonx_project_delegated = var.cos_kms_crn != null ? true : false
 
-  # Watson Machine Learning Instance (from test resources)
+  # Watson Machine Learning Instance (parsed from CRN)
   watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
-  watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
+  watson_ml_instance_resource_name = local.watson_machine_learning_instance_resource_name
 
   # Watson Project Configuration
   watson_ml_project_name      = local.watson_ml_project_name
