@@ -162,7 +162,7 @@
               "key": "inventory_repo_url"
             },
             {
-              "key": "watson_assistant_instance_crn",
+              "key": "watsonx_assistant_instance_crn",
               "display_name": "watson_assistant_instance",
               "custom_config": {
                 "type": "platform_resource",
