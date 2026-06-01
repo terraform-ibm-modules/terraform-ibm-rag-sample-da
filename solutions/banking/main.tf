@@ -28,6 +28,15 @@ module "secrets_manager_crn_parser" {
   crn     = var.secrets_manager_instance_crn
 }
 
+##############################################################################
+# Data Sources for Resource Lookups
+##############################################################################
+
+data "ibm_resource_instance" "watson_ml_instance" {
+  count      = var.watson_machine_learning_instance_crn != null ? 1 : 0
+  identifier = module.watson_machine_learning_crn_parser[0].service_instance
+}
+
 locals {
   # Parsed CRN values
   watson_assistant_instance_guid   = module.watson_assistant_crn_parser.service_instance
@@ -36,7 +45,7 @@ locals {
   watson_discovery_instance_guid = var.watson_discovery_instance_crn != null ? module.watson_discovery_crn_parser[0].service_instance : null
   watson_discovery_region        = var.watson_discovery_instance_crn != null ? module.watson_discovery_crn_parser[0].region : null
 
-  watson_machine_learning_instance_resource_name = var.watson_machine_learning_instance_crn != null ? module.watson_machine_learning_crn_parser[0].resource_name : null
+  watson_machine_learning_instance_resource_name = var.watson_machine_learning_instance_crn != null ? data.ibm_resource_instance.watson_ml_instance[0].name : null
 
   secrets_manager_guid   = module.secrets_manager_crn_parser.service_instance
   secrets_manager_region = module.secrets_manager_crn_parser.region
