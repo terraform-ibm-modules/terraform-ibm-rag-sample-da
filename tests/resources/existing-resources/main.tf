@@ -43,7 +43,7 @@ module "elasticsearch" {
   resource_group_id   = module.resource_group.resource_group_id
   name                = "${var.prefix}-es"
   region              = var.region
-  service_endpoints   = "public-and-private"
+  service_endpoints   = "public"
   deletion_protection = false
   service_credential_names = [
     {
@@ -59,13 +59,6 @@ module "elasticsearch" {
       "role" : "Editor"
     }
   ]
-}
-
-# Wait for Elasticsearch to be fully operational after creation
-# ICD Elasticsearch instances take time to become fully ready even after Terraform reports them as created
-resource "time_sleep" "wait_for_elasticsearch_ready" {
-  depends_on      = [module.elasticsearch]
-  create_duration = "300s" # 5 minutes to ensure Elasticsearch is fully operational
 }
 
 ##############################################################################
