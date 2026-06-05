@@ -48,15 +48,18 @@ module "elasticsearch" {
   service_credential_names = [
     {
       "name" : "elastic_db_admin",
-      "role" : "Administrator"
+      "role" : "Administrator",
+      "endpoint" : "public"
     },
     {
       "name" : "wxasst_db_user",
-      "role" : "Editor"
+      "role" : "Editor",
+      "endpoint" : "public"
     },
     {
       "name" : "toolchain_db_user",
-      "role" : "Editor"
+      "role" : "Editor",
+      "endpoint" : "public"
     }
   ]
 }
