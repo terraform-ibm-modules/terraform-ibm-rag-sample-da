@@ -43,20 +43,23 @@ module "elasticsearch" {
   resource_group_id   = module.resource_group.resource_group_id
   name                = "${var.prefix}-es"
   region              = var.region
-  service_endpoints   = "public-and-private"
+  service_endpoints   = "public"
   deletion_protection = false
   service_credential_names = [
     {
       "name" : "elastic_db_admin",
-      "role" : "Administrator"
+      "role" : "Administrator",
+      "endpoint" : "public"
     },
     {
       "name" : "wxasst_db_user",
-      "role" : "Editor"
+      "role" : "Editor",
+      "endpoint" : "public"
     },
     {
       "name" : "toolchain_db_user",
-      "role" : "Editor"
+      "role" : "Editor",
+      "endpoint" : "public"
     }
   ]
 }
