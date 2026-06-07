@@ -3,6 +3,7 @@ package test
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -91,7 +92,7 @@ func TestMain(m *testing.M) {
 
 func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terraform.Options) *testhelper.TestOptions {
 
-	region := terraform.Output(t, existingTerraformOptions, "region")
+	region := terraform.OutputContext(t, context.Background(), existingTerraformOptions, "region")
 
 	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
 		Testing:            t,
@@ -102,26 +103,30 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 		Region:                     region,
 		CheckApplyResultForUpgrade: true,
 		TerraformVars: map[string]interface{}{
-			"toolchain_region":                            region,
-			"prefix":                                      prefix,
-			"ci_pipeline_id":                              terraform.Output(t, existingTerraformOptions, "ci_pipeline_id"),
-			"cd_pipeline_id":                              terraform.Output(t, existingTerraformOptions, "cd_pipeline_id"),
-			"watson_assistant_instance_crn":               terraform.Output(t, existingTerraformOptions, "watson_assistant_instance_crn"),
-			"watson_discovery_instance_crn":               terraform.Output(t, existingTerraformOptions, "watson_discovery_instance_crn"),
-			"use_existing_resource_group":                 true,
-			"create_continuous_delivery_service_instance": false,
-			"resource_group_name":                         terraform.Output(t, existingTerraformOptions, "resource_group_name"),
-			"toolchain_resource_group":                    terraform.Output(t, existingTerraformOptions, "resource_group_name"),
-			"watson_machine_learning_instance_crn":        terraform.Output(t, existingTerraformOptions, "watson_machine_learning_instance_crn"),
-			"secrets_manager_instance_crn":                terraform.Output(t, existingTerraformOptions, "secrets_manager_instance_crn"),
-			"secrets_manager_resource_group_name":         terraform.Output(t, existingTerraformOptions, "resource_group_name"),
-			"trigger_ci_pipeline_run":                     false,
-			"secrets_manager_endpoint_type":               "public",
-			"provider_visibility":                         "public",
-			"elastic_instance_crn":                        terraform.Output(t, existingTerraformOptions, "elasticsearch_crn"),
-			"cluster_name":                                terraform.Output(t, existingTerraformOptions, "cluster_name"),
-			"cos_kms_crn":                                 terraform.Output(t, existingTerraformOptions, "kms_instance_crn"),
-			"create_secrets":                              true,
+			"toolchain_region":                               region,
+			"prefix":                                         prefix,
+			"ci_pipeline_id":                                 terraform.OutputContext(t, context.Background(), existingTerraformOptions, "ci_pipeline_id"),
+			"cd_pipeline_id":                                 terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cd_pipeline_id"),
+			"watson_assistant_instance_id":                   terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_assistant_instance_id"),
+			"watson_assistant_region":                        terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_assistant_region"),
+			"watson_discovery_instance_id":                   terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_discovery_instance_id"),
+			"watson_discovery_region":                        terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_discovery_region"),
+			"use_existing_resource_group":                    true,
+			"create_continuous_delivery_service_instance":    false,
+			"resource_group_name":                            terraform.OutputContext(t, context.Background(), existingTerraformOptions, "resource_group_name"),
+			"toolchain_resource_group":                       terraform.OutputContext(t, context.Background(), existingTerraformOptions, "resource_group_name"),
+			"watson_machine_learning_instance_crn":           terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_machine_learning_instance_crn"),
+			"watson_machine_learning_instance_resource_name": terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
+			"secrets_manager_guid":                           terraform.OutputContext(t, context.Background(), existingTerraformOptions, "secrets_manager_guid"),
+			"secrets_manager_region":                         terraform.OutputContext(t, context.Background(), existingTerraformOptions, "secrets_manager_region"),
+			"secrets_manager_resource_group_name":            terraform.OutputContext(t, context.Background(), existingTerraformOptions, "resource_group_name"),
+			"trigger_ci_pipeline_run":                        false,
+			"secrets_manager_endpoint_type":                  "public",
+			"provider_visibility":                            "public",
+			"elastic_instance_crn":                           terraform.OutputContext(t, context.Background(), existingTerraformOptions, "elasticsearch_crn"),
+			"cluster_name":                                   terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_name"),
+			"cos_kms_crn":                                    terraform.OutputContext(t, context.Background(), existingTerraformOptions, "kms_instance_crn"),
+			"create_secrets":                                 true,
 		},
 		IgnoreUpdates: testhelper.Exemptions{
 			List: []string{
@@ -155,10 +160,10 @@ func TestRunBankingSolutions(t *testing.T) {
 	// ------------------------------------------------------------------------------------
 	// Provision a resource group, watson assistance and watson discovery instances.
 	// ------------------------------------------------------------------------------------
-	prefix := fmt.Sprintf("rag-da-%s", strings.ToLower(random.UniqueId()))
+	prefix := fmt.Sprintf("rag-da-%s", strings.ToLower(random.UniqueID()))
 	region := validRegions[common.CryptoIntn(len(validRegions))]
 	realTerraformDir := "./resources/existing-resources"
-	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())))
+	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueID())))
 
 	// Verify ibmcloud_api_key variable is set
 	checkVariable := "TF_VAR_ibmcloud_api_key"
@@ -186,9 +191,9 @@ func TestRunBankingSolutions(t *testing.T) {
 		// This is the same as setting the -upgrade=true flag with terraform.
 		Upgrade: true,
 	})
-	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
+	terraform.WorkspaceSelectOrNewContext(t, context.Background(), existingTerraformOptions, prefix)
 
-	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
+	_, existErr := terraform.InitAndApplyContextE(t, context.Background(), existingTerraformOptions)
 
 	if existErr != nil {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
@@ -211,8 +216,8 @@ func TestRunBankingSolutions(t *testing.T) {
 		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
-		terraform.Destroy(t, existingTerraformOptions)
-		terraform.WorkspaceDelete(t, existingTerraformOptions, prefix)
+		terraform.DestroyContext(t, context.Background(), existingTerraformOptions)
+		terraform.WorkspaceDeleteContext(t, context.Background(), existingTerraformOptions, prefix)
 		logger.Log(t, "END: Destroy (existing resources)")
 	}
 }
@@ -220,10 +225,10 @@ func TestRunBankingSolutions(t *testing.T) {
 func TestRunUpgradeExample(t *testing.T) {
 	t.Parallel()
 
-	prefix := fmt.Sprintf("rag-da-upgr-%s", strings.ToLower(random.UniqueId()))
+	prefix := fmt.Sprintf("rag-da-upgr-%s", strings.ToLower(random.UniqueID()))
 	region := validRegions[common.CryptoIntn(len(validRegions))]
 	realTerraformDir := "./resources/existing-resources"
-	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())))
+	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueID())))
 
 	// Verify ibmcloud_api_key variable is set
 	checkVariable := "TF_VAR_ibmcloud_api_key"
@@ -252,8 +257,8 @@ func TestRunUpgradeExample(t *testing.T) {
 		Upgrade: true,
 	})
 
-	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
-	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
+	terraform.WorkspaceSelectOrNewContext(t, context.Background(), existingTerraformOptions, prefix)
+	_, existErr := terraform.InitAndApplyContextE(t, context.Background(), existingTerraformOptions)
 
 	if existErr != nil {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
@@ -277,8 +282,8 @@ func TestRunUpgradeExample(t *testing.T) {
 		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
-		terraform.Destroy(t, existingTerraformOptions)
-		terraform.WorkspaceDelete(t, existingTerraformOptions, prefix)
+		terraform.DestroyContext(t, context.Background(), existingTerraformOptions)
+		terraform.WorkspaceDeleteContext(t, context.Background(), existingTerraformOptions, prefix)
 		logger.Log(t, "END: Destroy (existing resources)")
 	}
 }
