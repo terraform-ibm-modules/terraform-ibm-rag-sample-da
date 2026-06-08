@@ -110,8 +110,8 @@ module "secrets_manager_secret_ibm_iam" {
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
   version                 = "1.10.1"
-  region                  = var.secrets_manager_region
-  secrets_manager_guid    = var.secrets_manager_guid
+  region                  = local.secrets_manager_region
+  secrets_manager_guid    = local.secrets_manager_guid
   secret_name             = "ibmcloud-api-key"
   secret_description      = "IBM IAM Api key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
@@ -151,8 +151,8 @@ module "secrets_manager_secret_signing_key" {
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
   version                 = "1.10.1"
-  region                  = var.secrets_manager_region
-  secrets_manager_guid    = var.secrets_manager_guid
+  region                  = local.secrets_manager_region
+  secrets_manager_guid    = local.secrets_manager_guid
   secret_group_id         = local.secret_group_id
   secret_name             = "signing-key"
   secret_description      = "IBM Signing GPG key"
@@ -169,8 +169,8 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   count                   = (var.create_secrets && var.watsonx_admin_api_key != null) ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
   version                 = "1.10.1"
-  region                  = var.secrets_manager_region
-  secrets_manager_guid    = var.secrets_manager_guid
+  region                  = local.secrets_manager_region
+  secrets_manager_guid    = local.secrets_manager_guid
   secret_group_id         = local.secret_group_id
   secret_name             = "watsonx-admin-api-key"
   secret_description      = "WatsonX Admin API Key"
