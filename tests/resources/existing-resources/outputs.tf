@@ -56,6 +56,7 @@ output "cluster_name" {
 output "elasticsearch_crn" {
   value       = module.elasticsearch.crn
   description = "Elasticsearch instance CRN."
+  depends_on  = [time_sleep.wait_for_elasticsearch_ready]
 }
 
 output "kms_instance_crn" {

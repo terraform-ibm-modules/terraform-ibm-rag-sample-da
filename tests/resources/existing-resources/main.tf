@@ -27,7 +27,7 @@ locals {
 
 module "resource_group" {
   source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.4.7"
+  version = "1.6.0"
   # if an existing resource group is not set (null) create a new one using prefix
   resource_group_name          = var.resource_group == null ? "${var.prefix}-resource-group" : null
   existing_resource_group_name = var.resource_group
@@ -39,17 +39,36 @@ module "resource_group" {
 
 module "elasticsearch" {
   source              = "terraform-ibm-modules/icd-elasticsearch/ibm"
-  version             = "2.9.4"
+  version             = "2.13.7"
   resource_group_id   = module.resource_group.resource_group_id
   name                = "${var.prefix}-es"
   region              = var.region
-  service_endpoints   = "public-and-private"
+  service_endpoints   = "public"
   deletion_protection = false
-  service_credential_names = {
-    "elastic_db_admin" : "Administrator",
-    "wxasst_db_user" : "Editor",
-    "toolchain_db_user" : "Editor"
-  }
+  service_credential_names = [
+    {
+      "name" : "elastic_db_admin",
+      "role" : "Administrator",
+      "endpoint" : "public"
+    },
+    {
+      "name" : "wxasst_db_user",
+      "role" : "Editor",
+      "endpoint" : "public"
+    },
+    {
+      "name" : "toolchain_db_user",
+      "role" : "Editor",
+      "endpoint" : "public"
+    }
+  ]
+}
+
+# Wait for Elasticsearch to be fully operational after creation
+# ICD Elasticsearch instances take time to become fully ready even after Terraform reports them as created
+resource "time_sleep" "wait_for_elasticsearch_ready" {
+  depends_on      = [module.elasticsearch]
+  create_duration = "300s" # 5 minutes to ensure Elasticsearch is fully operational
 }
 
 ##############################################################################
@@ -58,7 +77,7 @@ module "elasticsearch" {
 
 module "key_protect" {
   source                    = "terraform-ibm-modules/kms-all-inclusive/ibm"
-  version                   = "5.5.27"
+  version                   = "5.6.5"
   key_protect_instance_name = "${var.prefix}-key-protect"
   resource_group_id         = module.resource_group.resource_group_id
   region                    = var.region
@@ -209,7 +228,7 @@ module "ocp_base" {
 
   count                               = var.create_ocp_cluster ? 1 : 0
   source                              = "terraform-ibm-modules/base-ocp-vpc/ibm"
-  version                             = "3.78.7"
+  version                             = "3.87.2"
   resource_group_id                   = module.resource_group.resource_group_id
   region                              = var.region
   tags                                = []
@@ -226,7 +245,7 @@ module "ocp_base" {
 
 module "secrets_manager" {
   source               = "terraform-ibm-modules/secrets-manager/ibm"
-  version              = "v2.13.3"
+  version              = "v2.15.5"
   region               = var.region
   secrets_manager_name = "${var.prefix}-secrets-manager"
   sm_service_plan      = "trial"
