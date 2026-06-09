@@ -46,7 +46,7 @@ module "resource_group" {
     ibm = ibm.ibm_resources
   }
   source                       = "terraform-ibm-modules/resource-group/ibm"
-  version                      = "1.6.0"
+  version                      = "1.6.1"
   resource_group_name          = var.use_existing_resource_group == false ? var.resource_group_name : null
   existing_resource_group_name = var.use_existing_resource_group == true ? var.resource_group_name : null
 }
@@ -77,7 +77,7 @@ data "ibm_resource_instance" "secrets_manager_name" {
 # generate signing key if it is not provided.
 module "gpg_signing_key" {
   count                = local.generate_signing_key ? 1 : 0
-  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v3.1.1"
+  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v3.1.2"
   ibmcloud_api_key     = var.ibmcloud_api_key
   gpg_name             = var.gpg_name
   gpg_email            = var.gpg_email
