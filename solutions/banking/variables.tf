@@ -71,7 +71,7 @@ variable "inventory_repo_url" {
   default     = null
 }
 
-variable "watson_assistant_instance_crn" {
+variable "watsonx_assistant_instance_crn" {
   description = "CRN of the Watson Assistant service instance."
   type        = string
   validation {
