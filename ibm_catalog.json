@@ -163,7 +163,7 @@
             },
             {
               "key": "watsonx_assistant_instance_crn",
-              "display_name": "watson_assistant_instance",
+              "display_name": "watsonx_assistant_instance",
               "custom_config": {
                 "type": "platform_resource",
                 "grouping": "deployment",
