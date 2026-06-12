@@ -8,7 +8,7 @@ provider "ibm" {
 provider "ibm" {
   alias            = "sm_resources"
   ibmcloud_api_key = var.ibmcloud_api_key
-  region           = var.secrets_manager_region
+  region           = local.secrets_manager_region
   visibility       = var.provider_visibility
 }
 
