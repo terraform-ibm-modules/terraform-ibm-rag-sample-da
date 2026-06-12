@@ -1,11 +1,11 @@
 output "watsonx_project_id" {
   description = "ID of the created WatsonX project."
-  value       = local.use_watson_machine_learning ? module.configure_wml_project[0].watsonx_project_id : null
+  value       = local.use_watsonx_machine_learning ? module.configure_wml_project[0].watsonx_project_id : null
 }
 
 output "watsonx_project_url" {
   description = "WatsonX project ID URL."
-  value       = local.use_watson_machine_learning ? "https://dataplatform.cloud.ibm.com/projects/${module.configure_wml_project[0].watsonx_project_id}" : null
+  value       = local.use_watsonx_machine_learning ? "https://dataplatform.cloud.ibm.com/projects/${module.configure_wml_project[0].watsonx_project_id}" : null
 }
 
 output "watsonx_assistant_api_url" {
@@ -14,13 +14,13 @@ output "watsonx_assistant_api_url" {
 }
 
 output "watson_discovery_api_url" {
-  description = "Watson Discovery URL."
-  value       = local.use_watson_discovery ? "https:${local.watson_discovery_url}" : null
+  description = "Watsonx Discovery URL."
+  value       = local.use_watsonx_discovery ? "https:${local.watsonx_discovery_url}" : null
 }
 
 output "cos_instance_crn" {
   description = "COS instance CRN which is configured with the WatsonX project."
-  value       = local.use_watson_machine_learning ? module.configure_wml_project[0].watson_ml_cos_instance.cos_instance_crn : null
+  value       = local.use_watsonx_machine_learning ? module.configure_wml_project[0].watson_ml_cos_instance.cos_instance_crn : null
 }
 
 output "watsonx_assistant_integration_id" {
@@ -34,8 +34,8 @@ output "watsonx_assistant_environment" {
 }
 
 output "watson_discovery_project_id" {
-  description = "Watson Discovery Project ID."
-  value       = local.use_watson_discovery ? module.configure_discovery_project[0].watson_discovery_project_id : null
+  description = "Watsonx Discovery Project ID."
+  value       = local.use_watsonx_discovery ? module.configure_discovery_project[0].watson_discovery_project_id : null
 }
 
 output "watsonx_assistant_skills_status" {

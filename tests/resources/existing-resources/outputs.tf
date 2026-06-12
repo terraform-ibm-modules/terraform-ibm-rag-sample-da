@@ -1,21 +1,46 @@
-output "watson_assistant_instance_crn" {
+output "watsonx_assistant_instance_crn" {
   value       = ibm_resource_instance.assistant_instance.crn
   description = "CRN of the watsonx Assistant instance"
 }
 
-output "watson_discovery_instance_crn" {
+output "watsonx_assistant_instance_id" {
+  value       = ibm_resource_instance.assistant_instance.guid
+  description = "GUID of the watsonx Assistant instance"
+}
+
+output "watsonx_assistant_region" {
+  value       = ibm_resource_instance.assistant_instance.location
+  description = "Region of the watsonx Assistant instance"
+}
+
+output "watsonx_discovery_instance_crn" {
   value       = ibm_resource_instance.discovery_instance.crn
-  description = "CRN of the Watson Discovery instance"
+  description = "CRN of the watsonx Discovery instance"
 }
 
-output "watson_machine_learning_instance_crn" {
+output "watsonx_discovery_instance_id" {
+  value       = ibm_resource_instance.discovery_instance.guid
+  description = "GUID of the watsonx Discovery instance"
+}
+
+output "watsonx_discovery_region" {
+  value       = ibm_resource_instance.discovery_instance.location
+  description = "Region of the watsonx Discovery instance"
+}
+
+output "watsonx_machine_learning_instance_crn" {
   value       = ibm_resource_instance.machine_learning_instance.crn
-  description = "Watson Machine Learning instance CRN."
+  description = "CRN of the watsonx Machine Learning instance"
 }
 
-output "watson_studio_instance_crn" {
+output "watsonx_machine_learning_instance_resource_name" {
+  value       = ibm_resource_instance.machine_learning_instance.resource_name
+  description = "watsonx Machine Learning instance resource name."
+}
+
+output "watsonx_studio_instance_crn" {
   value       = ibm_resource_instance.studio_instance.crn
-  description = "Watson Studio instance CRN."
+  description = "CRN of the watsonx Studio instance."
 }
 
 output "ci_pipeline_id" {
@@ -57,4 +82,14 @@ output "region" {
 output "secrets_manager_instance_crn" {
   value       = module.secrets_manager.secrets_manager_crn
   description = "CRN of the Secrets Manager instance"
+}
+
+output "secrets_manager_guid" {
+  value       = module.secrets_manager.secrets_manager_guid
+  description = "GUID of Secrets Manager instance"
+}
+
+output "secrets_manager_region" {
+  value       = module.secrets_manager.secrets_manager_region
+  description = "Region of the Secrets Manager instance"
 }

@@ -16,7 +16,7 @@ variable "provider_visibility" {
 }
 variable "watsonx_admin_api_key" {
   default     = null
-  description = "Used to call Watson APIs to configure the user and the project."
+  description = "Used to call Watsonx APIs to configure the user and the project."
   sensitive   = true
   type        = string
 }
@@ -72,56 +72,56 @@ variable "inventory_repo_url" {
 }
 
 variable "watsonx_assistant_instance_crn" {
-  description = "CRN of the Watson Assistant service instance."
+  description = "CRN of the Watsonx Assistant service instance."
   type        = string
   validation {
-    condition     = can(regex("^crn:v\\d+:[^:]*:[^:]*:conversation:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watson_assistant_instance_crn))
-    error_message = "The value provided for 'watson_assistant_instance_crn' is not valid."
+    condition     = can(regex("^crn:v\\d+:[^:]*:[^:]*:conversation:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watsonx_assistant_instance_crn))
+    error_message = "The value provided for 'watsonx_assistant_instance_crn' is not valid."
   }
 }
 
-variable "watson_discovery_instance_crn" {
-  description = "CRN of the Watson Discovery service instance. If provided, Discovery integration is enabled."
+variable "watsonx_discovery_instance_crn" {
+  description = "CRN of the Watsonx Discovery service instance. If provided, Discovery integration is enabled."
   type        = string
   default     = null
   validation {
     condition = anytrue([
-      var.watson_discovery_instance_crn == null,
-      can(regex("^crn:v\\d+:[^:]*:[^:]*:discovery:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watson_discovery_instance_crn))
+      var.watsonx_discovery_instance_crn == null,
+      can(regex("^crn:v\\d+:[^:]*:[^:]*:discovery:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watsonx_discovery_instance_crn))
     ])
-    error_message = "The value provided for 'watson_discovery_instance_crn' is not valid."
+    error_message = "The value provided for 'watsonx_discovery_instance_crn' is not valid."
   }
 }
 
 ##############################################################################################################
-# Watson Machine Learning Instance Variables
+# watsonx Machine Learning Instance Variables
 ##############################################################################################################
 
-variable "watson_machine_learning_instance_crn" {
-  description = "Watson Machine Learning instance CRN"
+variable "watsonx_machine_learning_instance_crn" {
+  description = "Watsonx Machine Learning instance CRN"
   type        = string
   default     = null # WML usage is optional, elastic can be used instead
   validation {
     condition = anytrue([
-      var.watson_machine_learning_instance_crn == null,
-      can(regex("^crn:v\\d+:[^:]*:[^:]*:pm-20:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watson_machine_learning_instance_crn))
+      var.watsonx_machine_learning_instance_crn == null,
+      can(regex("^crn:v\\d+:[^:]*:[^:]*:pm-20:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watsonx_machine_learning_instance_crn))
     ])
-    error_message = "The value provided for 'watson_machine_learning_instance_crn' is not valid."
+    error_message = "The value provided for 'watsonx_machine_learning_instance_crn' is not valid."
   }
 }
 
 ##############################################################################################################
-# Watson Project Variables
+# watsonx Project Variables
 ##############################################################################################################
 
 variable "watson_project_name" {
-  description = "Watson project name"
+  description = "Watsonx project name"
   type        = string
   default     = "RAG-sample-project"
 }
 
 variable "watson_project_sensitive" {
-  description = "Mark Watson project as sensitive"
+  description = "Mark Watsonx project as sensitive"
   type        = bool
   default     = false
 }

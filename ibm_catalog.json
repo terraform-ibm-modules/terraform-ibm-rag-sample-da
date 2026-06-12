@@ -176,7 +176,7 @@
               }
             },
             {
-              "key": "watson_discovery_instance_crn",
+              "key": "watsonx_discovery_instance_crn",
               "display_name": "watson_discovery_instance",
               "custom_config": {
                 "type": "platform_resource",
@@ -190,7 +190,7 @@
               }
             },
             {
-              "key": "watson_machine_learning_instance_crn",
+              "key": "watsonx_machine_learning_instance_crn",
               "display_name": "watson_machine_learning_instance",
               "custom_config": {
                 "type": "platform_resource",
