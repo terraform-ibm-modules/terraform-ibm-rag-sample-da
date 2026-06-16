@@ -469,3 +469,9 @@ resource "null_resource" "ci_pipeline_run" {
     quiet       = true
   }
 }
+
+data "external" "rag_url" {
+  depends_on = [null_resource.ci_pipeline_run]
+
+  program = ["bash", "${path.module}/watson-scripts/get_rag_url.sh", var.cd_pipeline_id]
+}
