@@ -33,6 +33,10 @@ terraform {
       source  = "hashicorp/time"
       version = ">= 0.14.0"
     }
+    external = {
+      source  = "hashicorp/external"
+      version = ">= 2.3.4"
+    }
   }
   required_version = ">= 1.9.0"
 }
