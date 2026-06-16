@@ -108,7 +108,7 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"ci_pipeline_id":                              terraform.OutputContext(t, context.Background(), existingTerraformOptions, "ci_pipeline_id"),
 			"cd_pipeline_id":                              terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cd_pipeline_id"),
 			"watsonx_assistant_instance_crn":              terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watsonx_assistant_instance_crn"),
-			"watsonx_discovery_instance_crn":              terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watsonx_discovery_instance_crn"),
+			"watson_discovery_instance_crn":               terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_discovery_instance_crn"),
 			"use_existing_resource_group":                 true,
 			"create_continuous_delivery_service_instance": false,
 			"resource_group_name":                         terraform.OutputContext(t, context.Background(), existingTerraformOptions, "resource_group_name"),

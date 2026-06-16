@@ -35,7 +35,7 @@ TF_VARS_FILE="terraform.tfvars"
   ci_pipeline_id_var_name="ci_pipeline_id"
   cd_pipeline_id_var_name="cd_pipeline_id"
   watsonx_assistant_instance_crn_var_name="watsonx_assistant_instance_crn"
-  watsonx_discovery_instance_crn_var_name="watsonx_discovery_instance_crn"
+  watson_discovery_instance_crn_var_name="watson_discovery_instance_crn"
   watsonx_machine_learning_instance_crn_var_name="watsonx_machine_learning_instance_crn"
   use_existing_resource_group_var_name="use_existing_resource_group"
   create_continuous_delivery_service_instance_var_name="create_continuous_delivery_service_instance"
@@ -48,7 +48,7 @@ TF_VARS_FILE="terraform.tfvars"
   ci_pipeline_id_value=$(terraform output -state=terraform.tfstate -raw ci_pipeline_id)
   cd_pipeline_id_value=$(terraform output -state=terraform.tfstate -raw cd_pipeline_id)
   watsonx_assistant_instance_crn_value=$(terraform output -state=terraform.tfstate -raw watsonx_assistant_instance_crn)
-  watsonx_discovery_instance_crn_value=$(terraform output -state=terraform.tfstate -raw watsonx_discovery_instance_crn)
+  watson_discovery_instance_crn_value=$(terraform output -state=terraform.tfstate -raw watson_discovery_instance_crn)
   watsonx_machine_learning_instance_crn_value=$(terraform output -state=terraform.tfstate -raw watsonx_machine_learning_instance_crn)
   secrets_manager_instance_crn_value=$(terraform output -state=terraform.tfstate -raw secrets_manager_instance_crn)
   use_existing_resource_group_value=true
@@ -72,8 +72,8 @@ TF_VARS_FILE="terraform.tfvars"
         --arg cd_pipeline_id_value "${cd_pipeline_id_value}" \
         --arg watsonx_assistant_instance_crn_var_name "${watsonx_assistant_instance_crn_var_name}" \
         --arg watsonx_assistant_instance_crn_value "${watsonx_assistant_instance_crn_value}" \
-        --arg watsonx_discovery_instance_crn_var_name "${watsonx_discovery_instance_crn_var_name}" \
-        --arg watsonx_discovery_instance_crn_value "${watsonx_discovery_instance_crn_value}" \
+        --arg watson_discovery_instance_crn_var_name "${watson_discovery_instance_crn_var_name}" \
+        --arg watson_discovery_instance_crn_value "${watson_discovery_instance_crn_value}" \
         --arg watsonx_machine_learning_instance_crn_var_name "${watsonx_machine_learning_instance_crn_var_name}" \
         --arg watsonx_machine_learning_instance_crn_value "${watsonx_machine_learning_instance_crn_value}" \
         --arg use_existing_resource_group_var_name "${use_existing_resource_group_var_name}" \
@@ -93,7 +93,7 @@ TF_VARS_FILE="terraform.tfvars"
           ($ci_pipeline_id_var_name): $ci_pipeline_id_value,
           ($cd_pipeline_id_var_name): $cd_pipeline_id_value,
           ($watsonx_assistant_instance_crn_var_name): $watsonx_assistant_instance_crn_value,
-          ($watsonx_discovery_instance_crn_var_name): $watsonx_discovery_instance_crn_value,
+          ($watson_discovery_instance_crn_var_name): $watson_discovery_instance_crn_value,
           ($watsonx_machine_learning_instance_crn_var_name): $watsonx_machine_learning_instance_crn_value,
           ($use_existing_resource_group_var_name): $use_existing_resource_group_value,
           ($create_continuous_delivery_service_instance_var_name): $create_continuous_delivery_service_instance_value,

@@ -8,11 +8,11 @@ module "watsonx_assistant_crn_parser" {
   crn     = var.watsonx_assistant_instance_crn
 }
 
-module "watsonx_discovery_crn_parser" {
-  count   = var.watsonx_discovery_instance_crn != null ? 1 : 0
+module "watson_discovery_crn_parser" {
+  count   = var.watson_discovery_instance_crn != null ? 1 : 0
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
   version = "1.4.1"
-  crn     = var.watsonx_discovery_instance_crn
+  crn     = var.watson_discovery_instance_crn
 }
 
 module "watsonx_machine_learning_crn_parser" {
@@ -42,15 +42,16 @@ locals {
   watsonx_assistant_instance_guid   = module.watsonx_assistant_crn_parser.service_instance
   watsonx_assistant_instance_region = module.watsonx_assistant_crn_parser.region
 
-  watsonx_discovery_instance_guid = var.watsonx_discovery_instance_crn != null ? module.watsonx_discovery_crn_parser[0].service_instance : null
-  watsonx_discovery_region        = var.watsonx_discovery_instance_crn != null ? module.watsonx_discovery_crn_parser[0].region : null
+  watsonx_discovery_instance_guid = var.watson_discovery_instance_crn != null ? module.watson_discovery_crn_parser[0].service_instance : null
+  watsonx_discovery_region        = var.watson_discovery_instance_crn != null ? module.watson_discovery_crn_parser[0].region : null
 
   watsonx_machine_learning_instance_resource_name = var.watsonx_machine_learning_instance_crn != null ? data.ibm_resource_instance.watsonx_ml_instance[0].name : null
+  watsonx_machine_learning_region                 = var.watsonx_machine_learning_instance_crn != null ? module.watsonx_machine_learning_crn_parser[0].region : null
 
   secrets_manager_guid   = module.secrets_manager_crn_parser.service_instance
   secrets_manager_region = module.secrets_manager_crn_parser.region
 
-  use_watsonx_discovery        = var.watsonx_discovery_instance_crn != null
+  use_watsonx_discovery        = var.watson_discovery_instance_crn != null
   use_watsonx_machine_learning = (var.watsonx_machine_learning_instance_crn != null && var.watson_project_name != null) ? true : false
   use_elastic_index            = (var.elastic_instance_crn != null) ? true : false
 
@@ -61,7 +62,16 @@ locals {
   watsonx_discovery_project_name    = try("${local.prefix}-gen-ai-rag-sample-app-project", "gen-ai-rag-sample-app-project")
   watsonx_discovery_collection_name = try("${local.prefix}-gen-ai-rag-sample-app-data", "gen-ai-rag-sample-app-data")
   watsonx_ml_project_name           = try("${local.prefix}-${var.watson_project_name}", var.watson_project_name)
-  sensitive_tokendata               = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
+
+  # Construct region-aware watsonx project URL
+  # au-syd and ca-tor use dai.cloud.ibm.com, others use dataplatform.cloud.ibm.com
+  watsonx_project_base_url = local.use_watsonx_machine_learning ? (
+    contains(["au-syd", "ca-tor"], local.watsonx_machine_learning_region) ?
+    "https://${local.watsonx_machine_learning_region}.dai.cloud.ibm.com" :
+    "https://${local.watsonx_machine_learning_region}.dataplatform.cloud.ibm.com"
+  ) : null
+
+  sensitive_tokendata = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
   sm_secret_group_name = "default"
   secret_group_id      = [for sg in data.ibm_sm_secret_groups.secret_groups.secret_groups : sg.id if sg.name == local.sm_secret_group_name][0]
@@ -173,7 +183,7 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   secrets_manager_guid    = local.secrets_manager_guid
   secret_group_id         = local.secret_group_id
   secret_name             = "watsonx-admin-api-key"
-  secret_description      = "WatsonX Admin API Key"
+  secret_description      = "watsonx Admin API Key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_payload_password = var.watsonx_admin_api_key
   endpoint_type           = var.secrets_manager_endpoint_type
@@ -229,7 +239,7 @@ module "configure_wml_project" {
   watson_ml_project_name      = local.watsonx_ml_project_name
   watson_ml_project_sensitive = var.watson_project_sensitive
 
-  # Resource Group and COS
+  # Resource Group and Object Storage
   resource_group_id    = module.resource_group.resource_group_id
   cos_instance_name    = local.cos_instance_name
   cos_kms_crn          = var.cos_kms_crn

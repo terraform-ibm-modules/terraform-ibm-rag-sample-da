@@ -176,7 +176,7 @@
               }
             },
             {
-              "key": "watsonx_discovery_instance_crn",
+              "key": "watson_discovery_instance_crn",
               "display_name": "watson_discovery_instance",
               "custom_config": {
                 "type": "platform_resource",

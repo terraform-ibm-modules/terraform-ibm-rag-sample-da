@@ -1,45 +1,45 @@
 output "watsonx_project_id" {
-  description = "ID of the created WatsonX project."
+  description = "ID of the created watsonx project."
   value       = local.use_watsonx_machine_learning ? module.configure_wml_project[0].watsonx_project_id : null
 }
 
 output "watsonx_project_url" {
-  description = "WatsonX project ID URL."
-  value       = local.use_watsonx_machine_learning ? "https://dataplatform.cloud.ibm.com/projects/${module.configure_wml_project[0].watsonx_project_id}" : null
+  description = "watsonx project ID URL."
+  value       = local.use_watsonx_machine_learning ? "${local.watsonx_project_base_url}/projects/${module.configure_wml_project[0].watsonx_project_id}" : null
 }
 
 output "watsonx_assistant_api_url" {
-  description = "WatsonX Assistant URL."
+  description = "watsonx Assistant URL."
   value       = "https:${local.watsonx_assistant_url}"
 }
 
 output "watson_discovery_api_url" {
-  description = "Watsonx Discovery URL."
+  description = "watsonx Discovery URL."
   value       = local.use_watsonx_discovery ? "https:${local.watsonx_discovery_url}" : null
 }
 
 output "cos_instance_crn" {
-  description = "COS instance CRN which is configured with the WatsonX project."
+  description = "Cloud Resource Name (CRN) of the Object Storage instance which is configured with the watsonx project."
   value       = local.use_watsonx_machine_learning ? module.configure_wml_project[0].watson_ml_cos_instance.cos_instance_crn : null
 }
 
 output "watsonx_assistant_integration_id" {
-  description = "WatsonX assistant integration ID."
+  description = "watsonx Assistant integration ID."
   value       = module.configure_watson_assistant.watsonx_assistant_integration_id
 }
 
 output "watsonx_assistant_environment" {
-  description = "WatsonX assistant target environment."
+  description = "watsonx Assistant target environment."
   value       = module.configure_watson_assistant.watsonx_assistant_environment
 }
 
 output "watson_discovery_project_id" {
-  description = "Watsonx Discovery Project ID."
+  description = "watsonx Discovery Project ID."
   value       = local.use_watsonx_discovery ? module.configure_discovery_project[0].watson_discovery_project_id : null
 }
 
 output "watsonx_assistant_skills_status" {
-  description = "WatsonX assistant skills status"
+  description = "watsonx Assistant skills status"
   value       = module.configure_watson_assistant.watsonx_assistant_skills_status
 }
 

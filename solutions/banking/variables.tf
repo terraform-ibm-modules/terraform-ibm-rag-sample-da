@@ -72,7 +72,7 @@ variable "inventory_repo_url" {
 }
 
 variable "watsonx_assistant_instance_crn" {
-  description = "CRN of the watsonx Assistant service instance."
+  description = "Cloud Resource Name (CRN) of the watsonx Assistant service instance."
   type        = string
   validation {
     condition     = can(regex("^crn:v\\d+:[^:]*:[^:]*:conversation:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watsonx_assistant_instance_crn))
@@ -80,16 +80,16 @@ variable "watsonx_assistant_instance_crn" {
   }
 }
 
-variable "watsonx_discovery_instance_crn" {
-  description = "CRN of the Watsonx Discovery service instance. If provided, Discovery integration is enabled."
+variable "watson_discovery_instance_crn" {
+  description = "Cloud Resource Name (CRN) of the watsonx Discovery service instance. If provided, Discovery integration is enabled."
   type        = string
   default     = null
   validation {
     condition = anytrue([
-      var.watsonx_discovery_instance_crn == null,
-      can(regex("^crn:v\\d+:[^:]*:[^:]*:discovery:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watsonx_discovery_instance_crn))
+      var.watson_discovery_instance_crn == null,
+      can(regex("^crn:v\\d+:[^:]*:[^:]*:discovery:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watson_discovery_instance_crn))
     ])
-    error_message = "The value provided for 'watsonx_discovery_instance_crn' is not valid."
+    error_message = "The value provided for 'watson_discovery_instance_crn' is not valid."
   }
 }
 
@@ -98,7 +98,7 @@ variable "watsonx_discovery_instance_crn" {
 ##############################################################################################################
 
 variable "watsonx_machine_learning_instance_crn" {
-  description = "Watsonx Machine Learning instance CRN"
+  description = "Cloud Resource Name (CRN) of the watsonx Machine Learning instance."
   type        = string
   default     = null # WML usage is optional, elastic can be used instead
   validation {
@@ -127,7 +127,7 @@ variable "watson_project_sensitive" {
 }
 
 variable "cos_kms_crn" {
-  description = "Key Protect service instance CRN used to encrypt the COS buckets used by the watsonx projects."
+  description = "Cloud Resource Name (CRN) of the Key Protect service instance used to encrypt the Object Storage buckets used by the watsonx projects."
   type        = string
   default     = null
 
@@ -141,13 +141,13 @@ variable "cos_kms_crn" {
 }
 
 variable "cos_kms_key_crn" {
-  description = "Key Protect key CRN used to encrypt the COS buckets used by the watsonx projects. If not set, then the cos_kms_new_key_name must be specified."
+  description = "Cloud Resource Name (CRN) of the Key Protect key used to encrypt the Object Storage buckets used by the watsonx projects. If not set, then the cos_kms_new_key_name must be specified."
   type        = string
   default     = null
 }
 
 variable "cos_kms_new_key_name" {
-  description = "Name of the Key Protect key to create for encrypting the COS buckets used by the watsonx projects."
+  description = "Name of the Key Protect key to create for encrypting the Object Storage buckets used by the watsonx projects."
   type        = string
   default     = ""
 }
@@ -159,7 +159,7 @@ variable "cos_kms_ring_id" {
 }
 
 variable "elastic_instance_crn" {
-  description = "Elastic ICD instance CRN"
+  description = "Cloud Resource Name (CRN) of the Elastic ICD instance."
   type        = string
   default     = null # Elastic usage is optional
 }
@@ -228,7 +228,7 @@ variable "secrets_manager_endpoint_type" {
 }
 
 variable "secrets_manager_instance_crn" {
-  description = "CRN of the Secrets Manager instance where the API key and signing key will be stored."
+  description = "Cloud Resource Name (CRN) of the Secrets Manager instance where the API key and signing key will be stored."
   type        = string
   validation {
     condition     = can(regex("^crn:v\\d+:[^:]*:[^:]*:secrets-manager:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.secrets_manager_instance_crn))
