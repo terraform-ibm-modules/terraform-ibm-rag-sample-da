@@ -72,7 +72,7 @@ variable "inventory_repo_url" {
 }
 
 variable "watsonx_assistant_instance_crn" {
-  description = "CRN of the Watsonx Assistant service instance."
+  description = "CRN of the watsonx Assistant service instance."
   type        = string
   validation {
     condition     = can(regex("^crn:v\\d+:[^:]*:[^:]*:conversation:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watsonx_assistant_instance_crn))
