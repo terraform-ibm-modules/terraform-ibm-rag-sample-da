@@ -14,8 +14,8 @@ output "watsonx_assistant_api_url" {
 }
 
 output "watson_discovery_api_url" {
-  description = "watsonx Discovery URL."
-  value       = local.use_watsonx_discovery ? "https:${local.watsonx_discovery_url}" : null
+  description = "Watson Discovery URL."
+  value       = local.use_watson_discovery ? "https:${local.watson_discovery_url}" : null
 }
 
 output "cos_instance_crn" {
@@ -34,8 +34,8 @@ output "watsonx_assistant_environment" {
 }
 
 output "watson_discovery_project_id" {
-  description = "watsonx Discovery Project ID."
-  value       = local.use_watsonx_discovery ? module.configure_discovery_project[0].watson_discovery_project_id : null
+  description = "Watson Discovery Project ID."
+  value       = local.use_watson_discovery ? module.configure_discovery_project[0].watson_discovery_project_id : null
 }
 
 output "watsonx_assistant_skills_status" {
