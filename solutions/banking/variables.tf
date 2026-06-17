@@ -16,7 +16,7 @@ variable "provider_visibility" {
 }
 variable "watsonx_admin_api_key" {
   default     = null
-  description = "Used to call Watsonx APIs to configure the user and the project."
+  description = "Used to call watsonx APIs to configure the user and the project."
   sensitive   = true
   type        = string
 }
@@ -115,13 +115,13 @@ variable "watsonx_machine_learning_instance_crn" {
 ##############################################################################################################
 
 variable "watson_project_name" {
-  description = "Watsonx project name"
+  description = "watsonx project name"
   type        = string
   default     = "RAG-sample-project"
 }
 
 variable "watson_project_sensitive" {
-  description = "Mark Watsonx project as sensitive"
+  description = "Mark watsonx project as sensitive"
   type        = bool
   default     = false
 }
