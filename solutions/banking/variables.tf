@@ -81,7 +81,7 @@ variable "watsonx_assistant_instance_crn" {
 }
 
 variable "watson_discovery_instance_crn" {
-  description = "Cloud Resource Name (CRN) of the watsonx Discovery service instance. If provided, Discovery integration is enabled."
+  description = "Cloud Resource Name (CRN) of the Watson Discovery service instance. If provided, Discovery integration is enabled."
   type        = string
   default     = null
   validation {
