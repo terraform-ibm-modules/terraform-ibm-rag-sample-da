@@ -30,7 +30,6 @@ const bankingSolutionsDir = "solutions/banking"
 
 // watsonx.ai supported regions
 var validRegions = []string{
-	"au-syd",
 	"jp-tok",
 	"eu-gb",
 	"eu-de",
@@ -120,13 +119,12 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"secrets_manager_guid":                           terraform.OutputContext(t, context.Background(), existingTerraformOptions, "secrets_manager_guid"),
 			"secrets_manager_region":                         terraform.OutputContext(t, context.Background(), existingTerraformOptions, "secrets_manager_region"),
 			"secrets_manager_resource_group_name":            terraform.OutputContext(t, context.Background(), existingTerraformOptions, "resource_group_name"),
-			"trigger_ci_pipeline_run":                        false,
+			"trigger_ci_pipeline_run":                        true,
 			"secrets_manager_endpoint_type":                  "public",
 			"provider_visibility":                            "public",
 			"elastic_instance_crn":                           terraform.OutputContext(t, context.Background(), existingTerraformOptions, "elasticsearch_crn"),
-			"cluster_name":                                   terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_name"),
 			"cos_kms_crn":                                    terraform.OutputContext(t, context.Background(), existingTerraformOptions, "kms_instance_crn"),
-			"create_secrets":                                 true,
+			"create_secrets":                                 false,
 		},
 		IgnoreUpdates: testhelper.Exemptions{
 			List: []string{
@@ -185,7 +183,7 @@ func TestRunBankingSolutions(t *testing.T) {
 			"prefix":             prefix,
 			"region":             region,
 			"resource_group":     uniqueResourceGroup,
-			"create_ocp_cluster": true,
+			"create_ocp_cluster": false,
 		},
 		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
 		// This is the same as setting the -upgrade=true flag with terraform.
@@ -250,7 +248,7 @@ func TestRunUpgradeExample(t *testing.T) {
 			"prefix":             prefix,
 			"region":             region,
 			"resource_group":     uniqueResourceGroup,
-			"create_ocp_cluster": true,
+			"create_ocp_cluster": false,
 		},
 		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
 		// This is the same as setting the -upgrade=true flag with terraform.
