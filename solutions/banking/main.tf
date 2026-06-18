@@ -135,22 +135,28 @@ data "ibm_resource_instance" "secrets_manager_name" {
   identifier = local.secrets_manager_guid
 }
 
+data "ibm_resource_group" "secrets_manager_resource_group" {
+  count = local.generate_signing_key ? 1 : 0
+  name  = var.secrets_manager_resource_group_name
+}
+
 # generate signing key if it is not provided.
 module "gpg_signing_key" {
-  count                = local.generate_signing_key ? 1 : 0
-  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v3.1.2"
-  ibmcloud_api_key     = var.ibmcloud_api_key
-  gpg_name             = var.gpg_name
-  gpg_email            = var.gpg_email
-  sm_resource_group    = var.secrets_manager_resource_group_name
-  sm_location          = local.secrets_manager_region
-  sm_instance_id       = local.secrets_manager_guid
-  sm_name              = data.ibm_resource_instance.secrets_manager_name[0].name
-  sm_endpoint_type     = var.secrets_manager_endpoint_type
-  sm_exists            = true
-  create_secret_group  = false
-  create_signing_key   = true
-  sm_secret_group_name = local.sm_secret_group_name
+  count                   = local.generate_signing_key ? 1 : 0
+  source                  = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v3.1.2"
+  ibmcloud_api_key        = var.ibmcloud_api_key
+  gpg_name                = var.gpg_name
+  gpg_email               = var.gpg_email
+  sm_resource_group       = var.secrets_manager_resource_group_name
+  sm_resource_group_id    = data.ibm_resource_group.secrets_manager_resource_group[0].id
+  sm_location             = local.secrets_manager_region
+  sm_instance_id          = local.secrets_manager_guid
+  sm_name                 = data.ibm_resource_instance.secrets_manager_name[0].name
+  sm_endpoint_type        = var.secrets_manager_endpoint_type
+  sm_exists               = true
+  create_secret_group     = false
+  create_signing_key      = true
+  sm_secret_group_name    = local.sm_secret_group_name
 }
 
 # secrets manager secrets - IBM signing key
