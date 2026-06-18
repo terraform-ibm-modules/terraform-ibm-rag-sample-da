@@ -16,7 +16,7 @@ variable "provider_visibility" {
 }
 variable "watsonx_admin_api_key" {
   default     = null
-  description = "Used to call Watson APIs to configure the user and the project."
+  description = "Used to call watsonx APIs to configure the user and the project."
   sensitive   = true
   type        = string
 }
@@ -71,62 +71,63 @@ variable "inventory_repo_url" {
   default     = null
 }
 
-variable "watson_assistant_instance_id" {
-  description = "ID of the WatsonX Assistant service instance"
+variable "watsonx_assistant_instance_crn" {
+  description = "Cloud Resource Name (CRN) of the watsonx Assistant service instance."
   type        = string
+  validation {
+    condition     = can(regex("^crn:v\\d+:[^:]*:[^:]*:conversation:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watsonx_assistant_instance_crn))
+    error_message = "The value provided for 'watsonx_assistant_instance_crn' is not valid."
+  }
 }
 
-variable "watson_assistant_region" {
-  description = "Region where WatsonX Assistant resides"
+variable "watson_discovery_instance_crn" {
+  description = "Cloud Resource Name (CRN) of the watsonx Discovery service instance. If provided, Discovery integration is enabled."
   type        = string
-}
-
-variable "watson_discovery_instance_id" {
-  description = "ID of the WatsonX Discovery instance"
-  type        = string
-  default     = null # Discovery usage is optional, elastic can be used instead
-}
-
-variable "watson_discovery_region" {
-  description = "Region where Watson Discovery resides"
-  type        = string
-  default     = null # Discovery usage is optional, elastic can be used instead
+  default     = null
+  validation {
+    condition = anytrue([
+      var.watson_discovery_instance_crn == null,
+      can(regex("^crn:v\\d+:[^:]*:[^:]*:discovery:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watson_discovery_instance_crn))
+    ])
+    error_message = "The value provided for 'watson_discovery_instance_crn' is not valid."
+  }
 }
 
 ##############################################################################################################
-# Watson Machine Learning Instance Variables
+# watsonx Machine Learning Instance Variables
 ##############################################################################################################
 
-variable "watson_machine_learning_instance_crn" {
-  description = "Watson Machine Learning instance CRN"
+variable "watsonx_machine_learning_instance_crn" {
+  description = "Cloud Resource Name (CRN) of the watsonx Machine Learning instance."
   type        = string
   default     = null # WML usage is optional, elastic can be used instead
-}
-
-variable "watson_machine_learning_instance_resource_name" {
-  description = "Watson Machine Learning instance resource name"
-  type        = string
-  default     = null # WML usage is optional, elastic can be used instead
+  validation {
+    condition = anytrue([
+      var.watsonx_machine_learning_instance_crn == null,
+      can(regex("^crn:v\\d+:[^:]*:[^:]*:pm-20:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watsonx_machine_learning_instance_crn))
+    ])
+    error_message = "The value provided for 'watsonx_machine_learning_instance_crn' is not valid."
+  }
 }
 
 ##############################################################################################################
-# Watson Project Variables
+# watsonx Project Variables
 ##############################################################################################################
 
 variable "watson_project_name" {
-  description = "Watson project name"
+  description = "watsonx project name"
   type        = string
   default     = "RAG-sample-project"
 }
 
 variable "watson_project_sensitive" {
-  description = "Mark Watson project as sensitive"
+  description = "Mark watsonx project as sensitive"
   type        = bool
   default     = false
 }
 
 variable "cos_kms_crn" {
-  description = "Key Protect service instance CRN used to encrypt the COS buckets used by the watsonx projects."
+  description = "Cloud Resource Name (CRN) of the Key Protect service instance used to encrypt the Object Storage buckets used by the watsonx projects."
   type        = string
   default     = null
 
@@ -135,18 +136,18 @@ variable "cos_kms_crn" {
       can(regex("^crn:(.*:){3}kms:(.*:){2}[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.cos_kms_crn)),
       var.cos_kms_crn == null,
     ])
-    error_message = "Key Protect CRN validation failed."
+    error_message = "The value provided for 'cos_kms_crn' is not valid."
   }
 }
 
 variable "cos_kms_key_crn" {
-  description = "Key Protect key CRN used to encrypt the COS buckets used by the watsonx projects. If not set, then the cos_kms_new_key_name must be specified."
+  description = "Cloud Resource Name (CRN) of the Key Protect key used to encrypt the Object Storage buckets used by the watsonx projects. If not set, then the cos_kms_new_key_name must be specified."
   type        = string
   default     = null
 }
 
 variable "cos_kms_new_key_name" {
-  description = "Name of the Key Protect key to create for encrypting the COS buckets used by the watsonx projects."
+  description = "Name of the Key Protect key to create for encrypting the Object Storage buckets used by the watsonx projects."
   type        = string
   default     = ""
 }
@@ -158,7 +159,7 @@ variable "cos_kms_ring_id" {
 }
 
 variable "elastic_instance_crn" {
-  description = "Elastic ICD instance CRN"
+  description = "Cloud Resource Name (CRN) of the Elastic ICD instance."
   type        = string
   default     = null # Elastic usage is optional
 }
@@ -226,14 +227,13 @@ variable "secrets_manager_endpoint_type" {
   }
 }
 
-variable "secrets_manager_guid" {
-  description = "Secrets Manager GUID where the API key and signing key will be stored."
+variable "secrets_manager_instance_crn" {
+  description = "Cloud Resource Name (CRN) of the Secrets Manager instance where the API key and signing key will be stored."
   type        = string
-}
-
-variable "secrets_manager_region" {
-  description = "The region where the Secrets Manager instance previously created reside."
-  type        = string
+  validation {
+    condition     = can(regex("^crn:v\\d+:[^:]*:[^:]*:secrets-manager:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.secrets_manager_instance_crn))
+    error_message = "The value provided for 'secrets_manager_instance_crn' is not valid."
+  }
 }
 
 variable "secrets_manager_resource_group_name" {

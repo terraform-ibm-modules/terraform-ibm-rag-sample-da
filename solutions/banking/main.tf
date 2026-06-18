@@ -1,16 +1,77 @@
+##############################################################################
+# CRN Parsers
+##############################################################################
+
+module "watsonx_assistant_crn_parser" {
+  source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
+  version = "1.4.1"
+  crn     = var.watsonx_assistant_instance_crn
+}
+
+module "watson_discovery_crn_parser" {
+  count   = var.watson_discovery_instance_crn != null ? 1 : 0
+  source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
+  version = "1.4.1"
+  crn     = var.watson_discovery_instance_crn
+}
+
+module "watsonx_machine_learning_crn_parser" {
+  count   = var.watsonx_machine_learning_instance_crn != null ? 1 : 0
+  source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
+  version = "1.4.1"
+  crn     = var.watsonx_machine_learning_instance_crn
+}
+
+module "secrets_manager_crn_parser" {
+  source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
+  version = "1.4.1"
+  crn     = var.secrets_manager_instance_crn
+}
+
+##############################################################################
+# Data Sources for Resource Lookups
+##############################################################################
+
+data "ibm_resource_instance" "watsonx_ml_instance" {
+  count      = var.watsonx_machine_learning_instance_crn != null ? 1 : 0
+  identifier = module.watsonx_machine_learning_crn_parser[0].service_instance
+}
+
 locals {
-  use_watson_discovery        = (var.watson_discovery_instance_id != null) ? true : false
-  use_watson_machine_learning = (var.watson_machine_learning_instance_crn != null && var.watson_project_name != null) ? true : false
-  use_elastic_index           = (var.elastic_instance_crn != null) ? true : false
+  # Parsed CRN values
+  watsonx_assistant_instance_guid   = module.watsonx_assistant_crn_parser.service_instance
+  watsonx_assistant_instance_region = module.watsonx_assistant_crn_parser.region
+  watson_discovery_instance_guid    = var.watson_discovery_instance_crn != null ? module.watson_discovery_crn_parser[0].service_instance : null
+  watson_discovery_region           = var.watson_discovery_instance_crn != null ? module.watson_discovery_crn_parser[0].region : null
+
+
+  watsonx_machine_learning_instance_resource_name = var.watsonx_machine_learning_instance_crn != null ? data.ibm_resource_instance.watsonx_ml_instance[0].name : null
+  watsonx_machine_learning_region                 = var.watsonx_machine_learning_instance_crn != null ? module.watsonx_machine_learning_crn_parser[0].region : null
+
+  secrets_manager_guid   = module.secrets_manager_crn_parser.service_instance
+  secrets_manager_region = module.secrets_manager_crn_parser.region
+
+  use_watson_discovery         = var.watson_discovery_instance_crn != null
+  use_watsonx_machine_learning = (var.watsonx_machine_learning_instance_crn != null && var.watson_project_name != null) ? true : false
+  use_elastic_index            = (var.elastic_instance_crn != null) ? true : false
 
   cos_instance_name                = try("${local.prefix}-rag-sample-app-cos", "gen-ai-rag-sample-app-cos")
   cos_kms_new_key_name             = try("${local.prefix}-${var.cos_kms_new_key_name}", var.cos_kms_new_key_name)
-  watsonx_assistant_url            = "//api.${var.watson_assistant_region}.assistant.watson.cloud.ibm.com/instances/${var.watson_assistant_instance_id}"
-  watson_discovery_url             = local.use_watson_discovery ? "//api.${var.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${var.watson_discovery_instance_id}" : null
+  watsonx_assistant_url            = "//api.${local.watsonx_assistant_instance_region}.assistant.watson.cloud.ibm.com/instances/${local.watsonx_assistant_instance_guid}"
+  watson_discovery_url             = local.use_watson_discovery ? "//api.${local.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${local.watson_discovery_instance_guid}" : null
   watson_discovery_project_name    = try("${local.prefix}-gen-ai-rag-sample-app-project", "gen-ai-rag-sample-app-project")
   watson_discovery_collection_name = try("${local.prefix}-gen-ai-rag-sample-app-data", "gen-ai-rag-sample-app-data")
-  watson_ml_project_name           = try("${local.prefix}-${var.watson_project_name}", var.watson_project_name)
-  sensitive_tokendata              = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
+  watsonx_ml_project_name          = try("${local.prefix}-${var.watson_project_name}", var.watson_project_name)
+
+  # Construct region-aware watsonx project URL
+  # au-syd and ca-tor use dai.cloud.ibm.com, others use dataplatform.cloud.ibm.com
+  watsonx_project_base_url = local.use_watsonx_machine_learning ? (
+    contains(["au-syd", "ca-tor"], local.watsonx_machine_learning_region) ?
+    "https://${local.watsonx_machine_learning_region}.dai.cloud.ibm.com" :
+    "https://${local.watsonx_machine_learning_region}.dataplatform.cloud.ibm.com"
+  ) : null
+
+  sensitive_tokendata = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
 
   sm_secret_group_name = "default"
   secret_group_id      = [for sg in data.ibm_sm_secret_groups.secret_groups.secret_groups : sg.id if sg.name == local.sm_secret_group_name][0]
@@ -33,8 +94,8 @@ locals {
 }
 
 data "ibm_sm_secret_groups" "secret_groups" {
-  instance_id   = var.secrets_manager_guid
-  region        = var.secrets_manager_region
+  instance_id   = local.secrets_manager_guid
+  region        = local.secrets_manager_region
   endpoint_type = var.secrets_manager_endpoint_type
 }
 
@@ -59,8 +120,8 @@ module "secrets_manager_secret_ibm_iam" {
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
   version                 = "1.10.1"
-  region                  = var.secrets_manager_region
-  secrets_manager_guid    = var.secrets_manager_guid
+  region                  = local.secrets_manager_region
+  secrets_manager_guid    = local.secrets_manager_guid
   secret_name             = "ibmcloud-api-key"
   secret_description      = "IBM IAM Api key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
@@ -71,7 +132,7 @@ module "secrets_manager_secret_ibm_iam" {
 
 data "ibm_resource_instance" "secrets_manager_name" {
   count      = local.generate_signing_key ? 1 : 0
-  identifier = var.secrets_manager_guid
+  identifier = local.secrets_manager_guid
 }
 
 # generate signing key if it is not provided.
@@ -82,8 +143,8 @@ module "gpg_signing_key" {
   gpg_name             = var.gpg_name
   gpg_email            = var.gpg_email
   sm_resource_group    = var.secrets_manager_resource_group_name
-  sm_location          = var.secrets_manager_region
-  sm_instance_id       = var.secrets_manager_guid
+  sm_location          = local.secrets_manager_region
+  sm_instance_id       = local.secrets_manager_guid
   sm_name              = data.ibm_resource_instance.secrets_manager_name[0].name
   sm_endpoint_type     = var.secrets_manager_endpoint_type
   sm_exists            = true
@@ -100,8 +161,8 @@ module "secrets_manager_secret_signing_key" {
   count                   = var.create_secrets ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
   version                 = "1.10.1"
-  region                  = var.secrets_manager_region
-  secrets_manager_guid    = var.secrets_manager_guid
+  region                  = local.secrets_manager_region
+  secrets_manager_guid    = local.secrets_manager_guid
   secret_group_id         = local.secret_group_id
   secret_name             = "signing-key"
   secret_description      = "IBM Signing GPG key"
@@ -118,11 +179,11 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   count                   = (var.create_secrets && var.watsonx_admin_api_key != null) ? 1 : 0
   source                  = "terraform-ibm-modules/secrets-manager-secret/ibm"
   version                 = "1.10.1"
-  region                  = var.secrets_manager_region
-  secrets_manager_guid    = var.secrets_manager_guid
+  region                  = local.secrets_manager_region
+  secrets_manager_guid    = local.secrets_manager_guid
   secret_group_id         = local.secret_group_id
   secret_name             = "watsonx-admin-api-key"
-  secret_description      = "WatsonX Admin API Key"
+  secret_description      = "watsonx Admin API Key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_payload_password = var.watsonx_admin_api_key
   endpoint_type           = var.secrets_manager_endpoint_type
@@ -159,26 +220,26 @@ module "cluster_ingress" {
 }
 
 
-# ----------------------- Watson services configuration
+# ----------------------- watsonx services configuration
 module "configure_wml_project" {
   providers = {
     ibm                           = ibm.ibm_resources
     ibm.ibm_resources             = ibm.ibm_resources
     restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
   }
-  count                     = local.use_watson_machine_learning ? 1 : 0
+  count                     = local.use_watsonx_machine_learning ? 1 : 0
   source                    = "../../modules/watson-machine-learning"
   watsonx_project_delegated = var.cos_kms_crn != null ? true : false
 
-  # Watson Machine Learning Instance (from test resources)
-  watson_ml_instance_crn           = var.watson_machine_learning_instance_crn
-  watson_ml_instance_resource_name = var.watson_machine_learning_instance_resource_name
+  # watsonx Machine Learning Instance (parsed from CRN)
+  watson_ml_instance_crn           = var.watsonx_machine_learning_instance_crn
+  watson_ml_instance_resource_name = local.watsonx_machine_learning_instance_resource_name
 
-  # Watson Project Configuration
-  watson_ml_project_name      = local.watson_ml_project_name
+  # watsonx Project Configuration
+  watson_ml_project_name      = local.watsonx_ml_project_name
   watson_ml_project_sensitive = var.watson_project_sensitive
 
-  # Resource Group and COS
+  # Resource Group and Object Storage
   resource_group_id    = module.resource_group.resource_group_id
   cos_instance_name    = local.cos_instance_name
   cos_kms_crn          = var.cos_kms_crn
@@ -278,7 +339,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
   name        = "watsonx_assistant_id"
   pipeline_id = var.ci_pipeline_id
   type        = "text"
-  value       = var.watson_assistant_instance_id
+  value       = local.watsonx_assistant_instance_guid
 }
 
 # Update CD pipeline with Assistant instance ID
@@ -288,7 +349,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_proper
   name        = "watsonx_assistant_id"
   pipeline_id = var.cd_pipeline_id
   type        = "text"
-  value       = var.watson_assistant_instance_id
+  value       = local.watsonx_assistant_instance_guid
 }
 
 # Update CI pipeline with Assistant instance region
@@ -298,7 +359,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_region_pipeline_pr
   name        = "watsonx_assistant_region"
   pipeline_id = var.ci_pipeline_id
   type        = "text"
-  value       = var.watson_assistant_region
+  value       = local.watsonx_assistant_instance_region
 }
 
 # Update CD pipeline with Assistant instance region
@@ -308,7 +369,7 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_region_pipeline_pr
   name        = "watsonx_assistant_region"
   pipeline_id = var.cd_pipeline_id
   type        = "text"
-  value       = var.watson_assistant_region
+  value       = local.watsonx_assistant_instance_region
 }
 
 # Update CI pipeline with Resource Group
