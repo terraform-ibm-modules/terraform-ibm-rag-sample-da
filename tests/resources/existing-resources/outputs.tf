@@ -15,17 +15,17 @@ output "watsonx_assistant_region" {
 
 output "watson_discovery_instance_crn" {
   value       = ibm_resource_instance.discovery_instance.crn
-  description = "CRN of the watsonx Discovery instance"
+  description = "CRN of the Watson Discovery instance"
 }
 
 output "watson_discovery_instance_id" {
   value       = ibm_resource_instance.discovery_instance.guid
-  description = "GUID of the watsonx Discovery instance"
+  description = "GUID of the Watson Discovery instance"
 }
 
 output "watson_discovery_region" {
   value       = ibm_resource_instance.discovery_instance.location
-  description = "Region of the watsonx Discovery instance"
+  description = "Region of the Watson Discovery instance"
 }
 
 output "watsonx_machine_learning_instance_crn" {

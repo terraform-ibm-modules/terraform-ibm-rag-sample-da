@@ -135,6 +135,7 @@ data "ibm_resource_instance" "secrets_manager_name" {
   identifier = local.secrets_manager_guid
 }
 
+
 # generate signing key if it is not provided.
 module "gpg_signing_key" {
   count                = local.generate_signing_key ? 1 : 0

@@ -11,6 +11,7 @@ TERRAFORM_SOURCE_DIR="tests/resources/existing-resources"
 JSON_FILE="${DA_DIR}/catalogValidationValues.json"
 REGION="us-south"
 FILE_PATH="common-dev-assets/common-go-assets/common-permanent-resources.yaml"
+SECRETS_MANAGER_CRN=$(yq e '.secretsManagerCRN' "$FILE_PATH")
 SECRETS_MANAGER_RESOURCE_GROUP=$(yq e '.secretsManagerResourceGroup' "$FILE_PATH")
 PREFIX="rag-da-$(openssl rand -hex 2)"
 TF_VARS_FILE="terraform.tfvars"
@@ -50,7 +51,7 @@ TF_VARS_FILE="terraform.tfvars"
   watsonx_assistant_instance_crn_value=$(terraform output -state=terraform.tfstate -raw watsonx_assistant_instance_crn)
   watson_discovery_instance_crn_value=$(terraform output -state=terraform.tfstate -raw watson_discovery_instance_crn)
   watsonx_machine_learning_instance_crn_value=$(terraform output -state=terraform.tfstate -raw watsonx_machine_learning_instance_crn)
-  secrets_manager_instance_crn_value=$(terraform output -state=terraform.tfstate -raw secrets_manager_instance_crn)
+  secrets_manager_instance_crn_value="${SECRETS_MANAGER_CRN}"
   use_existing_resource_group_value=true
   create_continuous_delivery_service_instance_value=false
   trigger_ci_pipeline_run_value=false
