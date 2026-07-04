@@ -4,27 +4,27 @@
 
 module "watsonx_assistant_crn_parser" {
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
-  version = "1.4.1"
+  version = "1.9.0"
   crn     = var.watsonx_assistant_instance_crn
 }
 
 module "watson_discovery_crn_parser" {
   count   = var.watson_discovery_instance_crn != null ? 1 : 0
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
-  version = "1.4.1"
+  version = "1.9.0"
   crn     = var.watson_discovery_instance_crn
 }
 
 module "watsonx_machine_learning_crn_parser" {
   count   = var.watsonx_machine_learning_instance_crn != null ? 1 : 0
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
-  version = "1.4.1"
+  version = "1.9.0"
   crn     = var.watsonx_machine_learning_instance_crn
 }
 
 module "secrets_manager_crn_parser" {
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
-  version = "1.4.1"
+  version = "1.9.0"
   crn     = var.secrets_manager_instance_crn
 }
 
@@ -139,7 +139,7 @@ data "ibm_resource_instance" "secrets_manager_name" {
 # generate signing key if it is not provided.
 module "gpg_signing_key" {
   count                = local.generate_signing_key ? 1 : 0
-  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v3.1.2"
+  source               = "git::https://github.com/terraform-ibm-modules/terraform-ibm-devsecops-alm.git//prereqs?ref=v3.1.4"
   ibmcloud_api_key     = var.ibmcloud_api_key
   gpg_name             = var.gpg_name
   gpg_email            = var.gpg_email

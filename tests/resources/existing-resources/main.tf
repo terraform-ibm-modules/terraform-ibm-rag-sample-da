@@ -39,7 +39,7 @@ module "resource_group" {
 
 module "elasticsearch" {
   source              = "terraform-ibm-modules/icd-elasticsearch/ibm"
-  version             = "2.13.11"
+  version             = "2.14.5"
   resource_group_id   = module.resource_group.resource_group_id
   name                = "${var.prefix}-es"
   region              = var.region
@@ -228,7 +228,7 @@ module "ocp_base" {
 
   count                               = var.create_ocp_cluster ? 1 : 0
   source                              = "terraform-ibm-modules/base-ocp-vpc/ibm"
-  version                             = "3.87.5"
+  version                             = "3.90.0"
   resource_group_id                   = module.resource_group.resource_group_id
   region                              = var.region
   tags                                = []
@@ -245,7 +245,7 @@ module "ocp_base" {
 
 module "secrets_manager" {
   source               = "terraform-ibm-modules/secrets-manager/ibm"
-  version              = "v2.15.7"
+  version              = "v2.15.9"
   region               = var.region
   secrets_manager_name = "${var.prefix}-secrets-manager"
   sm_service_plan      = "trial"
