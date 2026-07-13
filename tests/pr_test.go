@@ -29,8 +29,8 @@ import (
 const bankingSolutionsDir = "solutions/banking"
 
 // watsonx.ai supported regions
+// au-syd excluded: continuous-delivery professional plan not available there
 var validRegions = []string{
-	"au-syd",
 	"jp-tok",
 	"eu-gb",
 	"eu-de",
