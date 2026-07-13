@@ -231,7 +231,7 @@ module "ocp_base" {
   version                             = "3.90.3"
   resource_group_id                   = module.resource_group.resource_group_id
   region                              = var.region
-  tags                                = []
+  resource_tags                       = []
   cluster_name                        = var.prefix
   force_delete_storage                = true
   vpc_id                              = ibm_is_vpc.vpc[0].id
