@@ -16,7 +16,7 @@ locals {
       pool_name        = "default" # ibm_container_vpc_cluster automatically names default pool "default" (See https://github.com/IBM-Cloud/terraform-provider-ibm/issues/2849)
       machine_type     = "bx2.4x16"
       workers_per_zone = 2 # minimum of 2 is allowed when using single zone
-      operating_system = "RHEL_9_64"
+      operating_system = "RHCOS"
     }
   ]
 }
@@ -228,10 +228,10 @@ module "ocp_base" {
 
   count                               = var.create_ocp_cluster ? 1 : 0
   source                              = "terraform-ibm-modules/base-ocp-vpc/ibm"
-  version                             = "3.87.5"
+  version                             = "3.90.3"
   resource_group_id                   = module.resource_group.resource_group_id
   region                              = var.region
-  tags                                = []
+  resource_tags                       = []
   cluster_name                        = var.prefix
   force_delete_storage                = true
   vpc_id                              = ibm_is_vpc.vpc[0].id

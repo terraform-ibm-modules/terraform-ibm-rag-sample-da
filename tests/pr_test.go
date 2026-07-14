@@ -29,8 +29,8 @@ import (
 const bankingSolutionsDir = "solutions/banking"
 
 // watsonx.ai supported regions
+// au-syd excluded: continuous-delivery professional plan not available there
 var validRegions = []string{
-	"au-syd",
 	"jp-tok",
 	"eu-gb",
 	"eu-de",
@@ -126,6 +126,10 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 		},
 		IgnoreUpdates: testhelper.Exemptions{
 			List: []string{
+				// Secret names are now prefixed — existing deployments without a prefix will have secrets renamed on upgrade. See https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/138
+				"module.secrets_manager_secret_ibm_iam[0].ibm_sm_arbitrary_secret.arbitrary_secret[0]",
+				"module.secrets_manager_secret_signing_key[0].ibm_sm_arbitrary_secret.arbitrary_secret[0]",
+				"module.secrets_manager_secret_watsonx_admin_api_key[0].ibm_sm_arbitrary_secret.arbitrary_secret[0]",
 				// Need to be checked, see https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/342
 				"module.configure_discovery_project[0].restapi_object.configure_discovery_collection",
 				"module.configure_discovery_project[0].restapi_object.configure_discovery_project",
@@ -221,7 +225,7 @@ func TestRunBankingSolutions(t *testing.T) {
 func TestRunUpgradeExample(t *testing.T) {
 	t.Parallel()
 
-	prefix := fmt.Sprintf("rag-da-upgr-%s", strings.ToLower(random.UniqueID()))
+	prefix := fmt.Sprintf("rag-upgr-%s", strings.ToLower(random.UniqueID()))
 	region := validRegions[common.CryptoIntn(len(validRegions))]
 	realTerraformDir := "./resources/existing-resources"
 	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueID())))
