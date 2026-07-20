@@ -122,7 +122,7 @@ module "secrets_manager_secret_ibm_iam" {
   version                 = "1.10.1"
   region                  = local.secrets_manager_region
   secrets_manager_guid    = local.secrets_manager_guid
-  secret_name             = "ibmcloud-api-key"
+  secret_name             = try("${local.prefix}-ibmcloud-api-key", "ibmcloud-api-key")
   secret_description      = "IBM IAM Api key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_group_id         = local.secret_group_id
@@ -165,7 +165,7 @@ module "secrets_manager_secret_signing_key" {
   region                  = local.secrets_manager_region
   secrets_manager_guid    = local.secrets_manager_guid
   secret_group_id         = local.secret_group_id
-  secret_name             = "signing-key"
+  secret_name             = try("${local.prefix}-signing-key", "signing-key")
   secret_description      = "IBM Signing GPG key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_payload_password = var.signing_key == null ? module.gpg_signing_key[0].gpg_key : var.signing_key
@@ -183,7 +183,7 @@ module "secrets_manager_secret_watsonx_admin_api_key" {
   region                  = local.secrets_manager_region
   secrets_manager_guid    = local.secrets_manager_guid
   secret_group_id         = local.secret_group_id
-  secret_name             = "watsonx-admin-api-key"
+  secret_name             = try("${local.prefix}-watsonx-admin-api-key", "watsonx-admin-api-key")
   secret_description      = "watsonx Admin API Key"
   secret_type             = "arbitrary" #checkov:skip=CKV_SECRET_6
   secret_payload_password = var.watsonx_admin_api_key
