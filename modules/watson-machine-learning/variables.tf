@@ -71,7 +71,7 @@ variable "watson_ml_project_name" {
 variable "watson_ml_project_description" {
   description = "Watson Machine Learning project description"
   type        = string
-  default     = "WatsonX AI project for RAG pattern sample app"
+  default     = "watsonx AI project for RAG pattern sample app"
 }
 
 variable "watson_ml_project_tags" {

@@ -1,5 +1,5 @@
 variable "watson_discovery_url" {
-  description = "WatsonX Discovery URL"
+  description = "Watson Discovery URL"
   type        = string
 }
 

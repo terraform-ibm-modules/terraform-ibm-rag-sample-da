@@ -29,6 +29,7 @@ import (
 const bankingSolutionsDir = "solutions/banking"
 
 // watsonx.ai supported regions
+// au-syd excluded: continuous-delivery professional plan not available there
 var validRegions = []string{
 	"jp-tok",
 	"eu-gb",
@@ -102,32 +103,33 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 		Region:                     region,
 		CheckApplyResultForUpgrade: true,
 		TerraformVars: map[string]interface{}{
-			"toolchain_region":                               region,
-			"prefix":                                         prefix,
-			"ci_pipeline_id":                                 terraform.OutputContext(t, context.Background(), existingTerraformOptions, "ci_pipeline_id"),
-			"cd_pipeline_id":                                 terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cd_pipeline_id"),
-			"watson_assistant_instance_id":                   terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_assistant_instance_id"),
-			"watson_assistant_region":                        terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_assistant_region"),
-			"watson_discovery_instance_id":                   terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_discovery_instance_id"),
-			"watson_discovery_region":                        terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_discovery_region"),
-			"use_existing_resource_group":                    true,
-			"create_continuous_delivery_service_instance":    false,
-			"resource_group_name":                            terraform.OutputContext(t, context.Background(), existingTerraformOptions, "resource_group_name"),
-			"toolchain_resource_group":                       terraform.OutputContext(t, context.Background(), existingTerraformOptions, "resource_group_name"),
-			"watson_machine_learning_instance_crn":           terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_machine_learning_instance_crn"),
-			"watson_machine_learning_instance_resource_name": terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_machine_learning_instance_resource_name"),
-			"secrets_manager_guid":                           terraform.OutputContext(t, context.Background(), existingTerraformOptions, "secrets_manager_guid"),
-			"secrets_manager_region":                         terraform.OutputContext(t, context.Background(), existingTerraformOptions, "secrets_manager_region"),
-			"secrets_manager_resource_group_name":            terraform.OutputContext(t, context.Background(), existingTerraformOptions, "resource_group_name"),
-			"trigger_ci_pipeline_run":                        true,
-			"secrets_manager_endpoint_type":                  "public",
-			"provider_visibility":                            "public",
-			"elastic_instance_crn":                           terraform.OutputContext(t, context.Background(), existingTerraformOptions, "elasticsearch_crn"),
-			"cos_kms_crn":                                    terraform.OutputContext(t, context.Background(), existingTerraformOptions, "kms_instance_crn"),
-			"create_secrets":                                 false,
+			"toolchain_region":                            region,
+			"prefix":                                      prefix,
+			"ci_pipeline_id":                              terraform.OutputContext(t, context.Background(), existingTerraformOptions, "ci_pipeline_id"),
+			"cd_pipeline_id":                              terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cd_pipeline_id"),
+			"watsonx_assistant_instance_crn":              terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watsonx_assistant_instance_crn"),
+			"watson_discovery_instance_crn":               terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_discovery_instance_crn"),
+			"use_existing_resource_group":                 true,
+			"create_continuous_delivery_service_instance": false,
+			"resource_group_name":                         terraform.OutputContext(t, context.Background(), existingTerraformOptions, "resource_group_name"),
+			"toolchain_resource_group":                    terraform.OutputContext(t, context.Background(), existingTerraformOptions, "resource_group_name"),
+			"watsonx_machine_learning_instance_crn":       terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watsonx_machine_learning_instance_crn"),
+			"secrets_manager_instance_crn":                terraform.OutputContext(t, context.Background(), existingTerraformOptions, "secrets_manager_instance_crn"),
+			"secrets_manager_resource_group_name":         terraform.OutputContext(t, context.Background(), existingTerraformOptions, "resource_group_name"),
+			"trigger_ci_pipeline_run":                     false,
+			"secrets_manager_endpoint_type":               "public",
+			"provider_visibility":                         "public",
+			"elastic_instance_crn":                        terraform.OutputContext(t, context.Background(), existingTerraformOptions, "elasticsearch_crn"),
+			"cluster_name":                                terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_name"),
+			"cos_kms_crn":                                 terraform.OutputContext(t, context.Background(), existingTerraformOptions, "kms_instance_crn"),
+			"create_secrets":                              true,
 		},
 		IgnoreUpdates: testhelper.Exemptions{
 			List: []string{
+				// Secret names are now prefixed — existing deployments without a prefix will have secrets renamed on upgrade. See https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/138
+				"module.secrets_manager_secret_ibm_iam[0].ibm_sm_arbitrary_secret.arbitrary_secret[0]",
+				"module.secrets_manager_secret_signing_key[0].ibm_sm_arbitrary_secret.arbitrary_secret[0]",
+				"module.secrets_manager_secret_watsonx_admin_api_key[0].ibm_sm_arbitrary_secret.arbitrary_secret[0]",
 				// Need to be checked, see https://github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da/issues/342
 				"module.configure_discovery_project[0].restapi_object.configure_discovery_collection",
 				"module.configure_discovery_project[0].restapi_object.configure_discovery_project",
@@ -223,7 +225,7 @@ func TestRunBankingSolutions(t *testing.T) {
 func TestRunUpgradeExample(t *testing.T) {
 	t.Parallel()
 
-	prefix := fmt.Sprintf("rag-da-upgr-%s", strings.ToLower(random.UniqueID()))
+	prefix := fmt.Sprintf("rag-upgr-%s", strings.ToLower(random.UniqueID()))
 	region := validRegions[common.CryptoIntn(len(validRegions))]
 	realTerraformDir := "./resources/existing-resources"
 	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueID())))
