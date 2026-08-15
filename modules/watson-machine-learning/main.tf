@@ -7,7 +7,7 @@ module "cos" {
     ibm = ibm.ibm_resources
   }
   source            = "terraform-ibm-modules/cos/ibm//modules/fscloud"
-  version           = "10.17.5"
+  version           = "10.17.7"
   resource_group_id = var.resource_group_id
   cos_instance_name = var.cos_instance_name
   cos_plan          = "standard"
@@ -83,7 +83,7 @@ locals {
 
 module "storage_delegation" {
   source  = "terraform-ibm-modules/watsonx-ai/ibm//modules/storage_delegation"
-  version = "2.17.8"
+  version = "2.17.9"
   count   = var.watsonx_project_delegated ? 1 : 0
   providers = {
     ibm     = ibm.ibm_resources
@@ -119,7 +119,7 @@ resource "time_sleep" "wait_for_storage_delegation_backend" {
 
 module "configure_project" {
   source  = "terraform-ibm-modules/watsonx-ai/ibm//modules/configure_project"
-  version = "2.17.8"
+  version = "2.17.9"
   providers = {
     restapi = restapi.restapi_watsonx_admin
   }
