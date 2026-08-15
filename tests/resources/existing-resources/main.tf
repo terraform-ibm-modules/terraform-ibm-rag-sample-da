@@ -245,7 +245,7 @@ module "ocp_base" {
 
 module "secrets_manager" {
   source               = "terraform-ibm-modules/secrets-manager/ibm"
-  version              = "v2.15.13"
+  version              = "v2.15.14"
   region               = var.region
   secrets_manager_name = "${var.prefix}-secrets-manager"
   sm_service_plan      = "trial"
