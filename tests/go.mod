@@ -3,7 +3,7 @@ module github.com/terraform-ibm-modules/terraform-ibm-rag-sample-da
 go 1.26.1
 
 require (
-	github.com/IBM/go-sdk-core/v5 v5.23.2
+	github.com/IBM/go-sdk-core/v5 v5.23.3
 	github.com/google/uuid v1.6.0
 	github.com/gruntwork-io/terratest v1.0.1
 	github.com/stretchr/testify v1.12.1
