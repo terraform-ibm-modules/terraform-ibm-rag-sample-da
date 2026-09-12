@@ -77,7 +77,7 @@ resource "time_sleep" "wait_for_elasticsearch_ready" {
 
 module "key_protect" {
   source                    = "terraform-ibm-modules/kms-all-inclusive/ibm"
-  version                   = "5.6.7"
+  version                   = "5.6.8"
   key_protect_instance_name = "${var.prefix}-key-protect"
   resource_group_id         = module.resource_group.resource_group_id
   region                    = var.region
@@ -245,7 +245,7 @@ module "ocp_base" {
 
 module "secrets_manager" {
   source               = "terraform-ibm-modules/secrets-manager/ibm"
-  version              = "v2.15.16"
+  version              = "v2.15.17"
   region               = var.region
   secrets_manager_name = "${var.prefix}-secrets-manager"
   sm_service_plan      = "trial"
