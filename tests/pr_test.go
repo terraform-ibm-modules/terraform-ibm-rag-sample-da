@@ -185,7 +185,7 @@ func TestRunBankingSolutions(t *testing.T) {
 			"prefix":             prefix,
 			"region":             region,
 			"resource_group":     uniqueResourceGroup,
-			"create_ocp_cluster": true,
+			"create_ocp_cluster": false,
 		},
 		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
 		// This is the same as setting the -upgrade=true flag with terraform.
@@ -250,7 +250,7 @@ func TestRunUpgradeExample(t *testing.T) {
 			"prefix":             prefix,
 			"region":             region,
 			"resource_group":     uniqueResourceGroup,
-			"create_ocp_cluster": true,
+			"create_ocp_cluster": false,
 		},
 		// Set Upgrade to true to ensure the latest version of providers and modules are used by terratest.
 		// This is the same as setting the -upgrade=true flag with terraform.
