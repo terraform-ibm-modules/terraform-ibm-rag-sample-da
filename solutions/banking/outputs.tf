@@ -8,11 +8,6 @@ output "watsonx_project_url" {
   value       = local.use_watsonx_machine_learning ? "${local.watsonx_project_base_url}/projects/${module.configure_wml_project[0].watsonx_project_id}" : null
 }
 
-output "watsonx_assistant_api_url" {
-  description = "watsonx Assistant URL."
-  value       = "https:${local.watsonx_assistant_url}"
-}
-
 output "watson_discovery_api_url" {
   description = "Watson Discovery URL."
   value       = local.use_watson_discovery ? "https:${local.watson_discovery_url}" : null
