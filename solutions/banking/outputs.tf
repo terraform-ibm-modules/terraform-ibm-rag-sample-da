@@ -23,24 +23,9 @@ output "cos_instance_crn" {
   value       = local.use_watsonx_machine_learning ? module.configure_wml_project[0].watson_ml_cos_instance.cos_instance_crn : null
 }
 
-output "watsonx_assistant_integration_id" {
-  description = "watsonx Assistant integration ID."
-  value       = module.configure_watson_assistant.watsonx_assistant_integration_id
-}
-
-output "watsonx_assistant_environment" {
-  description = "watsonx Assistant target environment."
-  value       = module.configure_watson_assistant.watsonx_assistant_environment
-}
-
 output "watson_discovery_project_id" {
   description = "Watson Discovery Project ID."
   value       = local.use_watson_discovery ? module.configure_discovery_project[0].watson_discovery_project_id : null
-}
-
-output "watsonx_assistant_skills_status" {
-  description = "watsonx Assistant skills status"
-  value       = module.configure_watson_assistant.watsonx_assistant_skills_status
 }
 
 output "elastic_collection_count" {

@@ -310,26 +310,6 @@ module "configure_elastic_index" {
   depends_on                 = [data.ibm_iam_auth_token.tokendata, time_sleep.wait_for_elasticsearch]
 }
 
-# Elastic index creation
-module "configure_watson_assistant" {
-  providers = {
-    restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
-  }
-  source                  = "../../modules/watson-assistant"
-  watsonx_admin_api_key   = coalesce(var.watsonx_admin_api_key, var.ibmcloud_api_key)
-  prefix                  = var.prefix
-  watsonx_assistant_url   = local.watsonx_assistant_url
-  assistant_search_skill  = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/elastic-search-skill.json") : null
-  assistant_action_skill  = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/wxa-conv-srch-es-v1.json") : null
-  elastic_service_binding = local.use_elastic_index ? local.elastic_service_binding : null
-  elastic_index_name      = local.elastic_index_name
-  depends_on              = [data.ibm_iam_auth_token.tokendata]
-}
-moved {
-  from = shell_script.watson_assistant
-  to   = module.configure_watson_assistant.shell_script.watson_assistant
-}
-
 ### Make all pipeline properties dependent on CD instance
 ### to avoid errors when the toolchains are out of grace period
 
@@ -406,26 +386,6 @@ resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property
   pipeline_id = var.cd_pipeline_id
   type        = "text"
   value       = "banking"
-}
-
-# Update CI pipeline with Assistant integration ID
-resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_ci" {
-  provider    = ibm.ibm_resources
-  depends_on  = [local.cd_instance]
-  name        = "watsonx_assistant_integration_id"
-  pipeline_id = var.ci_pipeline_id
-  type        = "text"
-  value       = module.configure_watson_assistant.watsonx_assistant_integration_id
-}
-
-# Update CD pipeline with Assistant integration ID
-resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_cd" {
-  provider    = ibm.ibm_resources
-  depends_on  = [local.cd_instance]
-  name        = "watsonx_assistant_integration_id"
-  pipeline_id = var.cd_pipeline_id
-  type        = "text"
-  value       = module.configure_watson_assistant.watsonx_assistant_integration_id
 }
 
 # Update CI pipeline with public ingress subdomain
@@ -509,7 +469,6 @@ resource "null_resource" "ci_pipeline_run" {
   depends_on = [
     ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook,
     ibm_cd_tekton_pipeline_trigger_property.ci_pipeline_webhook_branch_property,
-    ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci,
     ibm_cd_tekton_pipeline_property.watsonx_assistant_id_pipeline_property_ci,
     ibm_cd_tekton_pipeline_property.watsonx_assistant_region_pipeline_property_ci,
     ibm_cd_tekton_pipeline_property.resource_group_name_pipeline_property_ci,
