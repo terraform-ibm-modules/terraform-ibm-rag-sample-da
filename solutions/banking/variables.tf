@@ -92,15 +92,6 @@ variable "inventory_repo_url" {
   default     = null
 }
 
-variable "watsonx_assistant_instance_crn" {
-  description = "Cloud Resource Name (CRN) of the watsonx Assistant service instance."
-  type        = string
-  validation {
-    condition     = can(regex("^crn:v\\d+:[^:]*:[^:]*:conversation:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watsonx_assistant_instance_crn))
-    error_message = "The value provided for 'watsonx_assistant_instance_crn' is not valid."
-  }
-}
-
 variable "watson_discovery_instance_crn" {
   description = "Cloud Resource Name (CRN) of the Watson Discovery service instance. If provided, Discovery integration is enabled."
   type        = string

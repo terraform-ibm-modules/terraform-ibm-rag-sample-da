@@ -48,7 +48,7 @@ resource "shell_script" "elastic_index_entries" {
     ELASTIC_AUTH_BASE64 = local.elastic_auth_base64
   }
 
-  # Change in apikey should not trigger assistant re-create
+  # Change in apikey should not trigger re-create
   lifecycle {
     ignore_changes = [sensitive_environment]
   }
