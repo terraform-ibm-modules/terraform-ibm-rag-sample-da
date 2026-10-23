@@ -6,6 +6,7 @@ variable "elastic_service_binding" {
     username       = string
     password       = string
     ca_data_base64 = optional(string)
+    nullable = false
   })
 
   validation {
