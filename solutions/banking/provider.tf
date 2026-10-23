@@ -18,37 +18,6 @@ provider "ibm" {
   visibility       = var.provider_visibility
 }
 
-provider "restapi" {
-  uri                  = "https:"
-  write_returns_object = true
-  headers = {
-    Authorization = data.ibm_iam_auth_token.tokendata.iam_access_token
-    Content-Type  = "application/json"
-  }
-}
-
-provider "restapi" {
-  alias                = "restapi_watsonx_admin"
-  uri                  = "https:"
-  write_returns_object = true
-  headers = {
-    Authorization = data.ibm_iam_auth_token.tokendata.iam_access_token
-    Content-Type  = "application/json"
-  }
-}
-
-provider "restapi" {
-  alias                 = "oc_api"
-  uri                   = "https://containers.cloud.ibm.com/global"
-  write_returns_object  = true
-  create_returns_object = true
-
-  headers = {
-    Authorization = data.ibm_iam_auth_token.tokendata.iam_access_token
-    Content-Type  = "application/json"
-  }
-}
-
 provider "shell" {
   interpreter        = ["/bin/bash", "-c"]
   enable_parallelism = false

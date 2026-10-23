@@ -4,9 +4,13 @@ terraform {
       source  = "IBM-Cloud/ibm"
       version = ">= 1.67.1"
     }
-    restapi = {
-      source  = "Mastercard/restapi"
-      version = ">= 1.19.1"
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.4.0"
+    }
+    shell = {
+      source  = "scottwinkler/shell"
+      version = ">= 1.7.10"
     }
     time = {
       source  = "hashicorp/time"

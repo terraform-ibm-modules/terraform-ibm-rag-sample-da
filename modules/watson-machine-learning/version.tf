@@ -5,10 +5,17 @@ terraform {
       version               = ">= 1.67.1"
       configuration_aliases = [ibm.ibm_resources]
     }
-    restapi = {
-      source                = "Mastercard/restapi"
-      version               = ">= 1.19.1"
-      configuration_aliases = [restapi.restapi_watsonx_admin]
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.4.0"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.2.2"
+    }
+    shell = {
+      source  = "scottwinkler/shell"
+      version = ">= 1.7.10"
     }
     time = {
       source  = "hashicorp/time"

@@ -71,7 +71,12 @@ locals {
     "https://${local.watsonx_machine_learning_region}.dataplatform.cloud.ibm.com"
   ) : null
 
+  # The default ibm provider authenticates with the watsonx admin API key (falling back to the
+  # IBM Cloud API key). The http data sources use its IAM token, and the lifecycle scripts use the
+  # same API key to get their own token, so a long apply or a later destroy does not depend on
+  # the token stored in state.
   sensitive_tokendata = sensitive(data.ibm_iam_auth_token.tokendata.iam_access_token)
+  api_key_for_scripts = coalesce(var.watsonx_admin_api_key, var.ibmcloud_api_key)
 
   sm_secret_group_name = "default"
   secret_group_id      = [for sg in data.ibm_sm_secret_groups.secret_groups.secret_groups : sg.id if sg.name == local.sm_secret_group_name][0]
@@ -210,23 +215,23 @@ resource "ibm_resource_instance" "cd_instance" {
 # ----------------------- Cluster deployment options
 module "cluster_ingress" {
   providers = {
-    restapi = restapi.oc_api
-    ibm     = ibm.ibm_resources
+    ibm = ibm.ibm_resources
   }
-  count              = var.cluster_name != null && var.provision_public_ingress ? 1 : 0
-  source             = "../../modules/roks-ingress"
-  prefix             = var.prefix
-  cluster_name       = var.cluster_name
-  cluster_zone_count = var.cluster_zone_count
+  count               = var.cluster_name != null && var.provision_public_ingress ? 1 : 0
+  source              = "../../modules/roks-ingress"
+  prefix              = var.prefix
+  cluster_name        = var.cluster_name
+  cluster_zone_count  = var.cluster_zone_count
+  sensitive_tokendata = local.sensitive_tokendata
+  ibmcloud_api_key    = local.api_key_for_scripts
 }
 
 
 # ----------------------- watsonx services configuration
 module "configure_wml_project" {
   providers = {
-    ibm                           = ibm.ibm_resources
-    ibm.ibm_resources             = ibm.ibm_resources
-    restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
+    ibm               = ibm.ibm_resources
+    ibm.ibm_resources = ibm.ibm_resources
   }
   count                     = local.use_watsonx_machine_learning ? 1 : 0
   source                    = "../../modules/watson-machine-learning"
@@ -247,6 +252,10 @@ module "configure_wml_project" {
   cos_kms_key_crn      = var.cos_kms_key_crn
   cos_kms_ring_id      = var.cos_kms_ring_id
   cos_kms_new_key_name = local.cos_kms_new_key_name
+
+  # API access for the http data sources and the lifecycle scripts
+  sensitive_tokendata = local.sensitive_tokendata
+  ibmcloud_api_key    = local.api_key_for_scripts
 }
 
 moved {
@@ -268,6 +277,7 @@ module "configure_discovery_project" {
   watson_discovery_collection_name           = local.watson_discovery_collection_name
   watson_discovery_collection_artifacts_path = "${path.module}/artifacts/WatsonDiscovery"
   sensitive_tokendata                        = local.sensitive_tokendata
+  ibmcloud_api_key                           = local.api_key_for_scripts
   depends_on                                 = [data.ibm_iam_auth_token.tokendata]
 }
 
@@ -312,11 +322,9 @@ module "configure_elastic_index" {
 
 # Elastic index creation
 module "configure_watson_assistant" {
-  providers = {
-    restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
-  }
   source                  = "../../modules/watson-assistant"
-  watsonx_admin_api_key   = coalesce(var.watsonx_admin_api_key, var.ibmcloud_api_key)
+  watsonx_admin_api_key   = local.api_key_for_scripts
+  sensitive_tokendata     = local.sensitive_tokendata
   prefix                  = var.prefix
   watsonx_assistant_url   = local.watsonx_assistant_url
   assistant_search_skill  = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/elastic-search-skill.json") : null

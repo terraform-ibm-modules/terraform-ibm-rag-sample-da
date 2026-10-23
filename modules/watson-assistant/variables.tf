@@ -10,6 +10,12 @@ variable "watsonx_admin_api_key" {
   sensitive   = true
 }
 
+variable "sensitive_tokendata" {
+  description = "IAM access token (with the Bearer prefix) used for the Watson Assistant API calls"
+  type        = string
+  sensitive   = true
+}
+
 variable "watsonx_assistant_url" {
   description = "Watson Assistant instance endpoint"
   type        = string

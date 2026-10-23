@@ -15,7 +15,7 @@ resource "elasticstack_elasticsearch_index" "sample_index" {
 ## Upload sample data entries
 
 /*
-# Note: Elastic uses CA certificate for connection, and restapi does not have an option to specify that
+# Note: Elastic uses CA certificate for connection, which the generic REST API tooling could not easily provide
 # Therefore the Elastic APIs are used from shell_script
 */
 

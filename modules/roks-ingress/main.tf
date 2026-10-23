@@ -4,11 +4,14 @@ locals {
   # First entry in NLB DNS is the cluster's private ingress
   ingress_alb_hostname = data.ibm_container_nlb_dns.cluster_nlb_dns.nlb_config[0].lb_hostname
 
-  workload_nlb_dns_data = jsondecode(restapi_object.workload_nlb_dns.create_response)
+  containers_api_url = "https://containers.cloud.ibm.com/global"
+  api_headers = {
+    Authorization  = var.sensitive_tokendata
+    "Content-Type" = "application/json"
+  }
 
-  # NLB DNS API returns different structures in create and read operations
-  ingress_subdomain   = can(local.workload_nlb_dns_data.Nlb) ? local.workload_nlb_dns_data.Nlb.nlbSubdomain : local.workload_nlb_dns_data.nlbSubdomain
-  cluster_id          = can(local.workload_nlb_dns_data.Nlb) ? local.workload_nlb_dns_data.Nlb.cluster : local.workload_nlb_dns_data.cluster
+  ingress_subdomain   = shell_script.workload_nlb_dns.output.nlb_subdomain
+  cluster_id          = shell_script.workload_nlb_dns.output.cluster_id
   ingress_secret_name = split(".", local.ingress_subdomain)[0]
 
   cluster_workload_ingress_alb_hostname = data.kubernetes_service_v1.ingress_router_service.status[0].load_balancer[0].ingress[0].hostname
@@ -37,33 +40,49 @@ data "ibm_container_nlb_dns" "cluster_nlb_dns" {
 # <cluster name>-<guid>-<NLB DNS index>.<region>.containers.appdomain.cloud
 # Initially the NLB DNS will point to the cluster's default load balancer
 # Once the ingress controller provisions new public ALB, this NLB DNS entry will be updated
-resource "restapi_object" "workload_nlb_dns" {
-  path          = "/v2/nlb-dns/getNlbDetails"
-  read_path     = "/v2/nlb-dns/getNlbDetails?cluster=${var.cluster_name}&nlbSubdomain={id}"
-  read_method   = "GET"
-  create_path   = "/v2/nlb-dns/vpc/createNlbDNS"
-  create_method = "POST"
-  data = jsonencode({
-    cluster         = var.cluster_name
-    dnsType         = "public"
-    lbHostname      = local.ingress_alb_hostname
-    secretNamespace = "openshift-ingress"
-    type            = "public"
-  })
-  id_attribute = "nlbSubdomain"
-  # The destruction cannot be handled in this resources because the {id} needs to be in the request body
-  # and the create and read API data structures do not match so copy_keys are not working as intended
-  # This is just a stub to avoid API errors, the actual remove operation will be done in the "patch/cleanup" resource
-  destroy_method = "GET"
-  destroy_path   = "/v2/nlb-dns/getNlbDetails?cluster=${var.cluster_name}&nlbSubdomain={id}"
-  # Update is also a stub - it needs the {id} (nlbSubdomain in the request body)
-  update_method = "GET"
-  update_path   = "/v2/nlb-dns/getNlbDetails?cluster=${var.cluster_name}&nlbSubdomain={id}"
+#
+# The http provider only has a data source, so it cannot create and delete the entry.
+# The lifecycle is handled by curl calls in scripts/nlb-dns-utils.sh. On destroy the script
+# removes the domain (ingress/v2/dns/deleteDomain) and then the TLS secret (v2/nlb-dns/deleteSecret).
+resource "shell_script" "workload_nlb_dns" {
+  lifecycle_commands {
+    create = <<-EOT
+      set -e
+      source ./${path.module}/scripts/nlb-dns-utils.sh
+      create_nlb_dns
+    EOT
+    read   = <<-EOT
+      set -e
+      source ./${path.module}/scripts/nlb-dns-utils.sh
+      read_nlb_dns
+    EOT
+    delete = <<-EOT
+      set -e
+      source ./${path.module}/scripts/nlb-dns-utils.sh
+      delete_nlb_dns
+    EOT
+  }
+
+  environment = {
+    CONTAINERS_API_URL = local.containers_api_url
+    CLUSTER_NAME       = var.cluster_name
+    LB_HOSTNAME        = local.ingress_alb_hostname
+  }
+
+  sensitive_environment = {
+    IBMCLOUD_API_KEY = var.ibmcloud_api_key
+  }
+
+  lifecycle {
+    # Change in apikey should not trigger re-create. The initial load balancer hostname is only
+    # used at creation time; the entry is re-pointed to the ingress ALB by the data source below.
+    ignore_changes = [sensitive_environment, environment["LB_HOSTNAME"]]
+  }
 }
 
 # ALB private IPs take some time to get available - needed for ACL update
 resource "time_sleep" "wait_for_alb_provisioning" {
-  depends_on = [restapi_object.workload_nlb_dns]
+  depends_on = [shell_script.workload_nlb_dns]
 
   destroy_duration = "5s"
   create_duration  = "10m"
@@ -117,7 +136,7 @@ resource "kubernetes_manifest" "workload_ingress" {
 
 # Give some more time for ALB private IPs to become available in case only the ingress is being re-created
 resource "time_sleep" "wait_for_ingress_provisioning" {
-  depends_on = [restapi_object.workload_nlb_dns, kubernetes_manifest.workload_ingress]
+  depends_on = [shell_script.workload_nlb_dns, kubernetes_manifest.workload_ingress]
 
   destroy_duration = "5s"
   create_duration  = "7m"
@@ -134,61 +153,56 @@ data "kubernetes_service_v1" "ingress_router_service" {
   }
 }
 
-# The "patch" resource is needed to update the ALB hostname in the NLB DNS entry
-# to point to the new ALB created by the ingress controller
-# It will update the resource created by restapi_object" "workload_nlb_dns
-# and on destroy will delete the TLS secret
-resource "restapi_object" "workload_nlb_dns_patch" {
-  path         = "/v2/nlb-dns/getNlbDetails"
-  query_string = "cluster=${var.cluster_name}&nlbSubdomain=${local.ingress_subdomain}"
-  read_path    = "/v2/nlb-dns/getNlbDetails"
-  read_method  = "GET"
-  # Update existing entry with new ALB hostname instead of creating a new one
-  create_path    = "/v2/nlb-dns/vpc/replaceLBHostname"
-  create_method  = "POST"
-  data           = local.nlb_dns_data
-  object_id      = local.ingress_subdomain
-  destroy_method = "POST"
-  destroy_path   = "/v2/nlb-dns/deleteSecret"
-  # Delete ingress secret, the NLB DNS is removed by the resource creating it
-  destroy_data = jsonencode({
-    cluster   = var.cluster_name
-    subdomain = local.ingress_subdomain
-  })
-  update_method = "POST"
-  update_path   = "/v2/nlb-dns/vpc/replaceLBHostname"
-  update_data   = local.nlb_dns_data
+# Point the NLB DNS entry to the new ALB created by the ingress controller.
+# The http provider only has a data source, so this POST runs on every plan and apply.
+# The call is idempotent: it sets the same load balancer hostname each time.
+data "http" "workload_nlb_dns_patch" {
+  url             = "${local.containers_api_url}/v2/nlb-dns/vpc/replaceLBHostname"
+  method          = "POST"
+  request_headers = local.api_headers
+  request_body    = local.nlb_dns_data
+
+  retry {
+    attempts     = 3
+    min_delay_ms = 5000
+  }
+
+  lifecycle {
+    postcondition {
+      condition     = contains([200, 201, 202, 204], self.status_code)
+      error_message = "Updating the NLB DNS load balancer hostname failed with HTTP ${self.status_code}: ${self.response_body}"
+    }
+  }
 }
 
-# This resource is just to implement the destroy operation because it cannot be done
-# in the resource that creates the NLB DNS entry (see comment on restapi_object.workload_nlb_dns)
-resource "restapi_object" "workload_nlb_dns_cleanup" {
-  path         = "/v2/nlb-dns/getNlbDetails"
-  query_string = "cluster=${var.cluster_name}&nlbSubdomain=${local.ingress_subdomain}"
-  read_path    = "/v2/nlb-dns/getNlbDetails"
-  read_method  = "GET"
-  # Update existing entry with new ALB hostname instead of creating a new one
-  create_path   = "/v2/nlb-dns/vpc/replaceLBHostname"
-  create_method = "POST"
-  data          = local.nlb_dns_data
-  object_id     = local.ingress_subdomain
-  # Delete the ALB assignment from the NLB DNS, needs to use ingress/v2/dns API, otherwise the NLB DNS entry is not deleted
-  destroy_method = "POST"
-  destroy_path   = "/ingress/v2/dns/deleteDomain"
-  destroy_data = jsonencode({
-    cluster   = var.cluster_name
-    subdomain = local.ingress_subdomain
-  })
-  update_method = "POST"
-  update_path   = "/v2/nlb-dns/vpc/replaceLBHostname"
-  update_data   = local.nlb_dns_data
-  depends_on    = [restapi_object.workload_nlb_dns_patch]
+# Drop the old restapi objects from state without calling their destroy:
+# the stub destroy of workload_nlb_dns did nothing, and the deleteSecret / deleteDomain
+# calls of the patch and cleanup objects are now done by the shell_script delete above.
+removed {
+  from = restapi_object.workload_nlb_dns
+  lifecycle {
+    destroy = false
+  }
+}
+
+removed {
+  from = restapi_object.workload_nlb_dns_patch
+  lifecycle {
+    destroy = false
+  }
+}
+
+removed {
+  from = restapi_object.workload_nlb_dns_cleanup
+  lifecycle {
+    destroy = false
+  }
 }
 
 # Need to get private IPs (private_ips) of the ALB to include in ACL
 data "ibm_is_lb" "ingress_vpc_alb" {
   name       = "kube-${local.cluster_id}-${replace(data.kubernetes_service_v1.ingress_router_service.metadata[0].uid, "-", "")}"
-  depends_on = [time_sleep.wait_for_alb_provisioning, time_sleep.wait_for_ingress_provisioning]
+  depends_on = [time_sleep.wait_for_alb_provisioning, time_sleep.wait_for_ingress_provisioning, data.http.workload_nlb_dns_patch]
 }
 
 # Assuming all SLZ zones for the ALB subnet will have the same ACL

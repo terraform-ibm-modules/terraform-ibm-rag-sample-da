@@ -24,3 +24,9 @@ variable "sensitive_tokendata" {
   type        = string
   sensitive   = true
 }
+
+variable "ibmcloud_api_key" {
+  description = "API key used by the project and collection lifecycle scripts to get an IAM token"
+  type        = string
+  sensitive   = true
+}

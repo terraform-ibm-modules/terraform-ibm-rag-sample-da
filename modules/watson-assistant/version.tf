@@ -1,9 +1,8 @@
 terraform {
   required_providers {
-    restapi = {
-      source                = "Mastercard/restapi"
-      version               = ">= 1.19.1"
-      configuration_aliases = [restapi.restapi_watsonx_admin]
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.4.0"
     }
     shell = {
       source  = "scottwinkler/shell"

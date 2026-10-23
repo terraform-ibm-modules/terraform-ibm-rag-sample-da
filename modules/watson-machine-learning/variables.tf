@@ -119,3 +119,15 @@ variable "skip_iam_authorization_policy" {
   description = "Whether to create an IAM authorization policy that permits the Object Storage instance to read the encryption key from the KMS instance. An authorization policy must exist before an encrypted bucket can be created. Set to `true` to avoid creating the policy."
   default     = false
 }
+
+variable "sensitive_tokendata" {
+  description = "IAM access token (with the Bearer prefix) used for the watsonx.ai API calls"
+  type        = string
+  sensitive   = true
+}
+
+variable "ibmcloud_api_key" {
+  description = "API key used by the project and storage delegation lifecycle scripts to get an IAM token"
+  type        = string
+  sensitive   = true
+}
