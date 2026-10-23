@@ -219,6 +219,7 @@ func TestRunBankingSolutions(t *testing.T) {
 }
 
 func TestRunUpgradeExample(t *testing.T) {
+	// TODO: remove this skip once the watsonx_assistant_instance_crn removal is merged into main (the base branch still requires it)
 	t.Skip("Skipping upgrade test due to breaking change: watsonx_assistant_instance_crn was removed and is required on the base branch")
 	t.Parallel()
 

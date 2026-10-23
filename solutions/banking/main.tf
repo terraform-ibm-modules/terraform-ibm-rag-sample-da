@@ -296,9 +296,18 @@ module "configure_elastic_index" {
   source                     = "../../modules/elastic-index"
   elastic_service_binding    = local.elastic_service_binding
   elastic_index_name         = local.elastic_index_name
-  elastic_index_mapping      = jsonencode(jsondecode(file("${path.module}/artifacts/watsonx.Assistant/elastic-search-skill.json")).search_settings.schema_mapping)
-  elastic_index_entries_file = var.elastic_upload_sample_data ? "./artifacts/watsonx.Assistant/bank-loan-faqs.json" : null
+  elastic_index_mapping      = jsonencode(jsondecode(file("${path.module}/artifacts/Elasticsearch/elastic-search-skill.json")).search_settings.schema_mapping)
+  elastic_index_entries_file = var.elastic_upload_sample_data ? "${path.module}/artifacts/Elasticsearch/bank-loan-faqs.json" : null
   depends_on                 = [data.ibm_iam_auth_token.tokendata, time_sleep.wait_for_elasticsearch]
+}
+
+# The watsonx Assistant configuration was removed from this DA. Forget the resources in state
+# so that upgrading does not delete the existing Assistant configuration.
+removed {
+  from = module.configure_watson_assistant
+  lifecycle {
+    destroy = false
+  }
 }
 
 ### Make all pipeline properties dependent on CD instance
