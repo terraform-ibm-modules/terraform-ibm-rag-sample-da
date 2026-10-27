@@ -8,6 +8,21 @@ output "watsonx_project_url" {
   value       = local.use_watsonx_machine_learning ? "${local.watsonx_project_base_url}/projects/${module.configure_wml_project[0].watsonx_project_id}" : null
 }
 
+output "watsonx_orchestrate_api_url" {
+  description = "watsonx Orchestrate API URL."
+  value       = var.watsonx_orchestrate_instance_crn != null ? "https://api.${local.watsonx_orchestrate_instance_region}.watsonx-orchestrate.assistant.watson.cloud.ibm.com/instances/${local.watsonx_orchestrate_instance_guid}" : null
+}
+
+output "watsonx_orchestrate_id" {
+  description = "Instance ID (GUID) of the watsonx Orchestrate service instance."
+  value       = local.watsonx_orchestrate_instance_guid
+}
+
+output "watsonx_orchestrate_region" {
+  description = "Region of the watsonx Orchestrate service instance."
+  value       = local.watsonx_orchestrate_instance_region
+}
+
 output "watson_discovery_api_url" {
   description = "Watson Discovery URL."
   value       = local.use_watson_discovery ? "https:${local.watson_discovery_url}" : null

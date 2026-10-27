@@ -8,11 +8,6 @@ variable "elastic_service_binding" {
     password       = string
     ca_data_base64 = optional(string)
   })
-
-  validation {
-    condition     = startswith(var.elastic_service_binding.url, "https://")
-    error_message = "The Elastic URL must use HTTPS."
-  }
 }
 
 variable "elastic_index_name" {

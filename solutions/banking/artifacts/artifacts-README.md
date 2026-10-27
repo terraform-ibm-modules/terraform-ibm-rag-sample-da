@@ -26,8 +26,8 @@ https://cloud.ibm.com/docs/account?topic=account-iamtoken_from_apikey
 
 > Artifacts for Watson Discovery
 
-The RAG application pattern artifacts include documents uploaded andindexed in Watson Discovery. Content/passages from these documents
-is retrieved by the watsonx Assistant custom extension.
+The RAG application pattern artifacts include documents uploaded and indexed in Watson Discovery. Content/passages from these documents
+is retrieved by the watsonx Orchestrate Watson Discovery tool/skill.
 
 APIs are needed to create the Watson Discovery artifacts.
 
@@ -47,3 +47,37 @@ File: WatsonDiscoveryModel.sdumodel
 
 5.	Get the URL/Instance ID, Project and Collection ID
 - Captured from the steps done before
+
+
+
+
+> Artifacts for watsonx Orchestrate
+
+The RAG application pattern artifacts include the watsonx Orchestrate agent configuration that drives the chat conversations, tools/skills that make queries to Watson Discovery to retrieve content and to watsonx.ai for inferencing, and the web chat interface that enables the end-user chat experience.
+
+APIs are needed to create the watsonx Orchestrate artifacts. The watsonx Orchestrate APIs can use the Bearer Token of the administrative DA user or the "application owner" user. This user was created earlier and the API key stored in Secrets Manager. Use the API key to get a Bearer Token from the IAM endpoint, then use the Bearer Token to call the Orchestrate APIs.
+Reference: https://cloud.ibm.com/docs/account?topic=account-iamtoken_from_apikey
+
+1. Create agent (workspace/project)
+- https://cloud.ibm.com/apidocs/watsonx-orchestrate
+- Agent name: cc-bank-loan-demo-v1
+
+2. Add Watson Discovery as a tool/skill
+- Configure a Watson Discovery tool that queries the Discovery collection for document retrieval
+- JSON File: watson-discovery-custom-ext-api-query-openapi.json
+- Tool name: watson-discovery-tool-v1
+- Currently a manual step from the watsonx Orchestrate UI. API details TBD.
+
+3. Add watsonx.ai as a tool/skill
+- Configure a watsonx.ai tool that calls the Prompt Template deployment for inferencing
+- JSON File: watsonx-custom-ext-api-call.openapi.json
+- Tool name: wx-ai-tool-v1
+- Currently a manual step from the watsonx Orchestrate UI. API details TBD.
+
+4. Import RAG pattern action skill from the action JSON file
+- https://cloud.ibm.com/apidocs/watsonx-orchestrate
+- JSON File: cc-bank-loan-v1-action.json
+
+5. Get agent environment details and integration ID for the web chat interface
+- https://cloud.ibm.com/apidocs/watsonx-orchestrate
+- Capture the environment ID and integration ID for use in pipeline properties (`watsonx_orchestrate_id`, `watsonx_orchestrate_region`)
