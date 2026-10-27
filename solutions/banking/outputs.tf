@@ -9,7 +9,7 @@ output "watsonx_project_url" {
 }
 
 output "watsonx_orchestrate_api_url" {
-  description = "watsonx Orchestrate API URL. See [API reference](https://cloud.ibm.com/apidocs/assistant-v2)."
+  description = "watsonx Orchestrate API URL. See [API reference](https://cloud.ibm.com/docs/apis/assistant-v2)."
   value       = var.watsonx_orchestrate_instance_crn != null ? "https://api.${local.watsonx_orchestrate_instance_region}.assistant.watson.cloud.ibm.com/instances/${local.watsonx_orchestrate_instance_guid}" : null
 }
 
@@ -21,6 +21,16 @@ output "watsonx_orchestrate_id" {
 output "watsonx_orchestrate_region" {
   description = "Region of the watsonx Orchestrate service instance."
   value       = local.watsonx_orchestrate_instance_region
+}
+
+output "watsonx_orchestrate_crn" {
+  description = "Cloud Resource Name (CRN) of the watsonx Orchestrate service instance."
+  value       = var.watsonx_orchestrate_instance_crn
+}
+
+output "watsonx_orchestrate_integration_id" {
+  description = "ID of the watsonx Orchestrate web chat integration (agent environment ID)."
+  value       = var.watsonx_orchestrate_integration_id
 }
 
 output "watson_discovery_api_url" {

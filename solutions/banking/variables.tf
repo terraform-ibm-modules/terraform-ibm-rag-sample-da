@@ -105,6 +105,12 @@ variable "watsonx_orchestrate_instance_crn" {
   }
 }
 
+variable "watsonx_orchestrate_integration_id" {
+  description = "ID of the watsonx Orchestrate web chat integration (agent environment ID). If provided, it will be set as a pipeline property."
+  type        = string
+  default     = null
+}
+
 variable "watson_discovery_instance_crn" {
   description = "Cloud Resource Name (CRN) of the Watson Discovery service instance. If provided, Discovery integration is enabled."
   type        = string

@@ -176,6 +176,9 @@
               }
             },
             {
+              "key": "watsonx_orchestrate_integration_id"
+            },
+            {
               "key": "watson_discovery_instance_crn",
               "display_name": "watson_discovery_instance",
               "custom_config": {

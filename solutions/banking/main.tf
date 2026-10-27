@@ -346,6 +346,28 @@ resource "ibm_cd_tekton_pipeline_property" "watsonx_orchestrate_id_pipeline_prop
   value       = local.watsonx_orchestrate_instance_guid
 }
 
+# Update CI pipeline with Orchestrate integration ID
+resource "ibm_cd_tekton_pipeline_property" "watsonx_orchestrate_integration_id_pipeline_property_ci" {
+  count       = var.watsonx_orchestrate_integration_id != null ? 1 : 0
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  name        = "watsonx_orchestrate_integration_id"
+  pipeline_id = var.ci_pipeline_id
+  type        = "text"
+  value       = var.watsonx_orchestrate_integration_id
+}
+
+# Update CD pipeline with Orchestrate integration ID
+resource "ibm_cd_tekton_pipeline_property" "watsonx_orchestrate_integration_id_pipeline_property_cd" {
+  count       = var.watsonx_orchestrate_integration_id != null ? 1 : 0
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  name        = "watsonx_orchestrate_integration_id"
+  pipeline_id = var.cd_pipeline_id
+  type        = "text"
+  value       = var.watsonx_orchestrate_integration_id
+}
+
 # Update CI pipeline with Orchestrate instance region
 resource "ibm_cd_tekton_pipeline_property" "watsonx_orchestrate_region_pipeline_property_ci" {
   count       = var.watsonx_orchestrate_instance_crn != null ? 1 : 0
@@ -484,6 +506,7 @@ resource "null_resource" "ci_pipeline_run" {
   depends_on = [
     ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook,
     ibm_cd_tekton_pipeline_trigger_property.ci_pipeline_webhook_branch_property,
+    ibm_cd_tekton_pipeline_property.watsonx_orchestrate_integration_id_pipeline_property_ci,
     ibm_cd_tekton_pipeline_property.watsonx_orchestrate_id_pipeline_property_ci,
     ibm_cd_tekton_pipeline_property.watsonx_orchestrate_region_pipeline_property_ci,
     ibm_cd_tekton_pipeline_property.resource_group_name_pipeline_property_ci,

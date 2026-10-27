@@ -27,7 +27,7 @@ https://cloud.ibm.com/docs/account?topic=account-iamtoken_from_apikey
 > Artifacts for Watson Discovery
 
 The RAG application pattern artifacts include documents uploaded and indexed in Watson Discovery. Content/passages from these documents
-is retrieved by the watsonx Orchestrate Watson Discovery tool/skill.
+is retrieved by the watsonx Orchestrate Watson Discovery tool.
 
 APIs are needed to create the Watson Discovery artifacts.
 
@@ -53,31 +53,35 @@ File: WatsonDiscoveryModel.sdumodel
 
 > Artifacts for watsonx Orchestrate
 
-The RAG application pattern artifacts include the watsonx Orchestrate agent configuration that drives the chat conversations, tools/skills that make queries to Watson Discovery to retrieve content and to watsonx.ai for inferencing, and the web chat interface that enables the end-user chat experience.
+The RAG application pattern artifacts include the watsonx Orchestrate agent configuration that drives the chat conversations, the tools that query Watson Discovery (or Elasticsearch) to retrieve content and call the watsonx.ai Prompt Template deployment for inferencing, and the web chat interface that enables the end-user chat experience.
 
 APIs are needed to create the watsonx Orchestrate artifacts. The watsonx Orchestrate APIs can use the Bearer Token of the administrative DA user or the "application owner" user. This user was created earlier and the API key stored in Secrets Manager. Use the API key to get a Bearer Token from the IAM endpoint, then use the Bearer Token to call the Orchestrate APIs.
 Reference: https://cloud.ibm.com/docs/account?topic=account-iamtoken_from_apikey
 
-1. Create agent (workspace/project)
-- https://cloud.ibm.com/apidocs/watsonx-orchestrate
+Orchestrate imports OpenAPI files directly as tools, so no extensions are needed. Each tool is named after the `operationId` of its endpoint in the OpenAPI file (snake_case is recommended). The OpenAPI files must be OpenAPI 3.0, have exactly one non-parameterized `servers` URL, accept and return JSON, and have an `operationId` and `description` on every endpoint.
+Reference: https://developer.watson-orchestrate.ibm.com/tools/create_openapi_tool
+
+1. Add Watson Discovery as a tool
+- Configure a Watson Discovery tool that queries the Discovery collection for document retrieval (see "Artifacts for Watson Discovery" above for the URL/Instance ID, Project ID and Collection ID).
+- OpenAPI file: watson-discovery-custom-ext-api-query-openapi.json
+- Tool name: set through the `operationId` in the file (for example `watson_discovery_query`)
+- Import with the Orchestrate CLI: `orchestrate tools import -k openapi -f <openapi-file> [-a <connection-app-id>]`, or with the API `POST /v1/tools`. The optional connection app ID supplies the credentials for the endpoint.
+- If Elasticsearch is used as the knowledge base instead of Watson Discovery, configure a retrieval tool for the Elastic index instead (see `Elasticsearch/README.md`).
+
+2. Add watsonx.ai as a tool
+- Configure a watsonx.ai tool that calls the Prompt Template deployment for inferencing (see "Artifacts for watsonx.ai" above for the deployment endpoint).
+- OpenAPI file: watsonx-custom-ext-api-call.openapi.json
+- Tool name: set through the `operationId` in the file (for example `watsonx_ai_generate`)
+- Import with the same CLI command or `POST /v1/tools` API as above.
+
+3. Create the agent with the tools
+- API: `POST /v1/orchestrate/agents` (https://developer.watson-orchestrate.ibm.com/apis)
 - Agent name: cc-bank-loan-demo-v1
+- Required fields: `description` and `style`. Set `tools` to the two tools imported above.
+- The agent `instructions` drive the RAG conversation: retrieve passages with the Watson Discovery tool, then pass the question and passages to the watsonx.ai tool to generate the answer.
 
-2. Add Watson Discovery as a tool/skill
-- Configure a Watson Discovery tool that queries the Discovery collection for document retrieval
-- JSON File: watson-discovery-custom-ext-api-query-openapi.json
-- Tool name: watson-discovery-tool-v1
-- Currently a manual step from the watsonx Orchestrate UI. API details TBD.
-
-3. Add watsonx.ai as a tool/skill
-- Configure a watsonx.ai tool that calls the Prompt Template deployment for inferencing
-- JSON File: watsonx-custom-ext-api-call.openapi.json
-- Tool name: wx-ai-tool-v1
-- Currently a manual step from the watsonx Orchestrate UI. API details TBD.
-
-4. Import RAG pattern action skill from the action JSON file
-- https://cloud.ibm.com/apidocs/watsonx-orchestrate
-- JSON File: cc-bank-loan-v1-action.json
-
-5. Get agent environment details and integration ID for the web chat interface
-- https://cloud.ibm.com/apidocs/assistant-v2#getenvironment
-- Capture the environment ID and integration ID for use in pipeline properties (`watsonx_orchestrate_id`, `watsonx_orchestrate_region`)
+4. Get the details for the web chat interface
+- Capture the watsonx Orchestrate instance ID and region for use in the pipeline properties (`watsonx_orchestrate_id`, `watsonx_orchestrate_region`). These are set by this DA from the `watsonx_orchestrate_instance_crn` input.
+- Get the agent environment with `GET /v1/orchestrate/agents/{agent_id}/environment` to obtain the `agentId` and `agentEnvironmentId` needed to embed the web chat.
+- Embed the web chat with the script generated by `orchestrate channels webchat embed --agent-name=cc-bank-loan-demo-v1`, and configure embedded chat security first.
+- Reference: https://developer.watson-orchestrate.ibm.com/webchat/get_started
