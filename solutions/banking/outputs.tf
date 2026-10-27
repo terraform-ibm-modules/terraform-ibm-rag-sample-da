@@ -9,8 +9,8 @@ output "watsonx_project_url" {
 }
 
 output "watsonx_orchestrate_api_url" {
-  description = "watsonx Orchestrate API URL."
-  value       = var.watsonx_orchestrate_instance_crn != null ? "https://api.${local.watsonx_orchestrate_instance_region}.watsonx-orchestrate.assistant.watson.cloud.ibm.com/instances/${local.watsonx_orchestrate_instance_guid}" : null
+  description = "watsonx Orchestrate API URL. See [API reference](https://cloud.ibm.com/apidocs/assistant-v2)."
+  value       = var.watsonx_orchestrate_instance_crn != null ? "https://api.${local.watsonx_orchestrate_instance_region}.assistant.watson.cloud.ibm.com/instances/${local.watsonx_orchestrate_instance_guid}" : null
 }
 
 output "watsonx_orchestrate_id" {

@@ -79,5 +79,5 @@ Reference: https://cloud.ibm.com/docs/account?topic=account-iamtoken_from_apikey
 - JSON File: cc-bank-loan-v1-action.json
 
 5. Get agent environment details and integration ID for the web chat interface
-- https://cloud.ibm.com/apidocs/watsonx-orchestrate
+- https://cloud.ibm.com/apidocs/assistant-v2#getenvironment
 - Capture the environment ID and integration ID for use in pipeline properties (`watsonx_orchestrate_id`, `watsonx_orchestrate_region`)
