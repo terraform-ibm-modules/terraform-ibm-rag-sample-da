@@ -2,10 +2,11 @@
 # CRN Parsers
 ##############################################################################
 
-module "watsonx_assistant_crn_parser" {
+module "watsonx_orchestrate_crn_parser" {
+  count   = var.watsonx_orchestrate_instance_crn != null ? 1 : 0
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
   version = "1.9.0"
-  crn     = var.watsonx_assistant_instance_crn
+  crn     = var.watsonx_orchestrate_instance_crn
 }
 
 module "watson_discovery_crn_parser" {
@@ -39,10 +40,11 @@ data "ibm_resource_instance" "watsonx_ml_instance" {
 
 locals {
   # Parsed CRN values
-  watsonx_assistant_instance_guid   = module.watsonx_assistant_crn_parser.service_instance
-  watsonx_assistant_instance_region = module.watsonx_assistant_crn_parser.region
-  watson_discovery_instance_guid    = var.watson_discovery_instance_crn != null ? module.watson_discovery_crn_parser[0].service_instance : null
-  watson_discovery_region           = var.watson_discovery_instance_crn != null ? module.watson_discovery_crn_parser[0].region : null
+  watsonx_orchestrate_instance_guid   = var.watsonx_orchestrate_instance_crn != null ? module.watsonx_orchestrate_crn_parser[0].service_instance : null
+  watsonx_orchestrate_instance_region = var.watsonx_orchestrate_instance_crn != null ? module.watsonx_orchestrate_crn_parser[0].region : null
+
+  watson_discovery_instance_guid = var.watson_discovery_instance_crn != null ? module.watson_discovery_crn_parser[0].service_instance : null
+  watson_discovery_region        = var.watson_discovery_instance_crn != null ? module.watson_discovery_crn_parser[0].region : null
 
 
   watsonx_machine_learning_instance_resource_name = var.watsonx_machine_learning_instance_crn != null ? data.ibm_resource_instance.watsonx_ml_instance[0].name : null
@@ -57,7 +59,6 @@ locals {
 
   cos_instance_name                = try("${local.prefix}-rag-sample-app-cos", "gen-ai-rag-sample-app-cos")
   cos_kms_new_key_name             = try("${local.prefix}-${var.cos_kms_new_key_name}", var.cos_kms_new_key_name)
-  watsonx_assistant_url            = "//api.${local.watsonx_assistant_instance_region}.assistant.watson.cloud.ibm.com/instances/${local.watsonx_assistant_instance_guid}"
   watson_discovery_url             = local.use_watson_discovery ? "//api.${local.watson_discovery_region}.discovery.watson.cloud.ibm.com/instances/${local.watson_discovery_instance_guid}" : null
   watson_discovery_project_name    = try("${local.prefix}-gen-ai-rag-sample-app-project", "gen-ai-rag-sample-app-project")
   watson_discovery_collection_name = try("${local.prefix}-gen-ai-rag-sample-app-data", "gen-ai-rag-sample-app-data")
@@ -305,72 +306,88 @@ module "configure_elastic_index" {
   source                     = "../../modules/elastic-index"
   elastic_service_binding    = local.elastic_service_binding
   elastic_index_name         = local.elastic_index_name
-  elastic_index_mapping      = jsonencode(jsondecode(file("${path.module}/artifacts/watsonx.Assistant/elastic-search-skill.json")).search_settings.schema_mapping)
-  elastic_index_entries_file = var.elastic_upload_sample_data ? "./artifacts/watsonx.Assistant/bank-loan-faqs.json" : null
+  elastic_index_mapping      = jsonencode(jsondecode(file("${path.module}/artifacts/Elasticsearch/elastic-index-schema.json")).schema_mapping)
+  elastic_index_entries_file = var.elastic_upload_sample_data ? "${path.module}/artifacts/Elasticsearch/bank-loan-faqs.json" : null
   depends_on                 = [data.ibm_iam_auth_token.tokendata, time_sleep.wait_for_elasticsearch]
 }
 
-# Elastic index creation
-module "configure_watson_assistant" {
-  providers = {
-    restapi.restapi_watsonx_admin = restapi.restapi_watsonx_admin
+# The watsonx Assistant module has been replaced by watsonx Orchestrate in this DA.
+# The following removed block prevents Terraform from destroying previously provisioned
+# Assistant resources when upgrading from an older state that still contains them.
+removed {
+  from = module.configure_watson_assistant
+  lifecycle {
+    destroy = false
   }
-  source                  = "../../modules/watson-assistant"
-  watsonx_admin_api_key   = coalesce(var.watsonx_admin_api_key, var.ibmcloud_api_key)
-  prefix                  = var.prefix
-  watsonx_assistant_url   = local.watsonx_assistant_url
-  assistant_search_skill  = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/elastic-search-skill.json") : null
-  assistant_action_skill  = local.use_elastic_index ? file("${path.module}/artifacts/watsonx.Assistant/wxa-conv-srch-es-v1.json") : null
-  elastic_service_binding = local.use_elastic_index ? local.elastic_service_binding : null
-  elastic_index_name      = local.elastic_index_name
-  depends_on              = [data.ibm_iam_auth_token.tokendata]
-}
-moved {
-  from = shell_script.watson_assistant
-  to   = module.configure_watson_assistant.shell_script.watson_assistant
 }
 
 ### Make all pipeline properties dependent on CD instance
 ### to avoid errors when the toolchains are out of grace period
 
-# Update CI pipeline with Assistant instance ID
-resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_property_ci" {
+# Update CI pipeline with Orchestrate instance ID
+resource "ibm_cd_tekton_pipeline_property" "watsonx_orchestrate_id_pipeline_property_ci" {
+  count       = var.watsonx_orchestrate_instance_crn != null ? 1 : 0
   depends_on  = [local.cd_instance]
   provider    = ibm.ibm_resources
-  name        = "watsonx_assistant_id"
+  name        = "watsonx_orchestrate_id"
   pipeline_id = var.ci_pipeline_id
   type        = "text"
-  value       = local.watsonx_assistant_instance_guid
+  value       = local.watsonx_orchestrate_instance_guid
 }
 
-# Update CD pipeline with Assistant instance ID
-resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_id_pipeline_property_cd" {
+# Update CD pipeline with Orchestrate instance ID
+resource "ibm_cd_tekton_pipeline_property" "watsonx_orchestrate_id_pipeline_property_cd" {
+  count       = var.watsonx_orchestrate_instance_crn != null ? 1 : 0
   depends_on  = [local.cd_instance]
   provider    = ibm.ibm_resources
-  name        = "watsonx_assistant_id"
+  name        = "watsonx_orchestrate_id"
   pipeline_id = var.cd_pipeline_id
   type        = "text"
-  value       = local.watsonx_assistant_instance_guid
+  value       = local.watsonx_orchestrate_instance_guid
 }
 
-# Update CI pipeline with Assistant instance region
-resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_region_pipeline_property_ci" {
+# Update CI pipeline with Orchestrate integration ID
+resource "ibm_cd_tekton_pipeline_property" "watsonx_orchestrate_integration_id_pipeline_property_ci" {
+  count       = var.watsonx_orchestrate_integration_id != null ? 1 : 0
   depends_on  = [local.cd_instance]
   provider    = ibm.ibm_resources
-  name        = "watsonx_assistant_region"
+  name        = "watsonx_orchestrate_integration_id"
   pipeline_id = var.ci_pipeline_id
   type        = "text"
-  value       = local.watsonx_assistant_instance_region
+  value       = var.watsonx_orchestrate_integration_id
 }
 
-# Update CD pipeline with Assistant instance region
-resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_region_pipeline_property_cd" {
+# Update CD pipeline with Orchestrate integration ID
+resource "ibm_cd_tekton_pipeline_property" "watsonx_orchestrate_integration_id_pipeline_property_cd" {
+  count       = var.watsonx_orchestrate_integration_id != null ? 1 : 0
   depends_on  = [local.cd_instance]
   provider    = ibm.ibm_resources
-  name        = "watsonx_assistant_region"
+  name        = "watsonx_orchestrate_integration_id"
   pipeline_id = var.cd_pipeline_id
   type        = "text"
-  value       = local.watsonx_assistant_instance_region
+  value       = var.watsonx_orchestrate_integration_id
+}
+
+# Update CI pipeline with Orchestrate instance region
+resource "ibm_cd_tekton_pipeline_property" "watsonx_orchestrate_region_pipeline_property_ci" {
+  count       = var.watsonx_orchestrate_instance_crn != null ? 1 : 0
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  name        = "watsonx_orchestrate_region"
+  pipeline_id = var.ci_pipeline_id
+  type        = "text"
+  value       = local.watsonx_orchestrate_instance_region
+}
+
+# Update CD pipeline with Orchestrate instance region
+resource "ibm_cd_tekton_pipeline_property" "watsonx_orchestrate_region_pipeline_property_cd" {
+  count       = var.watsonx_orchestrate_instance_crn != null ? 1 : 0
+  depends_on  = [local.cd_instance]
+  provider    = ibm.ibm_resources
+  name        = "watsonx_orchestrate_region"
+  pipeline_id = var.cd_pipeline_id
+  type        = "text"
+  value       = local.watsonx_orchestrate_instance_region
 }
 
 # Update CI pipeline with Resource Group
@@ -406,26 +423,6 @@ resource "ibm_cd_tekton_pipeline_property" "application_flavor_pipeline_property
   pipeline_id = var.cd_pipeline_id
   type        = "text"
   value       = "banking"
-}
-
-# Update CI pipeline with Assistant integration ID
-resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_ci" {
-  provider    = ibm.ibm_resources
-  depends_on  = [local.cd_instance]
-  name        = "watsonx_assistant_integration_id"
-  pipeline_id = var.ci_pipeline_id
-  type        = "text"
-  value       = module.configure_watson_assistant.watsonx_assistant_integration_id
-}
-
-# Update CD pipeline with Assistant integration ID
-resource "ibm_cd_tekton_pipeline_property" "watsonx_assistant_integration_id_pipeline_property_cd" {
-  provider    = ibm.ibm_resources
-  depends_on  = [local.cd_instance]
-  name        = "watsonx_assistant_integration_id"
-  pipeline_id = var.cd_pipeline_id
-  type        = "text"
-  value       = module.configure_watson_assistant.watsonx_assistant_integration_id
 }
 
 # Update CI pipeline with public ingress subdomain
@@ -509,9 +506,9 @@ resource "null_resource" "ci_pipeline_run" {
   depends_on = [
     ibm_cd_tekton_pipeline_trigger.ci_pipeline_webhook,
     ibm_cd_tekton_pipeline_trigger_property.ci_pipeline_webhook_branch_property,
-    ibm_cd_tekton_pipeline_property.watsonx_assistant_integration_id_pipeline_property_ci,
-    ibm_cd_tekton_pipeline_property.watsonx_assistant_id_pipeline_property_ci,
-    ibm_cd_tekton_pipeline_property.watsonx_assistant_region_pipeline_property_ci,
+    ibm_cd_tekton_pipeline_property.watsonx_orchestrate_integration_id_pipeline_property_ci,
+    ibm_cd_tekton_pipeline_property.watsonx_orchestrate_id_pipeline_property_ci,
+    ibm_cd_tekton_pipeline_property.watsonx_orchestrate_region_pipeline_property_ci,
     ibm_cd_tekton_pipeline_property.resource_group_name_pipeline_property_ci,
     ibm_cd_tekton_pipeline_property.application_flavor_pipeline_property_ci,
     ibm_cd_tekton_pipeline_property.cluster_public_ingress_subdomain_pipeline_property_ci,

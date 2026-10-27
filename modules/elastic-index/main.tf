@@ -14,10 +14,8 @@ resource "elasticstack_elasticsearch_index" "sample_index" {
 
 ## Upload sample data entries
 
-/*
 # Note: Elastic uses CA certificate for connection, and restapi does not have an option to specify that
 # Therefore the Elastic APIs are used from shell_script
-*/
 
 resource "shell_script" "elastic_index_entries" {
   count      = var.elastic_index_entries_file != null ? 1 : 0
@@ -28,6 +26,9 @@ resource "shell_script" "elastic_index_entries" {
       source ./${path.module}/scripts/elastic-index-utils.sh
       create_index_entries
     EOT
+    # read is a no-op: index entries are immutable sample data and drift detection
+    # is not required. Returning an empty JSON object satisfies the provider.
+    read   = "echo {}"
     delete = <<-EOT
       set -e
       source ./${path.module}/scripts/elastic-index-utils.sh
@@ -48,7 +49,10 @@ resource "shell_script" "elastic_index_entries" {
     ELASTIC_AUTH_BASE64 = local.elastic_auth_base64
   }
 
-  # Change in apikey should not trigger assistant re-create
+  # Change in credentials should not trigger re-create.
+  # Note: the credentials stored in state are not refreshed, so after the Elastic password is rotated
+  # the delete command (which uses the stored credentials) fails with an authentication error.
+  # In that case, remove this resource from state (`terraform state rm`) before re-applying.
   lifecycle {
     ignore_changes = [sensitive_environment]
   }
