@@ -1,0 +1,7 @@
+{
+    "schema_mapping": {
+        "url": "source",
+        "body": "text",
+        "title": "title"
+    }
+}

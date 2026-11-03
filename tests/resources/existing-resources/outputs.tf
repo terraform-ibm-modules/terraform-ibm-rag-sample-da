@@ -1,16 +1,16 @@
-output "watsonx_assistant_instance_crn" {
-  value       = ibm_resource_instance.assistant_instance.crn
-  description = "CRN of the watsonx Assistant instance"
+output "watsonx_orchestrate_instance_crn" {
+  value       = ibm_resource_instance.orchestrate_instance.crn
+  description = "CRN of the watsonx Orchestrate instance"
 }
 
-output "watsonx_assistant_instance_id" {
-  value       = ibm_resource_instance.assistant_instance.guid
-  description = "GUID of the watsonx Assistant instance"
+output "watsonx_orchestrate_instance_id" {
+  value       = ibm_resource_instance.orchestrate_instance.guid
+  description = "GUID of the watsonx Orchestrate instance"
 }
 
-output "watsonx_assistant_region" {
-  value       = ibm_resource_instance.assistant_instance.location
-  description = "Region of the watsonx Assistant instance"
+output "watsonx_orchestrate_region" {
+  value       = ibm_resource_instance.orchestrate_instance.location
+  description = "Region of the watsonx Orchestrate instance"
 }
 
 output "watson_discovery_instance_crn" {

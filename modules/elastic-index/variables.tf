@@ -1,5 +1,7 @@
 variable "elastic_service_binding" {
   description = "Elastic ICD instance credentials"
+  sensitive   = true
+  nullable    = false
   type = object({
     url            = string
     username       = string

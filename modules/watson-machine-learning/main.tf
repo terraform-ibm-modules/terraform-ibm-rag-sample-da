@@ -148,18 +148,17 @@ moved {
   from = restapi_object.configure_project
   to   = module.configure_project.restapi_object.configure_project
 }
-/* Reading the project after creating it has some issues with the API - we do not need that data yet
-resource "time_sleep" "wait_60_seconds" { # tflint-ignore: terraform_required_providers
-  depends_on      = [restapi_object.configure_project]
-  create_duration = "60s"
-}
-data "restapi_object" "get_project" {
-  depends_on   = [resource.restapi_object.configure_project, resource.time_sleep.wait_60_seconds]
-  provider     = restapi.restapi_watsonx_admin
-  path         = "${local.dataplatform_api}/v2/projects"
-  results_key  = "resources"
-  search_key   = "metadata/guid"
-  search_value = local.watsonx_project_id
-  id_attribute = "metadata/guid"
-}
-*/
+# Reading the project after creating it has some issues with the API - we do not need that data yet
+# resource "time_sleep" "wait_60_seconds" { # tflint-ignore: terraform_required_providers
+#   depends_on      = [restapi_object.configure_project]
+#   create_duration = "60s"
+# }
+# data "restapi_object" "get_project" {
+#   depends_on   = [resource.restapi_object.configure_project, resource.time_sleep.wait_60_seconds]
+#   provider     = restapi.restapi_watsonx_admin
+#   path         = "${local.dataplatform_api}/v2/projects"
+#   results_key  = "resources"
+#   search_key   = "metadata/guid"
+#   search_value = local.watsonx_project_id
+#   id_attribute = "metadata/guid"
+# }

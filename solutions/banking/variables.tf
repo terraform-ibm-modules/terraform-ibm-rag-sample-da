@@ -92,13 +92,23 @@ variable "inventory_repo_url" {
   default     = null
 }
 
-variable "watsonx_assistant_instance_crn" {
-  description = "Cloud Resource Name (CRN) of the watsonx Assistant service instance."
+variable "watsonx_orchestrate_instance_crn" {
+  description = "Cloud Resource Name (CRN) of the watsonx Orchestrate service instance. If provided, Orchestrate instance ID and region will be set as pipeline properties."
   type        = string
+  default     = null
   validation {
-    condition     = can(regex("^crn:v\\d+:[^:]*:[^:]*:conversation:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watsonx_assistant_instance_crn))
-    error_message = "The value provided for 'watsonx_assistant_instance_crn' is not valid."
+    condition = anytrue([
+      var.watsonx_orchestrate_instance_crn == null,
+      can(regex("^crn:v\\d+:[^:]*:[^:]*:watsonx-orchestrate:[^:]*:[^:]*:[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.watsonx_orchestrate_instance_crn))
+    ])
+    error_message = "The value provided for 'watsonx_orchestrate_instance_crn' is not valid. The CRN must refer to a watsonx Orchestrate service instance. Learn more: https://cloud.ibm.com/apidocs/watsonx-orchestrate"
   }
+}
+
+variable "watsonx_orchestrate_integration_id" {
+  description = "ID of the watsonx Orchestrate web chat integration (agent environment ID). If provided, it will be set as a pipeline property."
+  type        = string
+  default     = null
 }
 
 variable "watson_discovery_instance_crn" {

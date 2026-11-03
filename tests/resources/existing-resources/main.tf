@@ -88,10 +88,10 @@ module "key_protect" {
 ########################################################################################################################
 
 
-resource "ibm_resource_instance" "assistant_instance" {
-  name              = "${var.prefix}-watson-assistant-instance"
-  service           = "conversation"
-  plan              = "plus"
+resource "ibm_resource_instance" "orchestrate_instance" {
+  name              = "${var.prefix}-watsonx-orchestrate-instance"
+  service           = "watsonx-orchestrate"
+  plan              = "essentials-agentic-mau"
   location          = var.region
   resource_group_id = module.resource_group.resource_group_id
 

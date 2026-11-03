@@ -3,9 +3,9 @@
 function create_index() {
     local OUTPUT
     # Skip -f
-    OUTPUT=$(curl -LsS -X PUT --location "$ELASTIC_URL/$ELASTIC_INDEX_NAME" \
-    --header "Authorization: Basic $ELASTIC_AUTH_BASE64" \
-    --header "Accepts: application/json" \
+    OUTPUT=$(curl -LsS --connect-timeout 30 --max-time 300 -X PUT --location "$ELASTIC_URL/$ELASTIC_INDEX_NAME" \
+    --config <(printf 'header = "Authorization: Basic %s"\n' "$ELASTIC_AUTH_BASE64") \
+    --header "Accept: application/json" \
     --cacert <(cat <<< "$ELASTIC_CACERT" | base64 -d) )
     check_error "$OUTPUT"
     # Read index attributes
@@ -26,10 +26,10 @@ function get_index() {
     local existing_index_name
     existing_index_name=$1
     local OUTPUT
-    OUTPUT=$(curl -LsS -X GET --location "${ELASTIC_URL}/$existing_index_name" \
-    --header "Authorization: Basic $ELASTIC_AUTH_BASE64" \
+    OUTPUT=$(curl -LsS --connect-timeout 30 --max-time 300 -X GET --location "${ELASTIC_URL}/$existing_index_name" \
+    --config <(printf 'header = "Authorization: Basic %s"\n' "$ELASTIC_AUTH_BASE64") \
     --cacert <(cat <<< "$ELASTIC_CACERT" | base64 -d) \
-    --header "Accepts: application/json"  )
+    --header "Accept: application/json"  )
     check_error "$OUTPUT"
     echo "$OUTPUT" | jq '. | to_entries[] | select( .value.aliases != null )' | jq -S --arg instance_id "$ELASTIC_INSTANCE_ID" '{"instance_id": $instance_id, "index_name": .key, "id": .value.settings.index.uuid}'
 }
@@ -43,9 +43,9 @@ function delete_index() {
         exit 0
     fi
     local OUTPUT
-    OUTPUT=$(curl -LsS -X DELETE --location "$ELASTIC_URL/$existing_index_name" \
-    --header "Authorization: Basic $ELASTIC_AUTH_BASE64" \
-    --header "Accepts: application/json" \
+    OUTPUT=$(curl -LsS --connect-timeout 30 --max-time 300 -X DELETE --location "$ELASTIC_URL/$existing_index_name" \
+    --config <(printf 'header = "Authorization: Basic %s"\n' "$ELASTIC_AUTH_BASE64") \
+    --header "Accept: application/json" \
     --cacert <(cat <<< "$ELASTIC_CACERT" | base64 -d) )
     check_error "$OUTPUT"
     echo "$OUTPUT" | jq '. | select( .acknowledged == true )'
@@ -54,10 +54,11 @@ function delete_index() {
 function create_index_entries() {
     local OUTPUT
 
-    OUTPUT=$(curl -LsS -X POST --location "$ELASTIC_URL/$ELASTIC_INDEX_NAME/_bulk" \
-    --header "Authorization: Basic $ELASTIC_AUTH_BASE64" \
+    # refresh=wait_for: entries are searchable (and countable) as soon as the call returns
+    OUTPUT=$(curl -LsS --connect-timeout 30 --max-time 300 -X POST --location "$ELASTIC_URL/$ELASTIC_INDEX_NAME/_bulk?refresh=wait_for" \
+    --config <(printf 'header = "Authorization: Basic %s"\n' "$ELASTIC_AUTH_BASE64") \
     --header "Content-Type: application/json" \
-    --header "Accepts: application/json" \
+    --header "Accept: application/json" \
     --data-binary @<(jq -r '.[] | tojson | ("{\"index\" : {} }\n" + .)' < "$ELASTIC_ENTRIES_FILE") \
     --cacert <(cat <<< "$ELASTIC_CACERT" | base64 -d)
      )
@@ -69,18 +70,37 @@ function create_index_entries() {
     echo "$OUTPUT" | jq '{ "count": (.items | length) }'
 }
 
+# Reports the current number of entries in the index, in the same format as create_index_entries.
+# Used as the shell_script "read" command so that state matches reality (no false drift),
+# while a real change (entries removed or added outside of Terraform) is detected.
+function read_index_entries() {
+    local OUTPUT
+
+    OUTPUT=$(curl -LsS --connect-timeout 30 --max-time 300 -X GET --location "$ELASTIC_URL/$ELASTIC_INDEX_NAME/_count" \
+    --config <(printf 'header = "Authorization: Basic %s"\n' "$ELASTIC_AUTH_BASE64") \
+    --header "Accept: application/json" \
+    --cacert <(cat <<< "$ELASTIC_CACERT" | base64 -d)
+     )
+    check_error "$OUTPUT" "index_not_found_exception"
+    if [[ $(echo "$OUTPUT" | jq -r '.error?.type') == "index_not_found_exception" ]]; then
+        echo '{ "count": 0 }'
+        exit 0
+    fi
+    echo "$OUTPUT" | jq '{ "count": .count }'
+}
+
 function delete_index_entries() {
     local OUTPUT
 
-    OUTPUT=$(curl -LsS -X POST --location "$ELASTIC_URL/$ELASTIC_INDEX_NAME/_delete_by_query?conflicts=proceed" \
-    --header "Authorization: Basic $ELASTIC_AUTH_BASE64" \
+    OUTPUT=$(curl -LsS --connect-timeout 30 --max-time 300 -X POST --location "$ELASTIC_URL/$ELASTIC_INDEX_NAME/_delete_by_query?conflicts=proceed" \
+    --config <(printf 'header = "Authorization: Basic %s"\n' "$ELASTIC_AUTH_BASE64") \
     --header "Content-Type: application/json" \
-    --header "Accepts: application/json" \
+    --header "Accept: application/json" \
     --data '{"query": {"match_all": {}}}' \
     --cacert <(cat <<< "$ELASTIC_CACERT" | base64 -d)
      )
     check_error "$OUTPUT" "index_not_found_exception"
-    if [[ ! $(echo "$OUTPUT" | jq -r '.error?.type') ==  "index_not_found_exception" ]]; then
+    if [[ $(echo "$OUTPUT" | jq -r '.error?.type') == "index_not_found_exception" ]]; then
         echo "Index already deleted"
         exit 0
     fi
