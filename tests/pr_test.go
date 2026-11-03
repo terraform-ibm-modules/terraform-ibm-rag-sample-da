@@ -31,9 +31,6 @@ const bankingSolutionsDir = "solutions/banking"
 // watsonx.ai supported regions
 // au-syd excluded: continuous-delivery professional plan not available there
 var validRegions = []string{
-	"jp-tok",
-	"eu-gb",
-	"eu-de",
 	"us-south",
 }
 
@@ -187,7 +184,6 @@ func TestRunBankingSolutions(t *testing.T) {
 		// This is the same as setting the -upgrade=true flag with terraform.
 		Upgrade: true,
 	})
-	terraform.WorkspaceSelectOrNewContext(t, context.Background(), existingTerraformOptions, prefix)
 
 	_, existErr := terraform.InitAndApplyContextE(t, context.Background(), existingTerraformOptions)
 
@@ -213,7 +209,6 @@ func TestRunBankingSolutions(t *testing.T) {
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
 		terraform.DestroyContext(t, context.Background(), existingTerraformOptions)
-		terraform.WorkspaceDeleteContext(t, context.Background(), existingTerraformOptions, prefix)
 		logger.Log(t, "END: Destroy (existing resources)")
 	}
 }
@@ -253,7 +248,6 @@ func TestRunUpgradeExample(t *testing.T) {
 		Upgrade: true,
 	})
 
-	terraform.WorkspaceSelectOrNewContext(t, context.Background(), existingTerraformOptions, prefix)
 	_, existErr := terraform.InitAndApplyContextE(t, context.Background(), existingTerraformOptions)
 
 	if existErr != nil {
@@ -279,7 +273,6 @@ func TestRunUpgradeExample(t *testing.T) {
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
 		terraform.DestroyContext(t, context.Background(), existingTerraformOptions)
-		terraform.WorkspaceDeleteContext(t, context.Background(), existingTerraformOptions, prefix)
 		logger.Log(t, "END: Destroy (existing resources)")
 	}
 }

@@ -54,7 +54,8 @@ function delete_index() {
 function create_index_entries() {
     local OUTPUT
 
-    OUTPUT=$(curl -LsS --connect-timeout 30 --max-time 300 -X POST --location "$ELASTIC_URL/$ELASTIC_INDEX_NAME/_bulk" \
+    # refresh=wait_for: entries are searchable (and countable) as soon as the call returns
+    OUTPUT=$(curl -LsS --connect-timeout 30 --max-time 300 -X POST --location "$ELASTIC_URL/$ELASTIC_INDEX_NAME/_bulk?refresh=wait_for" \
     --config <(printf 'header = "Authorization: Basic %s"\n' "$ELASTIC_AUTH_BASE64") \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -67,6 +68,25 @@ function create_index_entries() {
         exit 1
     fi
     echo "$OUTPUT" | jq '{ "count": (.items | length) }'
+}
+
+# Reports the current number of entries in the index, in the same format as create_index_entries.
+# Used as the shell_script "read" command so that state matches reality (no false drift),
+# while a real change (entries removed or added outside of Terraform) is detected.
+function read_index_entries() {
+    local OUTPUT
+
+    OUTPUT=$(curl -LsS --connect-timeout 30 --max-time 300 -X GET --location "$ELASTIC_URL/$ELASTIC_INDEX_NAME/_count" \
+    --config <(printf 'header = "Authorization: Basic %s"\n' "$ELASTIC_AUTH_BASE64") \
+    --header "Accept: application/json" \
+    --cacert <(cat <<< "$ELASTIC_CACERT" | base64 -d)
+     )
+    check_error "$OUTPUT" "index_not_found_exception"
+    if [[ $(echo "$OUTPUT" | jq -r '.error?.type') == "index_not_found_exception" ]]; then
+        echo '{ "count": 0 }'
+        exit 0
+    fi
+    echo "$OUTPUT" | jq '{ "count": .count }'
 }
 
 function delete_index_entries() {

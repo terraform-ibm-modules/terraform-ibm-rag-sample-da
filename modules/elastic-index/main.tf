@@ -26,9 +26,14 @@ resource "shell_script" "elastic_index_entries" {
       source ./${path.module}/scripts/elastic-index-utils.sh
       create_index_entries
     EOT
-    # read is a no-op: index entries are immutable sample data and drift detection
-    # is not required. Returning an empty JSON object satisfies the provider.
-    read   = "echo {}"
+    # read must return the same JSON shape as create (the entry count). The provider compares it
+    # with the output stored in state and marks the resource "dirty" (forces re-create) if they differ.
+    # Returning a stale/empty value (e.g. "echo {}") would cause a perpetual replace on every plan.
+    read = <<-EOT
+      set -e
+      source ./${path.module}/scripts/elastic-index-utils.sh
+      read_index_entries
+    EOT
     delete = <<-EOT
       set -e
       source ./${path.module}/scripts/elastic-index-utils.sh
