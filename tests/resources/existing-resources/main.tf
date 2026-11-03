@@ -88,6 +88,20 @@ module "key_protect" {
 ########################################################################################################################
 
 
+resource "ibm_resource_instance" "orchestrate_instance" {
+  name              = "${var.prefix}-watsonx-orchestrate-instance"
+  service           = "watsonx-orchestrate"
+  plan              = "essentials-agentic-mau"
+  location          = var.region
+  resource_group_id = module.resource_group.resource_group_id
+
+  timeouts {
+    create = "15m"
+    update = "15m"
+    delete = "15m"
+  }
+}
+
 resource "ibm_resource_instance" "discovery_instance" {
   name              = "${var.prefix}-watson-discovery-instance"
   service           = "discovery"

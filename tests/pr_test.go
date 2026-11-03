@@ -104,6 +104,8 @@ func setupOptions(t *testing.T, prefix string, existingTerraformOptions *terrafo
 			"prefix":                                      prefix,
 			"ci_pipeline_id":                              terraform.OutputContext(t, context.Background(), existingTerraformOptions, "ci_pipeline_id"),
 			"cd_pipeline_id":                              terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cd_pipeline_id"),
+			"watsonx_orchestrate_instance_crn":            terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watsonx_orchestrate_instance_crn"),
+			"watsonx_orchestrate_integration_id":          "test-orchestrate-integration-id",
 			"watson_discovery_instance_crn":               terraform.OutputContext(t, context.Background(), existingTerraformOptions, "watson_discovery_instance_crn"),
 			"use_existing_resource_group":                 true,
 			"create_continuous_delivery_service_instance": false,
