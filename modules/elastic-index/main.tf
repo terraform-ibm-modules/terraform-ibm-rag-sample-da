@@ -29,7 +29,7 @@ resource "shell_script" "elastic_index_entries" {
     # read must return the same JSON shape as create (the entry count). The provider compares it
     # with the output stored in state and marks the resource "dirty" (forces re-create) if they differ.
     # Returning a stale/empty value (e.g. "echo {}") would cause a perpetual replace on every plan.
-    read = <<-EOT
+    read   = <<-EOT
       set -e
       source ./${path.module}/scripts/elastic-index-utils.sh
       read_index_entries
